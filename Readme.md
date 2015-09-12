@@ -1,6 +1,6 @@
 # Ellipse
 
-It's a super-simplified web framework inspired by `Express` for those cases when you don't need templates, render engines and all the fancy stuff.
+It's a super-simplified web framework inspired by [Express](http://expressjs.com/) for those cases when you don't need templates, render engines and all the fancy stuff.
 A combination of a router, a middleware chain and a bunch of response helper utilities. Not more, not less. 
 
 ## Usage
