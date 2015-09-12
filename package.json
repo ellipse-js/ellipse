@@ -1,0 +1,27 @@
+{
+  "name": "ellipse",
+  "version": "0.0.1",
+  "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "http",
+    "rest",
+    "vanilla",
+    "simple",
+    "fast",
+    "server",
+    "toolchain",
+    "tool",
+    "light"
+  ],
+  "author": "Schwarzkopf Balazs <schwarzkopfb@icloud.com>",
+  "license": "MIT",
+  "dependencies": {
+    "escape-html": "^1.0.3",
+    "merge-descriptors": "^1.0.0",
+    "path-to-regexp": "^1.2.1"
+  }
+}
