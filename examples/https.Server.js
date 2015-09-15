@@ -2,7 +2,8 @@
  * Created by schwarzkopfb on 15/9/12.
  */
 
-var ellipse = require('../lib/ellipse'),
+var fs      = require('fs'),
+    ellipse = require('../lib/ellipse'),
     app     = ellipse()
 
 app.get('/', function (req, res) {
@@ -19,5 +20,5 @@ app.get('/:greeting/:name', function (req, res) {
     res.send(req.params.greeting + ' ' + req.params.name + '!')
 })
 
-// you can pass `app` directly as a requestListener to Node's http.Server
-require('http').createServer(app).listen(3333)
+// you can pass `app` directly as a requestListener to Node's https.Server
+require('https').createServer({ key: fs.readFileSync('key.pem'), cert: fs.readFileSync('cert.pem') }, app).listen(3333)

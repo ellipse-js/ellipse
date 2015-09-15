@@ -11,16 +11,23 @@ app.get('/', function (req, res) {
     res.send('Welcome ' + name + '!')
 })
 
-app.get('/:name', function (req, res) {
-    var name = req.params.name || 'Ellipse'
-
-    res.send('Hello ' + name + '!')
+app.get('/source', function (req, res) {
+    // send the source code of this app
+    res.sendFile(__filename)
 })
 
-app.get('/:greeting/:name', function (req) {
-    var name = req.params.name || 'Ellipse'
+app.get('/:name', function (req, res) {
+    res.html('<h1>Hello ' + req.params.name + '!</h1>')
+})
 
-    this.send(req.params.greeting + ' ' + name + '!')
+app.get('/:greeting/:name', function (req, res) {
+    res.json({
+        status: 'success',
+        data: {
+            greeting: req.params.greeting,
+            name:     req.params.name
+        }
+    })
 })
 
 app.listen(3333, function () {

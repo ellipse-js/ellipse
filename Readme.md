@@ -1,3 +1,7 @@
+[![view on npm](http://img.shields.io/npm/v/ellipse.svg)](https://www.npmjs.com/package/ellipse)
+[![npm module downloads per month](http://img.shields.io/npm/dm/ellipse.svg)](https://www.npmjs.com/package/ellipse)
+![Analytics](https://ga-beacon.appspot.com/UA-66872036-1/ellipse/README.md?pixel)
+
 # Ellipse
 
 It's a super-simplified web framework inspired by [Express](http://expressjs.com/) for those cases when you don't need templates, render engines and all the fancy stuff.
@@ -17,15 +21,17 @@ app.get('/', function (req, res) {
 })
 
 app.get('/:name', function (req, res) {
-    var name = req.params.name || 'Ellipse'
-
-    res.send('Hello ' + name + '!')
+    res.html('<h1>Hello ' + req.params.name + '!</h1>')
 })
 
-app.get('/:greeting/:name', function (req) {
-    var name = req.params.name || 'Ellipse'
-
-    this.send(req.params.greeting + ' ' + name + '!')
+app.get('/:greeting/:name', function (req, res) {
+    res.json({
+        status: 'success',
+        data: {
+            greeting: req.params.greeting,
+            name:     req.params.name
+        }
+    })
 })
 
 app.listen(3333, function () {
@@ -48,4 +54,4 @@ With git:
 
 ## License
 
-[MIT license](https://github.com/schwarzkopfb/hookserver/blob/master/LICENSE).
+[MIT license](https://github.com/schwarzkopfb/ellipse/blob/master/LICENSE).

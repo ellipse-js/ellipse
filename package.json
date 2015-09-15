@@ -1,6 +1,6 @@
 {
   "name": "ellipse",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,10 @@
   "license": "MIT",
   "dependencies": {
     "escape-html": "^1.0.3",
+    "fresh": "^0.3.0",
     "merge-descriptors": "^1.0.0",
-    "path-to-regexp": "^1.2.1"
+    "on-finished": "^2.3.0",
+    "path-to-regexp": "^1.2.1",
+    "send": "^0.13.0"
   }
 }

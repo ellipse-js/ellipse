@@ -9,11 +9,7 @@ app.get('/', function (req, res) {
     res.send('Hello!')
 })
 
-app.get('/page/:num', function (req, res) {
-    res.send('Page #' + req.params.num)
-})
-
-app.all('*', function (req) {
+app.all(function (req) {
     req.res.status(404).send('Page not found.')
 })
 
