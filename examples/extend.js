@@ -38,10 +38,6 @@ var db = {
 
 // routes
 
-app.get('/api/user', function (req, res) {
-    res.success(db.users[1])
-})
-
 app.get('/api/user/:id', function (req, res) {
     var id = req.params.id
 

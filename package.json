@@ -1,8 +1,8 @@
 {
   "name": "ellipse",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
-  "main": "index.js",
+  "main": "lib/ellipse.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
