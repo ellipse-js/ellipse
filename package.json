@@ -1,6 +1,6 @@
 {
   "name": "ellipse",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "lib/ellipse.js",
   "scripts": {
@@ -36,5 +36,13 @@
     "on-finished": "^2.3.0",
     "path-to-regexp": "^1.2.1",
     "send": "^0.13.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schwarzkopfb/ellipse.git"
+  },
+  "bugs": {
+    "url": "https://github.com/schwarzkopfb/ellipse/issues"
+  },
+  "homepage": "https://github.com/schwarzkopfb/ellipse#readme"
 }
