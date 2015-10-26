@@ -4,7 +4,7 @@
 
 var ellipse = require('../lib/ellipse'),
     app     = ellipse(),
-    serve   = require('serve-static') // tip: ensure 'serve-static' is installed
+    serve   = require('serve-static') // ensure 'serve-static' is installed
 
 app.use('/examples', serve(__dirname))
 

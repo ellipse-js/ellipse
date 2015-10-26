@@ -4,7 +4,7 @@
 
 var ellipse = require('../lib/ellipse'),
     app     = ellipse(),
-    logger  = require('morgan') // tip: ensure 'morgan' is installed
+    logger  = require('morgan') // ensure 'morgan' is installed
 
 function delay(callback) {
     // generate random duration between 200ms and 1s
@@ -12,20 +12,6 @@ function delay(callback) {
 
     setTimeout(callback, time)
 }
-
-// simple logger middleware
-//app.use(function (req, res, next) {
-//    var timestamp = +new Date,
-//        end       = res.end
-//
-//    res.end = function (body) {
-//        console.log(req.method, req.originalUrl, '-', res.statusCode, +new Date - timestamp + 'ms', res.get('content-length'))
-//
-//        end.apply(res, arguments)
-//    }
-//
-//    next()
-//})
 
 // morgan logger: https://npmjs.org/package/morgan
 app.use(logger(':date[clf] - :method :url :status :res[content-length] - :response-time ms'))
