@@ -55,19 +55,20 @@ var db = {
 
 // routes
 
+app.param('id', function (req, res, next, id) {
+    req.user = db.users[ id ]
+    next()
+})
+
 // note that extensions of router will also appear on app,
 // because app inherits from router
-//app.wait(1)
+app.wait(1)
 
-app.get('/api/user/:id', function (req, res, next) {
-    var id = req.params.id
-
-    if(id in db.users)
-        res.success(db.users[ id ])
+app.get('/api/user/:id', function (req, res) {
+    if(req.user)
+        res.success(req.user)
     else
         res.error(404, 'No user found with the given id.')
-
-    next()
 })
 
 // start listening
