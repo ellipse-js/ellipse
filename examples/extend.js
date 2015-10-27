@@ -62,7 +62,7 @@ app.param('id', function (req, res, next, id) {
 
 // note that extensions of router will also appear on app,
 // because app inherits from router
-app.wait(1)
+app.wait(.5)
 
 app.get('/api/user/:id', function (req, res) {
     if(req.user)
