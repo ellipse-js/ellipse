@@ -4,7 +4,7 @@
 
 var ellipse = require('../lib/ellipse'),
     api     = ellipse(),
-    express = require('express'), // tip: ensure 'express' is installed
+    express = require('express'), // ensure 'express' is installed
     app     = express()
 
 app.get('/', function (req, res) {
