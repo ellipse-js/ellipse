@@ -39,7 +39,9 @@ app.get('/test/:id', function *() {
 })
 
 app.get('/stream-test', function () {
-    fs.createReadStream('./test.es6').pipe(this)
+    //var ctx = this
+
+    fs.createReadStream('./test.es6').pipe(this)//.emit('error', Error('fake'))
 })
 
 app.get('/stream-test2', function () {
@@ -64,9 +66,9 @@ app.post('/upload', function *(next) {
     var req    = this.req,
         stream = fs.createWriteStream('./test.txt')
 
-    setTimeout(function () {
-        req.emit('error', 'fake error')
-    }, 1000)
+    //setTimeout(function () {
+    //    req.emit('error', 'fake error')
+    //}, 1000)
 
     this.pipe(stream)
 })
@@ -141,6 +143,17 @@ app.get('/user/:id', function *() {
         this.res.json({ status: 'success', data: user })
     else
         this.throw(404, { status: 'error', message: 'No user found with the given id.' })
+})
+
+app.get('/user/:id', function (req, res, next) {
+    getUserById(this.req.params.id, function (err, user) {
+        if(err)
+            next(err)
+        else if(user)
+            res.json({ status: 'success', data: user })
+        else
+            res.throw(404, { status: 'error', message: 'No user found with the given id.' })
+    })
 })
 
 app.listen(3333)

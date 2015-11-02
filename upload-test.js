@@ -17,9 +17,10 @@ var req = http.request(opts, function () {
 
 req.on('error', console.error)
 req.write('Hello Pipes!\nYeah, fucking cool!\n')
+req.end()
 
-setTimeout(function () {
-    req.end()
-}, 10000)
+//setTimeout(function () {
+//    req.end()
+//}, 10000)
 
 console.log('done')
