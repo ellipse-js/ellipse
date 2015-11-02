@@ -4,7 +4,8 @@
 
 ///////////////////
 
-var app = require('./lib/ellipse')()
+var ellipse = require('./lib/ellipse'),
+    app     = ellipse()
 
 app.param('test', function* (next, test) {
     this.test = test
@@ -125,8 +126,8 @@ app.get(
     }
 )
 
-function getUserById(id) {
-    return new Promise(function (resolve) {
+function getUserById(id, callback) {
+    var p = new Promise(function (resolve) {
         setTimeout(function () {
             if(id == 1)
                 resolve({ id: id, name: 'Peti' })
@@ -134,9 +135,22 @@ function getUserById(id) {
                 resolve(null)
         }, 100)
     })
+
+    if(callback instanceof Function)
+        p.then(function (result) {
+            callback(null, result)
+        }).catch(callback)
+
+    return p
 }
 
-app.get('/user/:id', function *() {
+var api = new ellipse.Router()
+
+app.use('/api', api)
+
+api.get('/user/:id', function *() {
+    console.log('koa')
+
     var user = yield getUserById(this.req.params.id)
 
     if(user)
@@ -145,8 +159,10 @@ app.get('/user/:id', function *() {
         this.throw(404, { status: 'error', message: 'No user found with the given id.' })
 })
 
-app.get('/user/:id', function (req, res, next) {
-    getUserById(this.req.params.id, function (err, user) {
+api.put('/user/:id', function (req, res, next) {
+    console.log('express')
+
+    getUserById(req.params.id, function (err, user) {
         if(err)
             next(err)
         else if(user)
