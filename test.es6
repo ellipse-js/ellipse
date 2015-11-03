@@ -29,7 +29,7 @@ var fs = require('fs')
 
 app.get('/test/:id', function *() {
     if(this.params.id !== '12')
-        this.redirect('/test/12')
+        return this.redirect('/test/12')
 
     this.body    = '{ query: "' + this.queryString + '" }'
     this.code    = 401
@@ -59,9 +59,8 @@ app.get('/html', function *() {
     yield this
 })
 
-app.get('/text', function () {
-    this.body = 'hello!'
-    this.respond()
+app.get('/text', function (req, res) {
+    res.send('hello!')
 })
 
 app.get('/json', function () {
@@ -87,10 +86,10 @@ app.get(
         next()
     },
 
-    function* (next) {
+    function* (ctx, next) {
         console.log('third')
 
-        this.body = 'hello '
+        ctx.body = 'hello '
         yield next
 
         console.log('third resumed')
@@ -104,7 +103,7 @@ app.get(
         console.log('third ended')
     },
 
-    function* (next) {
+    function* (req, res, next) {
         yield next
 
         console.log('mid resumed')
@@ -170,7 +169,7 @@ api.put('/user/:id', function (req, res, next) {
         else if(user)
             res.json({ status: 'success', data: user })
         else
-            res.throw(403)
+            res.throw(404)
     })
 })
 
@@ -187,7 +186,12 @@ api.error(function (err, req, res) {
         message = 'Internal Server Error'
     }
 
-    res.status(code).send({ status: 'error', message: message })
+    res.body = { status: 'error' }
+
+    if(message)
+        res.body.message = message
+
+    res.status(code).send()
 })
 
 //app.on('error', function (err, ctx) {
