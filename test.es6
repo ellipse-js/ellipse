@@ -39,38 +39,37 @@ app.get('/test/:id', function *() {
     this.respond()
 })
 
-app.get('/stream-test', function () {
-    //var ctx = this
-
-    fs.createReadStream('./test.es6').pipe(this)//.emit('error', Error('fake'))
-})
-
-app.get('/stream-test2', function () {
-    this.body = fs.createReadStream('./test.es6')
-
+app.get('/buffer', function () {
+    this.body = new Buffer(1, 2, 3, 4, 5, 6, 7, 8)
     this.respond()
 })
 
-app.get('/upload', function *() {
-    var req = this.req
-
-    //setTimeout(function () {
-    //    req.emit('error', 'fake error')
-    //}, 1000)
-
-    this.next()
-
-    //req.on('error', this.next)
+app.get('/stream', function () {
+    fs.createReadStream('./test.es6').pipe(this)
 })
 
-app.post('/upload', function *(next) {
-    var req    = this.req,
-        stream = fs.createWriteStream('./test.txt')
+app.get('/stream2', function *() {
+    this.set('content-type', 'text/js')
+    this.body = fs.createReadStream('./test.es6')
+    yield this
+})
 
-    //setTimeout(function () {
-    //    req.emit('error', 'fake error')
-    //}, 1000)
+app.get('/html', function *() {
+    this.html = '<h1>Hello!</h1>'
+    yield this
+})
 
+app.get('/text', function () {
+    this.body = 'hello!'
+    this.respond()
+})
+
+app.get('/json', function () {
+    this.res.json({ hello: '!' })
+})
+
+app.post('/upload', function *() {
+    var stream = fs.createWriteStream('./test.txt')
     this.pipe(stream)
 })
 
@@ -148,27 +147,30 @@ var api = new ellipse.Router()
 
 app.use('/api', api)
 
+api.param('id', function *(next, id) {
+    this.user = yield getUserById(id)
+    yield next
+})
+
 api.get('/user/:id', function *() {
-    console.log('koa')
+    this.assert(this.user, 404, 'No user found with the given id.')
 
-    var user = yield getUserById(this.req.params.id)
+    this.json = {
+        status: 'success',
+        data: this.user
+    }
 
-    if(user)
-        this.res.json({ status: 'success', data: user })
-    else
-        this.throw(404, { status: 'error', message: 'No user found with the given id.' })
+    yield this
 })
 
 api.put('/user/:id', function (req, res, next) {
-    console.log('express')
-
     getUserById(req.params.id, function (err, user) {
         if(err)
             next(err)
         else if(user)
             res.json({ status: 'success', data: user })
         else
-            res.throw(404, { status: 'error', message: 'No user found with the given id.' })
+            res.throw(403)
     })
 })
 
@@ -176,18 +178,24 @@ api.get('/error', function (req, res, next) {
     next(new Error('test error'))
 })
 
-//api.error(function (err, req, res) {
-//    console.log('api error')
-//
-//    res.status(500).send('sadness')
-//})
+api.error(function (err, req, res) {
+    var code    = err.status || 500,
+        message = err.message
 
-app.on('error', function (err, ctx) {
-    console.log('app error')
+    if(code === 500) {
+        console.error(err.stack || err)
+        message = 'Internal Server Error'
+    }
 
-    ctx.status = err.status || 500
-    ctx.body   = ':\'('
-    ctx.respond()
+    res.status(code).send({ status: 'error', message: message })
 })
+
+//app.on('error', function (err, ctx) {
+//    console.log('app error')
+//
+//    ctx.status = err.status || 500
+//    ctx.body   = ':\'('
+//    ctx.respond()
+//})
 
 app.listen(3333)
