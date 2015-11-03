@@ -172,4 +172,22 @@ api.put('/user/:id', function (req, res, next) {
     })
 })
 
+api.get('/error', function (req, res, next) {
+    next(new Error('test error'))
+})
+
+//api.error(function (err, req, res) {
+//    console.log('api error')
+//
+//    res.status(500).send('sadness')
+//})
+
+app.on('error', function (err, ctx) {
+    console.log('app error')
+
+    ctx.status = err.status || 500
+    ctx.body   = ':\'('
+    ctx.respond()
+})
+
 app.listen(3333)
