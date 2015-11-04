@@ -5,7 +5,34 @@
 ///////////////////
 
 var ellipse = require('./lib/ellipse'),
-    app     = ellipse()
+    app     = ellipse(),
+    app2    = ellipse()
+
+app._name = 'app'
+app2._name = 'app2'
+
+app2.request.test = function () {
+    console.log('app2 test')
+}
+
+app.request.test = function () {
+    console.log('test')
+}
+
+ellipse.request.test2 = function () {
+    console.log('test2')
+}
+
+ellipse.context.test = function () {
+    this.req.test()
+}
+
+app.use('/app2', app2)
+
+app2.get('/', function *() {
+    this.test()
+    yield this
+})
 
 app.param('test', function* (next, test) {
     this.test = test
@@ -39,6 +66,20 @@ app.get('/test/:id', function *() {
     this.respond()
 })
 
+app.get('/q', function *() {
+    this.body = this.query
+    yield this
+})
+
+app.get('/h', function () {
+    this.req.test()
+    this.req.test2()
+    this.test()
+
+    this.body = this.get('content-type')
+    this.respond()
+})
+
 app.get('/buffer', function () {
     this.body = new Buffer(1, 2, 3, 4, 5, 6, 7, 8)
     this.respond()
@@ -50,7 +91,7 @@ app.get('/stream', function () {
 
 app.get('/stream2', function *() {
     this.set('content-type', 'text/js')
-    this.body = fs.createReadStream('./test.es6')
+    this.body = fs.createReadStream(__filename)
     yield this
 })
 
@@ -162,15 +203,11 @@ api.get('/user/:id', function *() {
     yield this
 })
 
-api.put('/user/:id', function (req, res, next) {
-    getUserById(req.params.id, function (err, user) {
-        if(err)
-            next(err)
-        else if(user)
-            res.json({ status: 'success', data: user })
-        else
-            res.throw(404)
-    })
+api.put('/user/:id', function (req, res) {
+    if(this.user)
+        res.json({ status: 'success', data: this.user })
+    else
+        res.throw(404)
 })
 
 api.get('/error', function (req, res, next) {
