@@ -8,8 +8,9 @@ var ellipse = require('./lib/ellipse'),
     app     = ellipse(),
     app2    = ellipse()
 
-app._name = 'app'
-app2._name = 'app2'
+//ellipse.response.set = function (field, value) {
+//    this.body += field + ': ' + value + '\n'
+//}
 
 app2.request.test = function () {
     console.log('app2 test')
@@ -72,9 +73,8 @@ app.get('/q', function *() {
 })
 
 app.get('/h', function () {
-    this.req.test()
-    this.req.test2()
     this.test()
+    this.req.test2()
 
     this.body = this.get('content-type')
     this.respond()
