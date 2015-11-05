@@ -46,6 +46,12 @@ app.get('/cookie/:name', function (req, res) {
     res.send(this.cookies.get(this.param.name))
 })
 
+app.get('/inspect', function () {
+    console.log(this)
+    this.body = 'see the log'
+    this.respond()
+})
+
 app.param('test', function* (next, test) {
     this.test = test
     yield next
@@ -241,6 +247,10 @@ api.error(function (err, req, res) {
 
     res.status(code).send()
 })
+
+console.log(api)
+console.log(app2.router)
+console.log(app.router)
 
 //app.on('error', function (err, ctx) {
 //    console.log('app error')
