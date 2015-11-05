@@ -5,8 +5,8 @@
 ///////////////////
 
 var ellipse = require('./lib/ellipse'),
-    app     = ellipse(),
-    app2    = ellipse()
+    app     = new ellipse,
+    app2    = ellipse({ env: 'test', proxy: true })
 
 app.keys = [ 'tesztkulcs', 'masiktesztkulcs' ]
 
