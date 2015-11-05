@@ -8,6 +8,8 @@ var ellipse = require('./lib/ellipse'),
     app     = ellipse(),
     app2    = ellipse()
 
+app.keys = [ 'tesztkulcs', 'masiktesztkulcs' ]
+
 //ellipse.response.set = function (field, value) {
 //    this.body += field + ': ' + value + '\n'
 //}
@@ -33,6 +35,15 @@ app.use('/app2', app2)
 app2.get('/', function *() {
     this.test()
     yield this
+})
+
+app.get('/cookie/:name/:value', function (req, res) {
+    this.cookies.set(this.param.name, this.params.value)
+    res.send('hey')
+})
+
+app.get('/cookie/:name', function (req, res) {
+    res.send(this.cookies.get(this.param.name))
 })
 
 app.param('test', function* (next, test) {

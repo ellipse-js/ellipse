@@ -32,8 +32,10 @@
   "author": "Schwarzkopf Balazs <schwarzkopfb@icloud.com>",
   "license": "MIT",
   "dependencies": {
+    "cookies": "^0.5.1",
     "escape-html": "^1.0.3",
     "fresh": "^0.3.0",
+    "merge-descriptors": "^1.0.0",
     "methods": "^1.1.1",
     "on-finished": "^2.3.0",
     "path-to-regexp": "^1.2.1",
