@@ -52,6 +52,16 @@ app.get('/inspect', function () {
     this.respond()
 })
 
+app.get('/code/:code', function *() {
+    this.code = this.param.code
+    yield this
+})
+
+app.get('/message/:msg', function *() {
+    this.message = this.param.msg
+    yield this
+})
+
 app.param('test', function* (next, test) {
     this.test = test
     yield next
