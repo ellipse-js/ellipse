@@ -1,6 +1,6 @@
 {
   "name": "ellipse",
-  "version": "0.6.0",
+  "version": "0.7.0-alpha.0",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "lib/ellipse.js",
   "scripts": {
