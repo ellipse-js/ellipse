@@ -18,7 +18,7 @@ app2.request.test = function () {
     console.log('app2 test')
 }
 
-app.request.test = function () {
+app.request.test = function _____() {
     console.log('test')
 }
 
@@ -35,6 +35,11 @@ app.use('/app2', app2)
 app2.get('/', function *() {
     this.test()
     yield this
+})
+
+app.get('/test', function () {
+    this.test()
+    this.send()
 })
 
 app.get('/cookie/:name/:value', function (req, res) {
@@ -91,7 +96,7 @@ app.get('/test/:id', function *() {
     this.message = 'test'
     this.type    = 'application/json'
 
-    this.respond()
+    yield this
 })
 
 app.get('/q', function *() {
@@ -258,9 +263,7 @@ api.error(function (err, req, res) {
     res.status(code).send()
 })
 
-console.log(api)
-console.log(app2.router)
-console.log(app.router)
+//console.log(app.router.routes)
 
 //app.on('error', function (err, ctx) {
 //    console.log('app error')
