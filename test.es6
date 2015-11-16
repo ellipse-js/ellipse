@@ -215,9 +215,7 @@ function getUserById(id, callback) {
     return p
 }
 
-var api = new ellipse.Router()
-
-app.use('/api', api)
+var api = app.sub('/api')
 
 api.param('id', function *(next, id) {
     this.user = yield getUserById(id)
