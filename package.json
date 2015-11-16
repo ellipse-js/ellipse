@@ -10,9 +10,13 @@
     "index.js",
     "lib/ellipse.js",
     "lib/application.js",
-    "lib/router.js",
+    "lib/router/index.js",
+    "lib/router/route.js",
+    "lib/router/wrap.js",
+    "lib/context.js",
     "lib/request.js",
     "lib/response.js",
+    "lib/utils.js",
     "test/index.js"
   ],
   "keywords": [
@@ -24,14 +28,21 @@
     "server",
     "toolchain",
     "tool",
+    "chain",
+    "web",
+    "framework",
+    "middleware",
     "light",
     "generators",
     "yield",
-    "context"
+    "context",
+    "request",
+    "response"
   ],
   "author": "Schwarzkopf Balazs <schwarzkopfb@icloud.com>",
   "license": "MIT",
   "dependencies": {
+    "co": "^4.6.0",
     "cookies": "^0.5.1",
     "escape-html": "^1.0.3",
     "fresh": "^0.3.0",
