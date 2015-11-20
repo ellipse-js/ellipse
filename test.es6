@@ -151,6 +151,23 @@ app.get('/stream', function () {
     fs.createReadStream('./test.es6').pipe(this)
 })
 
+app.get('/stale', function () {
+    this.send({ stale: this.stale })
+})
+
+app.get('/fresh', function () {
+    this.send({ fresh: this.fresh })
+})
+
+app.get('/query', function (req, res) {
+    console.log(req.queryString)
+    console.log(req.query)
+    req.queryString = 'malac=ka'
+    console.log(req.queryString)
+    console.log(req.query)
+    this.send()
+})
+
 app.get('/stream2', function *() {
     this.set('content-type', 'text/js')
     this.body = fs.createReadStream(__filename)
