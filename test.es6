@@ -37,6 +37,36 @@ app2.get('/', function *() {
     yield this
 })
 
+app.get('/accepts', function *() {
+    this.body = this.accepts()
+    this.send()
+})
+
+app.get('/accepts/:type', function *() {
+    this.body = this.accepts(this.param.type)
+    this.send()
+})
+
+app.get('/acceptsEncodings', function *() {
+    this.body = this.acceptsEncodings()
+    this.send()
+})
+
+app.get('/acceptsCharsets', function *() {
+    this.body = this.acceptsCharsets()
+    this.send()
+})
+
+app.get('/acceptsCharsets/:set', function *() {
+    this.body = this.acceptsCharsets(this.params.set)
+    this.send()
+})
+
+app.get('/acceptsLanguages', function *() {
+    this.body = this.acceptsLanguages()
+    this.send()
+})
+
 app.get('/test', function () {
     this.test()
     this.send()
@@ -140,9 +170,42 @@ app.get('/json', function () {
     this.res.json({ hello: '!' })
 })
 
+app.get('/json2', function () {
+    this.json = { hello: '!' }
+    this.send()
+})
+
+app.get('/json3', function () {
+    this.json = '{"test":42}'
+    this.send()
+})
+
+app.get('/socket', function () {
+    console.log(this.socket)
+    this.send('hey')
+})
+
+app.post('/is', function () {
+    this.body = this.is()
+    this.send()
+})
+
+app.post('/is/:type', function () {
+    this.body = this.is(this.param.type)
+    this.send()
+})
+
 app.post('/upload', function *() {
     var stream = fs.createWriteStream('./test.txt')
     this.pipe(stream)
+})
+
+app.get('/file', function () {
+    this.sendFile('./test.txt', { root: __dirname })
+})
+
+app.get('/error', function () {
+    this.assert(0, 'must be 1', 403)
 })
 
 app.get(
