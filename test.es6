@@ -72,6 +72,21 @@ app.get('/test', function () {
     this.send()
 })
 
+app.get('/search', function *() {
+    this.send(this.search)
+})
+
+
+
+app.get('/search/:str', function *() {
+    this.search = '?' + this.params.str
+    this.send({
+        search:      this.search,
+        queryString: this.queryString,
+        query:       this.query
+    })
+})
+
 app.get('/cookie/:name/:value', function (req, res) {
     this.cookies.set(this.param.name, this.params.value)
     res.send('hey')
@@ -231,6 +246,16 @@ app.get('/file', function () {
 })
 
 app.get('/path', function () {
+    this.send(this.path)
+})
+
+app.get('/path/:value', function () {
+    this.path = this.params.value
+    this.send(this.path)
+})
+
+app.get('/path2/:value', function () {
+    this.path = this.params.value + '?hey'
     this.send(this.path)
 })
 
