@@ -81,6 +81,15 @@ app.get('/cookie/:name', function (req, res) {
     res.send(this.cookies.get(this.param.name))
 })
 
+app.get('/ctx.app', function () {
+    this.send(this.app)
+    console.log(this.application)
+})
+
+app.get('/router', function () {
+    this.send(ellipse.Router.prototype.toJSON.call(this.router))
+})
+
 app.get('/inspect', function () {
     console.log(this)
     this.body = 'see the log'
@@ -219,6 +228,14 @@ app.post('/upload', function *() {
 
 app.get('/file', function () {
     this.sendFile('./test.txt', { root: __dirname })
+})
+
+app.get('/path', function () {
+    this.send(this.path)
+})
+
+app.get('/length', function () {
+    this.send(this.length || 'unknown')
 })
 
 app.get('/error', function () {
