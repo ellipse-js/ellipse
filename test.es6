@@ -76,8 +76,6 @@ app.get('/search', function *() {
     this.send(this.search)
 })
 
-
-
 app.get('/search/:str', function *() {
     this.search = '?' + this.params.str
     this.send({
@@ -116,9 +114,10 @@ app.get('/code/:code', function *() {
     yield this
 })
 
-app.get('/message/:msg', function *() {
-    this.message = this.param.msg
-    yield this
+app.get('/message/:msg', function () {
+    this.message = this.params.msg
+    this.status  = 404
+    this.send()
 })
 
 app.param('test', function* (next, test) {
@@ -267,6 +266,38 @@ app.get('/error', function () {
     this.assert(0, 'must be 1', 403)
 })
 
+app.get('/seeeet', function *() {
+    this.set({
+        A: 1,
+        B: 2,
+        c: 3
+    })
+    this.set('D', 'ok')
+    this.send()
+})
+
+app.get('/attachment', function () {
+    var file = './test2.es6'
+
+    this.attachment(file, { root: '.' })
+    this.sendFile(file, { root: '.' })
+})
+
+app.get('/download', function () {
+    this.download('./test2.es6')
+})
+
+app.get('/header/:field', function () {
+    this.json = { value: this.get(this.param.field) }
+    this.set('X-Test', 'alma')
+    this.remove('X-Test')
+    this.set('test-x', [ 'hey', 'ho' ])
+    this.set({
+        'alma': 'fa'
+    })
+    this.send()
+})
+
 app.get(
     '/:test',
 
@@ -380,6 +411,7 @@ api.error(function (err, req, res) {
     if(message)
         res.body.message = message
 
+    res.message = message
     res.status(code).send()
 })
 
