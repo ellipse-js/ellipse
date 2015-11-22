@@ -103,6 +103,11 @@ app.get('/router', function () {
     this.send(ellipse.Router.prototype.toJSON.call(this.router))
 })
 
+app.del('/test', function () {
+    this.body = 'you deleted test'
+    this.send()
+})
+
 app.get('/inspect', function () {
     console.log(this)
     this.body = 'see the log'
@@ -297,6 +302,44 @@ app.get('/header/:field', function () {
     })
     this.send()
 })
+
+app.param('p', function (next, param) {
+    this.p = param
+    next()
+})
+
+app.route('/delegate/:p')
+   .use(function (next) {
+       this.type = 'text/css'
+       next()
+   })
+   .get(function () {
+       this.body = 'get delegate ' + this.p
+       this.send()
+   })
+   .post(
+       function (next) {
+           this.type = 'text/js'
+           next()
+       },
+
+       function () {
+           this.body = 'post delegate' + this.param.p
+           this.send()
+       }
+   )
+   .put(function () {
+       this.body = 'put delegate'
+       this.send()
+   })
+   .del(function () {
+       this.body = 'delete delegate'
+       this.send()
+   })
+   .all(function () {
+       this.body = this.method + ' is not registered for ' + this.url
+       this.send()
+   })
 
 app.get(
     '/:test',
