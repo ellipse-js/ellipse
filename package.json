@@ -47,6 +47,7 @@
     "content-disposition": "^0.5.0",
     "cookies": "^0.5.1",
     "depd": "^1.1.0",
+    "destroy": "^1.0.3",
     "escape-html": "^1.0.3",
     "fresh": "^0.3.0",
     "http-assert": "^1.1.1",
