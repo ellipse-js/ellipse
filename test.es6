@@ -8,6 +8,7 @@ var ellipse = require('./lib/ellipse'),
     app     = new ellipse,
     app2    = ellipse({ env: 'test', proxy: true })
 
+//app.etag = false
 app.keys = [ 'tesztkulcs', 'masiktesztkulcs' ]
 
 //ellipse.response.set = function (field, value) {
@@ -144,6 +145,15 @@ app.use(function *(next){
 })
 
 var fs = require('fs')
+
+app.get('/redirect', function () {
+    this.redirect('/fake')
+})
+
+app.get('/last-modified', function () {
+    this.lastModified = new Date
+    this.send('see the response headers')
+})
 
 app.get('/test/:id', function *() {
     if(this.params.id !== '12')
