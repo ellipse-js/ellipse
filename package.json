@@ -1,6 +1,6 @@
 {
   "name": "ellipse",
-  "version": "0.8.0-alpha.1",
+  "version": "0.9.0-alpha.1",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "lib/ellipse.js",
   "scripts": {
@@ -57,7 +57,7 @@
     "content-disposition": "^0.5.0",
     "cookies": "^0.5.1",
     "destroy": "^1.0.3",
-    "ellipse-logger": "0.2.0-alpha.0",
+    "ellipse-logger": "0.3.0-alpha.0",
     "escape-html": "^1.0.3",
     "etag": "^1.7.0",
     "fresh": "^0.3.0",

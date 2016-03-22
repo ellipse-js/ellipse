@@ -5,7 +5,8 @@
 ///////////////////
 
 var ellipse = require('./lib/ellipse'),
-    app     = new ellipse,
+    //app     = new ellipse({ log: false }),
+    app     = new ellipse({ log: true }),
     app2    = ellipse({ env: 'test', proxy: true })
 
 //app.etag = false

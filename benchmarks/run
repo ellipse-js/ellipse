@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo
-MW=$1 node $2 &
+MW=$2 node "middleware.$1" &
 pid=$!
 
 sleep 2
