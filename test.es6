@@ -33,6 +33,13 @@ ellipse.context.test = function () {
 
 app.use('/app2', app2)
 
+app.use(function *(next) {
+    var start = new Date
+    yield next
+    var ms = new Date - start
+    console.log('< %s %s - %sms', this.req.method, this.req.url, ms, '>')
+})
+
 app2.get('/', function *() {
     this.test()
     yield this
@@ -135,13 +142,6 @@ app.param('test', function* (next, test) {
     })
 
     console.log('param process after yield')
-})
-
-app.use(function *(next){
-    var start = new Date;
-    yield next
-    var ms = new Date - start;
-    console.log('%s %s - %sms', this.req.method, this.req.url, ms);
 })
 
 var fs = require('fs')
@@ -421,7 +421,7 @@ function getUserById(id, callback) {
     return p
 }
 
-var api = app.sub('/api')
+var api = app.mount('/api')
 
 api.param('id', function *(next, id) {
     this.user = yield getUserById(id)
