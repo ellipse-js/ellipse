@@ -8,12 +8,10 @@ var ellipse = require('..'),
 // number of middleware
 
 var n = parseInt(process.env.MW || '1', 10)
-console.log('  %s middleware', n)
+console.log(`  ${n} middleware`)
 
 while (n--)
-    app.use(function(next) {
-        next()
-    })
+    app.use(next => next())
 
 var body = new Buffer('Hello World')
 
