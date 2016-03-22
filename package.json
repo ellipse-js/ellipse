@@ -1,6 +1,6 @@
 {
   "name": "ellipse",
-  "version": "0.7.0-alpha.1",
+  "version": "0.7.0-alpha.5",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "lib/ellipse.js",
   "scripts": {
@@ -63,7 +63,6 @@
     "fresh": "^0.3.0",
     "http-assert": "^1.1.1",
     "http-errors": "^1.3.1",
-    "merge-descriptors": "^1.0.0",
     "methods": "^1.1.1",
     "mime-types": "^2.1.7",
     "on-finished": "^2.3.0",
