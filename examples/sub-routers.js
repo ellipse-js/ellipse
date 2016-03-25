@@ -2,6 +2,8 @@
  * Created by schwarzkopfb on 15/9/13.
  */
 
+'use strict'
+
 var ellipse = require('../lib/ellipse'),
     app     = ellipse()
 

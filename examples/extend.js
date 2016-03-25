@@ -26,6 +26,11 @@ ellipse.router.wait = function (seconds) {
     })
 }
 
+// it'll be overridden by `app.success`
+ellipse.response.success = function () {
+    this.send('success!')
+}
+
 // extend response prototype with some helper utils that are useful for REST APIs
 
 app.response.error = function (code, message) {
@@ -94,3 +99,14 @@ app.get('/api/user/:id', function (req, res) {
 app.figureOutPortAndListen(function () {
     console.log('server is ready to accept connections on port 3333')
 })
+
+// `app2`'s purpose is to demonstrate that `app.response.success`
+// doesn't affect `ellipse.response.success`
+var app2 = ellipse()
+
+app2.all(function () {
+    // this should send 'success!'
+    this.res.success()
+})
+
+app2.listen(3334)

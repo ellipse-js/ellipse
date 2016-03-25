@@ -1,6 +1,6 @@
 {
   "name": "ellipse",
-  "version": "0.11.0-alpha.1",
+  "version": "0.11.1-alpha.0",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "lib/ellipse.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "lib/utils/decodeParam.js",
     "lib/utils/defineMethod.js",
     "lib/utils/ETag.js",
+    "lib/utils/extractKeys.js",
     "lib/utils/isAbsolute.js",
     "lib/utils/isGeneratorFunction.js",
     "lib/utils/sendFile.js",

@@ -2,6 +2,8 @@
  * Created by schwarzkopfb on 15/9/14.
  */
 
+'use strict'
+
 var ellipse = require('../lib/ellipse'),
     website = ellipse(),
     blog    = ellipse(),
