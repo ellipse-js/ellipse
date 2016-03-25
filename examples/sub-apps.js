@@ -6,12 +6,24 @@ var ellipse = require('../lib/ellipse'),
     website = ellipse(),
     blog    = ellipse(),
     api     = ellipse(),
-    app     = ellipse()
+    // we use this as a parent of our sub-apps
+    // children will do logging for themselves
+    app     = ellipse({ log: false })
 
 // website
 
 website.get('/', function (req, res) {
-    res.send('Hello there!')
+    res.body = 'Hello there!'
+    res.body += [
+        '\n',
+        'try:',
+        '/blog',
+        '/blog/post/1',
+        '/api/me',
+        '/4oh4'
+    ].join('\n')
+
+    res.send()
 })
 
 // blog
@@ -39,9 +51,16 @@ api.get('/me', function (req, res) {
 
 // add sub-apps
 
+/*
+    try:
+    /blog
+    /blog/post/1
+    /api/me
+    /4oh4
+ */
 app.use(website)
-   .use('/blog', blog)
    .use('/api', api)
+   .use('/blog', blog)
 
 // 404
 

@@ -7,6 +7,7 @@
 var Ellipse = require('../lib/ellipse'),
     app     = new Ellipse
 
+// simple logger
 app.use(function (req, res) {
     console.log(req.method, req.originalUrl)
 
@@ -15,27 +16,56 @@ app.use(function (req, res) {
     this.next() // `ctx.next()`
 })
 
+// main route
 app.get('/', function () {
-    this.req.res.send('hey!') // `ctx.req.res`
+    // `ctx.req.res`
+    this.req.res.send([
+        'try:',
+        '/home',
+        '/home?foo=bar',
+        '/home?foo=bar&redirect',
+        '/shop',
+        '/shop?count=42',
+        '/404'
+    ].join('\n'))
 })
 
+/*
+    try:
+    /home
+    /home?foo=bar
+    /home?foo=bar&redirect
+ */
 app.get('/home', function (req, res) {
     var url = '/',
-        qs  = res.req.queryString
+        qs  = res.req.queryString // `res.req`
 
     if(qs)
         url += '?' + qs
 
-    res.redirect(url) // `res.req`
+    if('redirect' in res.req.query)
+        res.redirect(url)
+    else
+        res.send('url: ' + url)
 })
 
+/*
+    try:
+    /shop
+    /shop?count=42
+ */
 app.get('/shop', function () {
     // `ctx.request === ctx.req`
     this.send('Displaying ' + this.request.query.count + ' products.')
 })
 
+/*
+    try:
+    /404
+ */
 app.get('/404', function () {
     this.next() // `this === ctx`
 })
 
+// start listening
 app.listen(3333)

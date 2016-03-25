@@ -8,7 +8,13 @@ var Ellipse = require('../lib/ellipse'),
     app     = new Ellipse
 
 app.get('/', function (req, res) {
-    res.send('Hello!')
+    res.body = [
+        'try:',
+        '/next',
+        '/throw'
+    ].join('\n')
+
+    res.send()
 })
 
 app.get('/throw', function () {
@@ -19,7 +25,13 @@ app.get('/next', function (req, res, next) {
     next(Error('fake'))
 })
 
-// catch errors
+/*
+    catch errors
+
+    try:
+    /next
+    /throw
+*/
 app.on('error', function (err, ctx) {
     console.error(err.stack || err)
 

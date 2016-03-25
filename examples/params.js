@@ -22,18 +22,7 @@ function *findUserById(id) {
         return null
 }
 
-// override param
-app.param('name', function (next, name) {
-    this.params.name = name.split(' ').map(capitalize).join(' ')
-    next()
-})
-
-// extend `ctx` based on a param
-app.param('user_id', function *(next, id) {
-    this.user = yield *findUserById(id)
-    yield next
-})
-
+// main route
 app.get('/', function () {
     this.body = [
         'try:',
@@ -49,6 +38,18 @@ app.get('/', function () {
     ].join('\n')
 
     this.send()
+})
+
+// override `name` param in `ctx.params`
+app.param('name', function (next, name) {
+    this.params.name = name.split(' ').map(capitalize).join(' ')
+    next()
+})
+
+// extend `ctx` based on `user_id` param
+app.param('user_id', function *(next, id) {
+    this.user = yield *findUserById(id)
+    yield next
 })
 
 /*
@@ -107,4 +108,5 @@ app.get('/:name', function () {
     this.send(this.params.name)
 })
 
+// start listening
 app.listen(3333)

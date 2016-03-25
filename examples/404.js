@@ -8,9 +8,15 @@ var Ellipse = require('../lib/ellipse'),
     app     = new Ellipse
 
 app.get('/', function (req, res) {
-    res.send('Hello!')
+    res.send('try any other route to get a 4oh4 response:\n/foo\n/bar')
 })
 
+/*
+    try:
+    /foo
+    /bar
+    /*
+ */
 app.all(function () {
     this.res.status(404).send('Page not found.')
 })

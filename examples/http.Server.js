@@ -10,13 +10,34 @@ var Ellipse = require('../lib/ellipse'),
 app.get('/', function (req, res) {
     var name = req.query.name || 'Ellipse'
 
-    res.send('Welcome ' + name + '!')
+    res.body = 'Welcome ' + name + '!'
+    res.body += [
+        '\n',
+        'try:',
+        '/John',
+        '/Jack',
+        '/*',
+        '/hello/Jack',
+        '/aloha/John'
+    ].join('\n')
+
+    res.send()
 })
 
+/*
+    try:
+    /John
+    /Jack
+ */
 app.get('/:name', function (req, res) {
     res.send('Hello ' + req.params.name + '!')
 })
 
+/*
+    try:
+    /hello/Jack
+    /aloha/John
+ */
 app.get('/:greeting/:name', function (req, res) {
     res.send(req.params.greeting + ' ' + req.params.name + '!')
 })

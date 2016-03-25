@@ -11,16 +11,29 @@ var Ellipse = require('../lib/ellipse'),
     // environments
     app = new Ellipse({ log: true })
 
+// fire the given callback after a random duration between 200ms and 1s
 function delay(callback) {
-    // generate random duration between 200ms and 1s
     var time = Math.round(Math.random() * 800) + 200
     setTimeout(callback, time)
 }
 
-app.get('/', function (req, res) {
+/*
+    this route handles all the incoming requests
+
+    try:
+    /?foo=bar
+    /foo
+    /foo?bar
+    /foo/bar
+    /*
+
+    after a few requests, see stdout
+ */
+app.all(function (req, res) {
     delay(function () {
-        res.send('Hello!')
+        res.send('try:\n/?foo=bar\n/foo\n/foo?bar\n/foo/bar\n/*\n\nafter a few requests, see stdout')
     })
 })
 
+// start server
 app.listen(3333)
