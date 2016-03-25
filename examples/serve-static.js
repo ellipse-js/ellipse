@@ -4,7 +4,7 @@
 
 'use strict'
 
-var Ellipse = require('../lib/ellipse'),
+var Ellipse = require('../'),
     app     = new Ellipse,
     // simply use the official static server of Express
     serve   = require('serve-static')

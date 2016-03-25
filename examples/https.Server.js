@@ -5,7 +5,7 @@
 'use strict'
 
 var fs      = require('fs'),
-    ellipse = require('../lib/ellipse'),
+    ellipse = require('../'),
     app     = ellipse()
 
 app.get('/', function (req, res) {

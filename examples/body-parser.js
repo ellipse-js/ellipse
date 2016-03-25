@@ -4,7 +4,7 @@
 
 'use strict'
 
-var Ellipse    = require('../lib/ellipse'),
+var Ellipse    = require('../'),
     app        = new Ellipse,
     // simply use the official body parser of Express
     bodyParser = require('body-parser')

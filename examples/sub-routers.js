@@ -4,7 +4,7 @@
 
 'use strict'
 
-var ellipse = require('../lib/ellipse'),
+var ellipse = require('../'),
     app     = ellipse()
 
 // `app.mount(...)` returns a `Router` instance and

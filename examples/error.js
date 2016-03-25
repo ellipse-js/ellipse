@@ -4,7 +4,7 @@
 
 'use strict'
 
-var Ellipse = require('../lib/ellipse'),
+var Ellipse = require('../'),
     app1    = new Ellipse,
     app2    = new Ellipse,
     app3    = new Ellipse

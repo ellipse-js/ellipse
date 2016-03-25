@@ -4,7 +4,7 @@
 
 'use strict'
 
-var ellipse = require('../lib/ellipse'),
+var ellipse = require('../'),
     website = ellipse(),
     blog    = ellipse(),
     api     = ellipse(),

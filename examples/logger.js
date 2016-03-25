@@ -4,7 +4,7 @@
 
 'use strict'
 
-var Ellipse = require('../lib/ellipse'),
+var Ellipse = require('../'),
     // Ellipse has a built in http logger
     // that's enabled when `app.log === true`
     // by default `app.log` is true in development
