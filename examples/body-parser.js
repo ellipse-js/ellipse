@@ -2,11 +2,14 @@
  * Created by schwarzkopfb on 15/9/12.
  */
 
-var ellipse    = require('../lib/ellipse'),
-    app        = ellipse(),
-    bodyParser = require('body-parser') // tip: ensure 'body-parser' is installed
+'use strict'
 
-app.use(bodyParser.urlencoded({ extended: false }))
+var Ellipse    = require('../lib/ellipse'),
+    app        = new Ellipse,
+    // simply use the official body parser of Express
+    bodyParser = require('body-parser')
+
+app.use(bodyParser.json())
 
 app.post('/api/user', function (req, res) {
     res.json(req.body)

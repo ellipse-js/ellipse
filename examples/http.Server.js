@@ -2,8 +2,10 @@
  * Created by schwarzkopfb on 15/9/12.
  */
 
-var ellipse = require('../lib/ellipse'),
-    app     = ellipse()
+'use strict'
+
+var Ellipse = require('../lib/ellipse'),
+    app     = new Ellipse
 
 app.get('/', function (req, res) {
     var name = req.query.name || 'Ellipse'
@@ -19,5 +21,5 @@ app.get('/:greeting/:name', function (req, res) {
     res.send(req.params.greeting + ' ' + req.params.name + '!')
 })
 
-// you can pass `app` directly as a requestListener to Node's http.Server
-require('http').createServer(app).listen(3333)
+// `app.callback()` returns a request listener function that's suitable tor Node's http.Server
+require('http').createServer(app.callback()).listen(3333)

@@ -2,9 +2,12 @@
  * Created by schwarzkopfb on 15/9/15.
  */
 
-var ellipse = require('../lib/ellipse'),
-    app     = ellipse(),
-    serve   = require('serve-static') // ensure 'serve-static' is installed
+'use strict'
+
+var Ellipse = require('../lib/ellipse'),
+    app     = new Ellipse,
+    // simply use the official static server of Express
+    serve   = require('serve-static')
 
 app.use('/examples', serve(__dirname))
 

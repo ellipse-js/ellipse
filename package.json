@@ -1,6 +1,6 @@
 {
   "name": "ellipse",
-  "version": "0.9.0-alpha.1",
+  "version": "0.11.0-alpha.0",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "lib/ellipse.js",
   "scripts": {
@@ -15,7 +15,11 @@
     "lib/response.js",
     "lib/router/index.js",
     "lib/router/route.js",
+    "lib/router/mount.js",
     "lib/router/delegate.js",
+    "lib/router/handlers/error.js",
+    "lib/router/handlers/missing.js",
+    "lib/router/handlers/options.js",
     "lib/utils/alias.js",
     "lib/utils/decodeParam.js",
     "lib/utils/defineMethod.js",
@@ -24,9 +28,6 @@
     "lib/utils/isGeneratorFunction.js",
     "lib/utils/sendFile.js",
     "lib/utils/wrap.js",
-    "lib/utils/handlers/error.js",
-    "lib/utils/handlers/missing.js",
-    "lib/utils/handlers/options.js",
     "test/index.js"
   ],
   "keywords": [

@@ -2,6 +2,8 @@
  * Created by schwarzkopfb on 15/9/12.
  */
 
+'use strict'
+
 var fs      = require('fs'),
     ellipse = require('../lib/ellipse'),
     app     = ellipse()
@@ -20,5 +22,8 @@ app.get('/:greeting/:name', function (req, res) {
     res.send(req.params.greeting + ' ' + req.params.name + '!')
 })
 
-// you can pass `app` directly as a requestListener to Node's https.Server
-require('https').createServer({ key: fs.readFileSync('key.pem'), cert: fs.readFileSync('cert.pem') }, app).listen(3333)
+// `app.callback()` returns a request listener function that's suitable tor Node's https.Server as well
+require('https').createServer({
+    key:  fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+}, app).listen(3333)

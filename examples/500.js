@@ -2,8 +2,10 @@
  * Created by schwarzkopfb on 15/9/12.
  */
 
-var ellipse = require('../lib/ellipse'),
-    app     = ellipse()
+'use strict'
+
+var Ellipse = require('../lib/ellipse'),
+    app     = new Ellipse
 
 app.get('/', function (req, res) {
     res.send('Hello!')
@@ -18,10 +20,11 @@ app.get('/next', function (req, res, next) {
 })
 
 // catch errors
-app.error(function (err, req, res) {
+app.on('error', function (err, ctx) {
     console.error(err.stack || err)
 
-    res.status(500).send('Ouch!')
+    ctx.status = 500
+    ctx.send('Ouch!')
 })
 
 app.listen(3333)

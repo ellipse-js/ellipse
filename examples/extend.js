@@ -2,13 +2,15 @@
  * Created by schwarzkopfb on 15/9/15.
  */
 
+'use strict'
+
 var ellipse = require('../lib/ellipse'),
     app     = ellipse()
 
 // extend app prototype
 
 ellipse.application.figureOutPortAndListen = function (callback) {
-    var port = +process.argv[2] || +process.env.PORT || 3333
+    var port = +process.argv[ 2 ] || +process.env.PORT || 3333
 
     this.listen(port, callback)
 }
@@ -60,7 +62,7 @@ app.param('id', function (req, res, next, id) {
     next()
 })
 
-// note that extensions of router will also appear on app,
+// note that extensions of `router` will also appear on `app`,
 // because app inherits from router
 app.wait(.5)
 

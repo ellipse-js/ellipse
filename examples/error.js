@@ -2,10 +2,12 @@
  * Created by schwarzkopfb on 15/9/15.
  */
 
-var ellipse = require('../lib/ellipse'),
-    app1    = ellipse(),
-    app2    = ellipse(),
-    app3    = ellipse()
+'use strict'
+
+var Ellipse = require('../lib/ellipse'),
+    app1    = new Ellipse,
+    app2    = new Ellipse,
+    app3    = new Ellipse
 
 // app1
 
@@ -46,18 +48,21 @@ app3.get('/', function (req, res, next) {
 
 router = app3.mount('/error')
 
-router.get('/', function () {
+router.get('/*', function () {
     throw 'fake error'
 })
 
-router.catch(function (err, req, res) {
+// you can also use the `error` event to catch unhandled errors
+router.on('error', function (err, ctx) {
     // receive errors only from `router` here
-    res.status(500).send('Something went wrong under the /error* route.')
+    ctx.status = 500
+    ctx.send('Something went wrong under the /error* route.')
 })
 
-app3.catch(function (err, req, res) {
+app3.on('error', function (err, ctx) {
     // receive errors only from `app3` here
-    res.status(500).send('Something went wrong.')
+    ctx.status = 500
+    ctx.send('Something went wrong.')
 })
 
 app3.listen(3335)

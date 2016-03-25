@@ -37,6 +37,19 @@ api.get('/me', function (req, res) {
     })
 })
 
+// add sub-apps
+
+app.use(website)
+   .use('/blog', blog)
+   .use('/api', api)
+
+// 404
+
+app.all(function () {
+    this.status = 404
+    this.send('Page not found!')
+})
+
 // 500
 
 app.error(function (err, req, res) {
@@ -45,9 +58,6 @@ app.error(function (err, req, res) {
     res.send('App error!')
 })
 
-// app
+// start listening
 
-app.use(website)
-   .use('/blog', blog)
-   .use('/api', api)
-   .listen(3333)
+app.listen(3333)
