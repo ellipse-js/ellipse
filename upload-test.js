@@ -16,7 +16,7 @@ var req = http.request(opts, function () {
 })
 
 req.on('error', console.error)
-req.write('Hello Pipes!\nYeah, it\'s cool!\nAnd destroyed.')
+req.write('Hello Pipes!\nYeah, it\'s cool!\nAnd destroyed.\nHello fast pipes! :)')
 req.end()
 
 //setTimeout(function () {

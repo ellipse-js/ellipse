@@ -112,7 +112,7 @@ app.get('/router', function () {
     this.send(ellipse.Router.prototype.toJSON.call(this.router))
 })
 
-app.del('/test', function () {
+app.delete('/test', function () {
     this.body = 'you deleted test'
     this.send()
 })
@@ -190,6 +190,12 @@ app.get('/stream', function () {
     fs.createReadStream('./test.es6').pipe(this)
 })
 
+app.get('/stream2', function *() {
+    this.set('content-type', 'text/js')
+    this.body = fs.createReadStream(__filename)
+    yield this
+})
+
 app.get('/stale', function () {
     this.send({ stale: this.stale })
 })
@@ -205,12 +211,6 @@ app.get('/query', function (req, res) {
     console.log(req.queryString)
     console.log(req.query)
     this.send()
-})
-
-app.get('/stream2', function *() {
-    this.set('content-type', 'text/js')
-    this.body = fs.createReadStream(__filename)
-    yield this
 })
 
 app.get('/html', function *() {
@@ -257,7 +257,7 @@ app.post('/upload', function *() {
 })
 
 app.get('/file', function () {
-    this.sendFile('./test.txt', { root: __dirname })
+    this.sendFile('./test.txt')
 })
 
 app.get('/path', function () {
@@ -343,7 +343,7 @@ app.route('/delegate/:p')
        this.body = 'put delegate'
        this.send()
    })
-   .del(function () {
+   .delete(function () {
        this.body = 'delete delegate'
        this.send()
    })
