@@ -79,7 +79,7 @@ app.get('/', function *() {
     this.send()
 })
 
-// note that extensions of `router` will also appear on `app`,
+// extensions of `router` will also appear on `app`,
 // because app inherits from router
 app.wait(.5)
 

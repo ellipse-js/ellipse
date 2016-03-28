@@ -19,6 +19,10 @@ function randStr() {
     return str
 }
 
+function isRequired(name) {
+    return ~Object.keys(require.cache).join().indexOf(name)
+}
+
 /* app.proxy */
 
 assert.equal(app.proxy, false, 'app.proxy should be false by default')
@@ -53,9 +57,13 @@ assert.equal(app.subdomainOffset, 1, 'app.subdomainOffset should be unchanged')
 
 assert.equal(app.log, 'development', "app.log should default to 'development'")
 
+assert(!isRequired('ellipse-logger'), '`ellipse-logger` should not be required before needed')
+
 assert.doesNotThrow(function () {
     app.log = true
 }, '`true` is a valid value for app.log')
+
+assert(isRequired('ellipse-logger'), '`ellipse-logger` should be required if needed')
 
 assert.doesNotThrow(function () {
     app.log = false
@@ -81,7 +89,7 @@ delete env.NODE_ENV
 
 app = new Ellipse
 
-assert.equal(app.env, 'development', "app.env should be 'development' if no NODE_ENV is empty")
+assert.equal(app.env, 'development', "app.env should be 'development' if NODE_ENV is empty")
 
 for(var i = 5; i--;) {
     env.NODE_ENV = randStr()
