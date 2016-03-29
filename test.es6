@@ -196,6 +196,16 @@ app.get('/stream2', function *() {
     yield this
 })
 
+app.get('/unpipe', function () {
+    var stream = fs.createReadStream('./test.es6')
+    stream.pipe(this)
+    stream.unpipe(this)
+    stream.close()
+
+    this.body = 'unpiped!'
+    this.send()
+})
+
 app.get('/stale', function () {
     this.send({ stale: this.stale })
 })
@@ -219,7 +229,14 @@ app.get('/html', function *() {
 })
 
 app.get('/text', function (req, res) {
-    res.send('hello!')
+    res.set('content-type', 'text/plain; charset=utf-8')
+    res.body = 'hello!'
+    res.send()
+})
+
+app.get('/text2', function () {
+    this.text = 'hello!'
+    this.send()
 })
 
 app.get('/json', function () {
@@ -252,8 +269,30 @@ app.post('/is/:type', function () {
 })
 
 app.post('/upload', function *() {
-    var stream = fs.createWriteStream('./test.txt')
+    var stream = fs.createWriteStream('./test1.txt')
     this.pipe(stream)
+
+    this.body = 'done!'
+    this.send()
+})
+
+app.post('/cancel-upload', function *() {
+    var stream = fs.createWriteStream('./test3.txt')
+    this.pipe(stream)
+    this.unpipe(stream)
+    stream.close()
+
+    this.body = 'canceled!'
+    this.send()
+})
+
+app.post('/cancel-upload-lazy', function *() {
+    var stream = fs.createWriteStream('./test3.txt')
+    this.pipe(stream)
+    stream.close()
+
+    this.body = 'canceled!'
+    this.send()
 })
 
 app.get('/file', function () {
