@@ -404,6 +404,16 @@ app.get(
     }
 )
 
+//app.on('missing', function (ctx) {
+//    ctx.status = 404
+//    ctx.send('not found :(')
+//})
+
+app.missing(function (ctx) {
+    ctx.status = 404
+    ctx.send('not found :\'(')
+})
+
 function getUserById(id, callback) {
     var p = new Promise(function (resolve) {
         setTimeout(function () {
