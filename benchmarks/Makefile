@@ -1,7 +1,6 @@
 all: export NODE_ENV = test
 all:
 	@echo
-
 	@echo " koa-style middleware"
 
 	@./run es6 1
@@ -14,7 +13,6 @@ all:
 	@./run es6 100
 
 	@echo
-
 	@echo " express-style middleware"
 
 	@./run js 1

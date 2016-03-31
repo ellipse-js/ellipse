@@ -25,18 +25,12 @@ app.get('/', function (req, res) {
     /bar
     /*
  */
-app.missing(function (ctx) {
+app.on('not found', function (ctx) {
+    console.log('missing:', ctx.url)
+
     ctx.status = 404
     ctx.body   = 'Page not found.'
     ctx.send()
-})
-
-app.on('missing', function (ctx) {
-    console.log('missing', ctx.url)
-})
-
-app.on('not found', function (ctx) {
-    console.log('not found', ctx.url)
 })
 
 app.listen(3333)

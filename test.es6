@@ -117,15 +117,16 @@ app.delete('/test', function () {
     this.send()
 })
 
-app.get('/inspect', function () {
+app.get('/inspect', function (next) {
     console.log(this)
     this.body = 'see the log'
-    this.respond()
+    this.respond = true
+    next()
 })
 
 app.get('/code/:code', function *() {
     this.code = this.param.code
-    yield this
+    this.send()
 })
 
 app.get('/message/:msg', function () {
@@ -178,31 +179,23 @@ app.get('/h', function () {
     this.req.test2()
 
     this.body = this.get('content-type')
-    this.respond()
+    this.respond = true
+    this.next()
 })
 
 app.get('/buffer', function () {
     this.body = new Buffer(1, 2, 3, 4, 5, 6, 7, 8)
-    this.respond()
+    this.respond = true
+    this.next()
 })
 
 app.get('/stream', function () {
-    fs.createReadStream('./test.es6').pipe(this)
+    fs.createReadStream('./test.es6').pipe(this.response)
 })
 
 app.get('/stream2', function *() {
     this.set('content-type', 'text/js')
     this.body = fs.createReadStream(__filename)
-    yield this
-})
-
-app.get('/unpipe', function () {
-    var stream = fs.createReadStream('./test.es6')
-    stream.pipe(this)
-    stream.unpipe(this)
-    stream.close()
-
-    this.body = 'unpiped!'
     this.send()
 })
 
@@ -225,7 +218,7 @@ app.get('/query', function (req, res) {
 
 app.get('/html', function *() {
     this.html = '<h1>Hello!</h1>'
-    yield this
+    this.send()
 })
 
 app.get('/text', function (req, res) {
@@ -439,7 +432,8 @@ app.get(
     function () {
         console.log('fourth')
         this.body += 'generators'
-        this.respond()
+        this.respond = true
+        this.next()
     }
 )
 
@@ -448,7 +442,7 @@ app.get(
 //    ctx.send('not found :(')
 //})
 
-app.missing(function (ctx) {
+app.on('not found', function (ctx) {
     ctx.status = 404
     ctx.send('not found :\'(')
 })
@@ -525,7 +519,7 @@ api.error(function (err, req, res) {
 //
 //    ctx.status = err.status || 500
 //    ctx.body   = ':\'('
-//    ctx.respond()
+//    ctx.send()
 //})
 
 app.listen(3333)
