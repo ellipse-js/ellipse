@@ -1,40 +1,15 @@
 {
   "name": "ellipse",
-  "version": "0.14.0-alpha.0",
+  "version": "0.14.1-alpha.0",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "lib/ellipse.js",
   "scripts": {
-    "test": "NODE_ENV=test node test"
+    "test": "node test"
   },
   "files": [
     "index.js",
-    "lib/ellipse.js",
-    "lib/application.js",
-    "lib/context.js",
-    "lib/request.js",
-    "lib/response.js",
-    "lib/router/index.js",
-    "lib/router/route.js",
-    "lib/router/mount.js",
-    "lib/router/delegate.js",
-    "lib/router/handlers/error.js",
-    "lib/router/handlers/missing.js",
-    "lib/router/handlers/options.js",
-    "lib/utils/alias.js",
-    "lib/utils/compose.js",
-    "lib/utils/decodeParam.js",
-    "lib/utils/defineMethod.js",
-    "lib/utils/ETag.js",
-    "lib/utils/extractKeys.js",
-    "lib/utils/isAbsolute.js",
-    "lib/utils/isGeneratorFunction.js",
-    "lib/utils/lazy.js",
-    "lib/utils/listenerCount.js",
-    "lib/utils/sendFile.js",
-    "lib/utils/verbs.js",
-    "lib/utils/wrap/index.js",
-    "lib/utils/wrap/generator.js",
-    "test/index.js"
+    "lib",
+    "test"
   ],
   "keywords": [
     "http",
@@ -64,7 +39,7 @@
     "content-disposition": "^0.5.0",
     "cookies": "^0.5.1",
     "destroy": "^1.0.3",
-    "ellipse-logger": "0.3.0-alpha.0",
+    "ellipse-logger": "0.4.0-alpha.2",
     "escape-html": "^1.0.3",
     "etag": "^1.7.0",
     "fresh": "^0.3.0",

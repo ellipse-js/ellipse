@@ -43,7 +43,7 @@ app.use(function *(next) {
 
 app2.get('/', function *() {
     this.test()
-    yield this
+    this.send()
 })
 
 app.get('/accepts', function *() {
@@ -468,8 +468,10 @@ function getUserById(id, callback) {
 var api = app.mount('/api')
 
 api.param('id', function *(next, id) {
+    console.log('param: id = ', id)
+
     this.user = yield getUserById(id)
-    yield next
+    yield *next
 })
 
 api.get('/user/:id', function *() {
@@ -480,7 +482,7 @@ api.get('/user/:id', function *() {
         data: this.user
     }
 
-    yield this
+    this.send()
 })
 
 api.put('/user/:id', function (req, res) {
