@@ -1,6 +1,5 @@
 [![view on npm](http://img.shields.io/npm/v/ellipse.svg)](https://www.npmjs.com/package/ellipse)
 [![npm module downloads per month](http://img.shields.io/npm/dm/ellipse.svg)](https://www.npmjs.com/package/ellipse)
-![Analytics](https://ga-beacon.appspot.com/UA-66872036-1/ellipse/README.md?pixel)
 
 # Ellipse
 
@@ -47,10 +46,6 @@ For more information, see the [examples](https://github.com/schwarzkopfb/ellipse
 With npm:
 
     npm install --save ellipse
-    
-With git:
-    
-    git clone git://github.com/schwarzkopfb/ellipse.git
 
 ## License
 
