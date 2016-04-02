@@ -6,8 +6,8 @@
 
 var ellipse = require('./lib/ellipse'),
     //app     = new ellipse({ log: false }),
-    app     = new ellipse({ log: true }),
-    app2    = ellipse({ env: 'test', proxy: true })
+    app     = new ellipse({ log: true, proxy: true }),
+    app2    = ellipse({ env: 'test' })
 
 //app.etag = false
 app.keys = [ 'tesztkulcs', 'masiktesztkulcs' ]
@@ -51,6 +51,32 @@ app.get('/accepts', function *() {
     this.send()
 })
 
+app.get('/ip', function () {
+    this.body    = this.ip
+    this.respond = true
+    this.next()
+})
+
+app.get('/ips', function () {
+    this.body    = this.ips
+    this.respond = true
+    this.next()
+})
+
+app.get('/hostname', function () {
+    this.body = this.hostname
+    this.send()
+})
+
+app.get('/append/:field/:value', function () {
+    var field = this.params.field,
+        value = this.params.value.split(',')
+
+    this.set(field, 'hello')
+    this.append(field, value)
+    this.send('see response headers')
+})
+
 app.get('/accepts/:type', function *() {
     this.body = this.accepts(this.param.type)
     this.send()
@@ -92,6 +118,16 @@ app.get('/search/:str', function *() {
         queryString: this.queryString,
         query:       this.query
     })
+})
+
+app.get('/res.cookie/:name/:value', function (req, res) {
+    this.response.cookie(this.param.name, this.params.value)
+    res.send('hey')
+})
+
+app.get('/res.clearCookie/:name', function (req, res) {
+    this.response.clearCookie(this.param.name)
+    res.send('hey')
 })
 
 app.get('/cookie/:name/:value', function (req, res) {
@@ -388,6 +424,9 @@ app.get(
     '/:test',
 
     function* (next) {
+        if (this.body)
+            return this.send()
+
         console.log('first')
         yield next
         console.log('first ended')
