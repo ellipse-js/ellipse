@@ -102,11 +102,11 @@ For more information, see [examples](https://github.com/schwarzkopfb/ellipse/blo
 
 You're reading about the upcoming `v0.14` release-line of Ellipse which is in `alpha` state right now.
 
-If you want to try out these new features introduced above, then you should use the `next` tag:
+If you want to try out these new features listed above, then you should use the `next` tag:
 
     npm install ellipse@next
     
-Or simply install `v0.5` which is the latest release, considered as stable:
+Or simply install `v0.5` which is the latest version, considered as stable:
   
     npm install ellipse
 
