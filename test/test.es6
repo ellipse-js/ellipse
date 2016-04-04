@@ -4,7 +4,7 @@
 
 ///////////////////
 
-var ellipse = require('./lib/ellipse'),
+var ellipse = require('./../lib/ellipse'),
     //app     = new ellipse({ log: false }),
     app     = new ellipse({ log: true, proxy: true }),
     app2    = ellipse({ env: 'test' })
