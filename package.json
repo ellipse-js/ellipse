@@ -3,7 +3,7 @@
     "tag": "next"
   },
   "name": "ellipse",
-  "version": "0.14.3-alpha.4",
+  "version": "0.14.4-alpha.0",
   "description": "Minimalistic toolchain to make writing of vanilla http servers more enjoyable.",
   "main": "lib/ellipse.js",
   "scripts": {

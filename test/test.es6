@@ -112,10 +112,14 @@ app.get('/search', function *() {
 })
 
 app.get('/search/:str', function *() {
+    this.path = '/test'
+    this.query = { alma: 'fa' }
     this.search = '?' + this.params.str
     this.send({
+        url:         this.url,
+        path:        this.path,
         search:      this.search,
-        queryString: this.queryString,
+        querystring: this.querystring,
         query:       this.query
     })
 })
