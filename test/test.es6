@@ -124,6 +124,20 @@ app.get('/search/:str', function *() {
     })
 })
 
+app.get('/promise', function *() {
+    this.body = Promise.resolve(1)
+    this.send()
+})
+
+function *gen() {
+    return 'hello'
+}
+
+app.get('/generator', function *() {
+    this.body = gen()
+    this.send()
+})
+
 app.get('/res.cookie/:name/:value', function (req, res) {
     this.response.cookie(this.param.name, this.params.value)
     res.send('hey')
