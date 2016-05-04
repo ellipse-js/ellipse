@@ -12,67 +12,16 @@ Unobtrusive web framework for [node.js](https://nodejs.org) that consolidates AP
   * HTTP helpers (redirection, caching, etc)
   * Content negotiation
   * Support for ES6 Generators
-  * HTTP `Context`s
+  * HTTP Contexts
 
 ## Usage
-
-```js
-
-var Ellipse = require('ellipse'),
-    app     = new Ellipse
-
-app.get('/', function (req, res) {
-    res.body = 'Hello Ellipse!'
-    res.send()
-})
-
-app.get('/greet/:name', function (req, res) {
-    res.send('<h1>Hello ' + req.params.name + '!</h1>')
-})
-
-app.on('not found', function(ctx, req, res) {
-    res.status(404)
-       .send('Page not found.')
-})
-
-app.listen(3333)
-
-```
-
-or
-
-```js
-
-const Ellipse = require('ellipse'),
-      app     = new Ellipse({ respond: true })
-      
-app.get('/', function *(next) {
-    this.body = 'Hello Ellipse!'
-    yield *next
-})
-
-app.get('/greet/:name', function *(next) {
-    this.html = `<h1>Hello ${this.params.name}!</h1>`
-    yield *next
-})
-
-app.on('not found', function(ctx) {
-    ctx.status = 404
-    ctx.send('Page not found.')
-})
-
-app.listen(3333)
-
-```
-
-or
 
 ```js
 
 const Ellipse = require('ellipse'),
       app     = new Ellipse
 
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     req.sessionId = this.cookies.get('session')
     next()
 })
@@ -82,17 +31,32 @@ app.use(function *(next) {
     yield *next
 })
 
-app.use(function (next) {
+app.get('/', (req, res) => {
+    res.send('Hello Ellipse!')
+})
+
+app.all('/me', function(next) {
     this.assert(this.user, 403)
     next()
 })
 
-app.get('/', function *() {
+app.get('/me', function *(next) {
     this.body = this.user
-    this.send()
+    yield *next
 })
 
-app.listen(3333)
+app.get('/greet/:name', function *(next) {
+    this.html = `<h1>Hello ${this.params.name}!</h1>`
+    yield *next
+})
+
+app.on('not found', ctx => {
+    ctx.status = 404
+    ctx.send('Page not found.')
+})
+
+app.listen(3333, () =>
+    console.log('Server is ready accept incoming connections on port 3333'))
 
 ```
 
@@ -100,9 +64,9 @@ For more information, see [examples](https://github.com/schwarzkopfb/ellipse/blo
 
 ## Installation
 
-You're reading about the upcoming `v0.14` release-line of Ellipse which is in `alpha` state right now.
+You're reading about the upcoming `v0.15` release-line of Ellipse which is `alpha` software.
 
-If you want to try out these new features listed above, then you should use the `next` tag:
+If you want to try out these new features presented above, then you should use the `next` tag:
 
     npm install ellipse@next
     
