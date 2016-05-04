@@ -56,7 +56,7 @@ app.on('not found', ctx => {
 })
 
 app.listen(3333, () =>
-    console.log('Server is ready accept incoming connections on port 3333'))
+    console.log('Server is ready to accept incoming connections on port 3333'))
 
 ```
 

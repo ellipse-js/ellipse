@@ -38,7 +38,7 @@ app.get('/', function () {
  */
 app.get('/home', function (req, res) {
     var url = '/',
-        qs  = res.req.queryString // `res.req`
+        qs  = res.req.querystring // `res.req`
 
     if(qs)
         url += '?' + qs

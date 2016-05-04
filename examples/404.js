@@ -12,7 +12,7 @@ app.get('/', function (req, res) {
 })
 
 // keep in mind that you can use Express-style '404' handlers as well,
-// but if you do, then `missing` and `not found` events will not be fired
+// but if you do, then `not found` event will not be fired
 //app.all(function () {
 //    this.status = 404
 //    this.body   = 'Page not found.'

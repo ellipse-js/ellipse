@@ -31,7 +31,17 @@ function delay(callback) {
  */
 app.all(function (req, res) {
     delay(function () {
-        res.send('try:\n/?foo=bar\n/foo\n/foo?bar\n/foo/bar\n/*\n\nafter a few requests, see stdout')
+        res.type('text/plain')
+           .send([
+                    'try:',
+                    '/?foo=bar',
+                    '/foo',
+                    '/foo?bar',
+                    '/foo/bar',
+                    '/*',
+                    '',
+                    'after a few requests see stdout'
+                 ].join('\n'))
     })
 })
 

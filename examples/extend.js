@@ -12,7 +12,7 @@ var ellipse = require('../'),
 ellipse.application.figureOutPortAndListen = function (callback) {
     var port = +process.argv[ 2 ] || +process.env.PORT || 3333
 
-    // note that `this` refers to an `Ellipse` instance instead of `ctx`
+    // note that `this` refers to an `Ellipse` instance
     this.listen(port, callback)
 }
 
