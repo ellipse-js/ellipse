@@ -1,6 +1,6 @@
 [![view on npm](http://img.shields.io/npm/v/ellipse.svg?maxAge=2592000&style=flat-square)](https://www.npmjs.com/package/ellipse)
 [![npm module downloads per month](http://img.shields.io/npm/dm/ellipse.svg?maxAge=2592000&style=flat-square)](https://www.npmjs.com/package/ellipse)
-[![node version](https://img.shields.io/node/v/ellipse.svg?maxAge=2592000&style=flat-square)](https://nodejs.org/download)
+[![node version](https://img.shields.io/badge/node-%3E%3D%200.10-brightgreen.svg?maxAge=2592000&style=flat-square)](https://nodejs.org/download)
 [![license](https://img.shields.io/npm/l/express.svg?maxAge=2592000?maxAge=2592000&style=flat-square)](https://www.npmjs.com/package/ellipse)
 
 # Ellipse
