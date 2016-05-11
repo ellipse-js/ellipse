@@ -11,7 +11,7 @@ Unobtrusive web framework for [node.js](https://nodejs.org) that consolidates AP
 
   * Robust routing
   * Focus on high performance
-  * HTTP helpers (redirection, caching, etc)
+  * HTTP helpers (redirection, caching, etc.)
   * Content negotiation
   * Support for ES6 Generators
   * HTTP Contexts
@@ -75,6 +75,12 @@ If you want to try out these new features presented above, then you should use t
 Or simply install `v0.5` which is the latest version, considered as stable:
   
     npm install ellipse
+
+## Compatibility
+
+The project complies with the node.js LTS [schedule](https://github.com/nodejs/LTS#lts_schedule).
+So currently Ellipse *is* compatible with `v0.10` and above, but the support of ES6 features (e.g. generators)
+is opt-in and - of course - related to the corresponding node releases.
 
 ## License
 
