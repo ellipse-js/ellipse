@@ -76,6 +76,8 @@ Or simply install `v0.5` which is the latest version, considered as stable:
   
     npm install ellipse
 
+Please note that, these early versions (<=0.5) are deprecated and no longer supported.
+
 ## Compatibility
 
 The project complies with the node.js LTS [schedule](https://github.com/nodejs/LTS#lts_schedule).
