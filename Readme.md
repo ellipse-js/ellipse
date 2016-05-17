@@ -1,7 +1,7 @@
 [![view on npm](http://img.shields.io/npm/v/ellipse.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
 [![npm module downloads per month](http://img.shields.io/npm/dm/ellipse.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
 [![node version](https://img.shields.io/badge/node-%3E%3D%200.10-brightgreen.svg?style=flat-square)](https://nodejs.org/download)
-[![license](https://img.shields.io/npm/l/express.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
+[![license](https://img.shields.io/npm/l/express.svg?style=flat-square)](https://github.com/schwarzkopfb/ellipse/blob/master/LICENSE)
 
 # Ellipse
 
@@ -62,7 +62,7 @@ app.listen(3333, () =>
 
 ```
 
-For more information, see [examples](https://github.com/schwarzkopfb/ellipse/blob/development/examples). 
+For more information consult the [examples](https://github.com/schwarzkopfb/ellipse/blob/development/examples).
 
 ## Installation
 

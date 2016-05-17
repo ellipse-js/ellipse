@@ -10,7 +10,7 @@ var ellipse = require('./../lib/ellipse'),
     app2    = ellipse({ env: 'test' })
 
 //app.etag = false
-app.keys = [ 'tesztkulcs', 'masiktesztkulcs' ]
+app.keys = [ 'foo', 'bar' ]
 
 //ellipse.response.set = function (field, value) {
 //    this.body += field + ': ' + value + '\n'
@@ -136,6 +136,40 @@ function *gen() {
 app.get('/generator', function *() {
     this.body = gen()
     this.send()
+})
+
+app.get('/method-overwrite', function (next) {
+    this.method = 'post'
+    next()
+})
+
+app.post('/method-overwrite', function () {
+    this.body = 'overwritten!'
+    this.send()
+})
+
+app.get('/method-overwrite2', function *(next) {
+    this.method = 'put'
+    this.text = 'get -> put\n'
+    yield *next
+})
+
+app.put('/method-overwrite2', function *(next) {
+    this.method = 'post'
+    this.text += 'put -> post\n'
+    yield *next
+})
+
+app.post('/method-overwrite2', function *(next) {
+    this.method = 'delete'
+    this.text += 'post -> delete\n'
+    yield *next
+})
+
+app.delete('/method-overwrite2', function *(next) {
+    this.text += 'overwritten!'
+    this.respond = true
+    yield *next
 })
 
 app.get('/res.cookie/:name/:value', function (req, res) {
