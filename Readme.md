@@ -67,16 +67,14 @@ For more information consult the [examples](https://github.com/schwarzkopfb/elli
 ## Installation
 
 You're reading about the upcoming `v0.15` release-line of Ellipse which is `alpha` software.
-
 If you want to try out these new features presented above, then you should use the `next` tag:
 
     npm install ellipse@next
     
-Or simply install `v0.5` which is the latest version, considered as stable:
+Or simply install `v0.5` which is the latest version, considered as stable.
+But please note that, those early versions (<=0.5) are deprecated and no longer supported.
   
     npm install ellipse
-
-Please note that, these early versions (<=0.5) are deprecated and no longer supported.
 
 ## Compatibility
 
