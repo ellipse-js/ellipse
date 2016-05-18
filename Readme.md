@@ -1,11 +1,11 @@
 [![view on npm](http://img.shields.io/npm/v/ellipse.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
 [![npm module downloads per month](http://img.shields.io/npm/dm/ellipse.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
 [![node version](https://img.shields.io/badge/node-%3E%3D%200.10-brightgreen.svg?style=flat-square)](https://nodejs.org/download)
-[![license](https://img.shields.io/npm/l/express.svg?style=flat-square)](https://github.com/schwarzkopfb/ellipse/blob/master/LICENSE)
+[![license](https://img.shields.io/npm/l/express.svg?style=flat-square)](https://github.com/schwarzkopfb/ellipse/blob/development/LICENSE)
 
 # Ellipse
 
-Unobtrusive web framework for [node.js](https://nodejs.org) that consolidates APIs of [Koa](http://koajs.com/) and [Express](http://expressjs.com/) yet performs better than both, whilst maintains a relatively small footprint. 
+Unobtrusive web framework for [node.js](https://nodejs.org) that consolidates APIs of [Koa](http://koajs.com/) and [Express](http://expressjs.com/) yet performs better than both, whilst maintains a relatively small footprint.
 
 ## Features
 
@@ -70,10 +70,10 @@ You're reading about the upcoming `v0.15` release-line of Ellipse which is `alph
 If you want to try out these new features presented above, then you should use the `next` tag:
 
     npm install ellipse@next
-    
+
 Or simply install `v0.5` which is the latest version, considered as stable.
 But please note that, those early versions (<=0.5) are deprecated and no longer supported.
-  
+
     npm install ellipse
 
 ## Compatibility
