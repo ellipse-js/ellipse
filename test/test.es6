@@ -78,6 +78,7 @@ app.get('/append/:field/:value', function () {
 })
 
 app.get('/accepts/:type', function *() {
+    console.log(this.accepts(this.param.type))
     this.body = this.accepts(this.param.type)
     this.send()
 })
@@ -213,7 +214,7 @@ app.get('/inspect', function (next) {
 })
 
 app.get('/code/:code', function *() {
-    this.code = this.param.code
+    this.status = this.param.code
     this.send()
 })
 
@@ -247,19 +248,19 @@ app.get('/last-modified', function () {
 
 app.get('/test/:id', function *() {
     if(this.params.id !== '12')
-        return this.redirect('/test/12')
+        return this.redirect('/test/12' + this.search)
 
-    this.body    = '{ query: "' + this.queryString + '" }'
-    this.code    = 401
+    this.body    = '{ query: "' + this.querystring + '" }'
+    this.status  = 401
     this.message = 'test'
     this.type    = 'application/json'
 
-    yield this
+    this.send()
 })
 
 app.get('/q', function *() {
     this.body = this.query
-    yield this
+    this.send()
 })
 
 app.get('/h', function () {
@@ -267,18 +268,21 @@ app.get('/h', function () {
     this.req.test2()
 
     this.body = this.get('content-type')
-    this.respond = true
-    this.next()
+    this.send()
 })
 
 app.get('/buffer', function () {
     this.body = new Buffer(1, 2, 3, 4, 5, 6, 7, 8)
-    this.respond = true
-    this.next()
+    this.send()
 })
 
 app.get('/stream', function () {
-    fs.createReadStream('./test.es6').pipe(this.response)
+    fs.createReadStream(__filename).pipe(this.response)
+})
+
+app.get('/stream-error', function () {
+    // WARNING: Ellipse can't handle it for you!
+    fs.createReadStream('absent_file').pipe(this.response)
 })
 
 app.get('/stream2', function *() {
@@ -296,10 +300,10 @@ app.get('/fresh', function () {
 })
 
 app.get('/query', function (req, res) {
-    console.log(req.queryString)
+    console.log(req.querystring)
     console.log(req.query)
-    req.queryString = 'malac=ka'
-    console.log(req.queryString)
+    req.querystring = 'malac=ka'
+    console.log(req.querystring)
     console.log(req.query)
     this.send()
 })
@@ -350,17 +354,17 @@ app.post('/is/:type', function () {
 })
 
 app.post('/upload', function *() {
-    var stream = fs.createWriteStream('./test1.txt')
-    this.pipe(stream)
+    var stream = fs.createWriteStream(__dirname + '/test1.txt')
+    this.request.pipe(stream)
 
     this.body = 'done!'
     this.send()
 })
 
 app.post('/cancel-upload', function *() {
-    var stream = fs.createWriteStream('./test3.txt')
-    this.pipe(stream)
-    this.unpipe(stream)
+    var stream = fs.createWriteStream(__dirname + '/test3.txt')
+    this.request.pipe(stream)
+    this.request.unpipe(stream)
     stream.close()
 
     this.body = 'canceled!'
@@ -368,8 +372,8 @@ app.post('/cancel-upload', function *() {
 })
 
 app.post('/cancel-upload-lazy', function *() {
-    var stream = fs.createWriteStream('./test3.txt')
-    this.pipe(stream)
+    var stream = fs.createWriteStream(__dirname + '/test3.txt')
+    this.request.pipe(stream)
     stream.close()
 
     this.body = 'canceled!'
@@ -377,7 +381,8 @@ app.post('/cancel-upload-lazy', function *() {
 })
 
 app.get('/file', function () {
-    this.sendFile('./test.txt')
+    this.type = 'text/plain'
+    this.sendFile(__filename)
 })
 
 app.get('/path', function () {
@@ -395,10 +400,11 @@ app.get('/path2/:value', function () {
 })
 
 app.get('/length', function () {
+    this.set('content-length', 42)
     this.send(this.length || 'unknown')
 })
 
-app.get('/error', function () {
+app.get('/assert', function () {
     this.assert(0, 'must be 1', 403)
 })
 
@@ -413,18 +419,18 @@ app.get('/seeeet', function *() {
 })
 
 app.get('/attachment', function () {
-    var file = './test2.es6'
+    var file = './test.es6'
 
-    this.attachment(file, { root: '.' })
-    this.sendFile(file, { root: '.' })
+    this.attachment(file, { root: __dirname })
+    this.sendFile(file, { root: __dirname })
 })
 
 app.get('/download', function () {
-    this.download('./test2.es6')
+    this.download(__filename)
 })
 
-app.get('/header/:field', function () {
-    this.json = { value: this.get(this.param.field) }
+app.get('/header', function () {
+    this.json = { status: 'ok' }
     this.set('X-Test', 'alma')
     this.remove('X-Test')
     this.set('test-x', [ 'hey', 'ho' ])
@@ -523,7 +529,6 @@ app.get(
     function () {
         console.log('fourth')
         this.body += 'generators'
-        this.respond = true
         this.next()
     }
 )
