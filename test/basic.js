@@ -5,6 +5,8 @@ var http    = require('http'),
     request = require('supertest'),
     app     = require('../')()
 
+test.plan(1)
+
 app.get('/', function (next) {
     this.body = 'Hello World!'
     next()

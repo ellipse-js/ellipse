@@ -7,6 +7,8 @@ var AE      = require('assert').AssertionError,
     app     = new Ellipse,
     env     = process.env.NODE_ENV || 'development'
 
+// todo: what about app.keys?
+
 test.test('properties & getters', function (test) {
     test.equal(app, app.application, 'application reference should be exposed')
     test.equal(app, app.router, 'application itself should be its own router')
@@ -54,7 +56,7 @@ test.test('setters', function (test) {
         test.throws(function () {
             app.etag = 'invalid'
         }, TypeError, 'app.etag should not accept invalid values')
-        test.equal(app.etag, etag, 'value for app.etag should be stored')
+        test.equal(app.etag, etag, 'value for app.etag should persist')
 
         test.end()
     })
@@ -75,7 +77,7 @@ test.test('setters', function (test) {
         test.throws(function () {
             app.subdomainOffset = true
         }, AE, 'app.subdomainOffset should only accept numbers')
-        test.equal(app.subdomainOffset, 42, 'value for app.subdomainOffset should be stored')
+        test.equal(app.subdomainOffset, 42, 'value for app.subdomainOffset should persist')
 
         test.end()
     })
@@ -90,7 +92,7 @@ test.test('setters', function (test) {
         test.throws(function () {
             app.env = ''
         }, AE, 'app.env should not accept empty strings')
-        test.equals(app.env, 'test', 'value for app.env should be stored')
+        test.equals(app.env, 'test', 'value for app.env should persist')
 
         test.end()
     })
@@ -126,7 +128,7 @@ test.test('setters', function (test) {
         test.throws(function () {
             app.xPoweredBy = ''
         }, TypeError, 'app.xPoweredBy should only accept non-empty strings')
-        test.equals(app.xPoweredBy, 'org', 'value for app.xPoweredBy should be stored')
+        test.equals(app.xPoweredBy, 'org', 'value for app.xPoweredBy should persist')
 
         test.end()
     })

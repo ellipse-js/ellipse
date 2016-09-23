@@ -7,7 +7,7 @@
   "description": "Minimalistic, high-performance web framework that supports both classic and generator middleware.",
   "main": "lib/ellipse.js",
   "scripts": {
-    "test": "tap test/*.js",
+    "test": "tap --node-arg=--harmony test/**.js",
     "cover": "npm test -- --cov --coverage-report=lcov"
   },
   "files": [
