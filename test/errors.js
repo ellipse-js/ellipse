@@ -48,3 +48,6 @@ function onend(err) {
 get('/1/a')
 get('/1/b')
 get('/2')
+
+// todo: add a test for that case when an `error` event handler throws
+// note: that should be caught on emit: `try { emitter.emit('error', err) } catch (ex) { /* error in error handler */ }`
