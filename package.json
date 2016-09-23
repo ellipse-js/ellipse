@@ -3,11 +3,12 @@
     "tag": "next"
   },
   "name": "ellipse",
-  "version": "0.15.3-alpha.0",
+  "version": "0.16.0-alpha.0",
   "description": "Minimalistic, high-performance web framework that supports both classic and generator middleware.",
   "main": "lib/ellipse.js",
   "scripts": {
-    "test": "node test"
+    "test": "tap test/*.js",
+    "cover": "npm test -- --cov --coverage-report=lcov"
   },
   "files": [
     "lib"
@@ -40,7 +41,6 @@
     "content-disposition": "^0.5.0",
     "cookies": "^0.5.1",
     "destroy": "^1.0.4",
-    "ellipse-logger": "0.4.0-alpha.2",
     "escape-html": "^1.0.3",
     "etag": "^1.7.0",
     "fresh": "^0.3.0",
@@ -63,5 +63,9 @@
   "bugs": {
     "url": "https://github.com/schwarzkopfb/ellipse/issues"
   },
-  "homepage": "https://github.com/schwarzkopfb/ellipse#readme"
+  "homepage": "https://github.com/schwarzkopfb/ellipse#readme",
+  "devDependencies": {
+    "supertest": "^2.0.0",
+    "tap": "^7.1.2"
+  }
 }
