@@ -2,8 +2,8 @@
  * Created by schwarzkopfb on 15/11/15.
  */
 
-var ellipse = require('..'),
-    app     = ellipse()
+var Ellipse = require('..'),
+    app     = new Ellipse
 
 // number of middleware
 

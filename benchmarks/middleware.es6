@@ -4,8 +4,8 @@
 
 'use strict'
 
-var ellipse = require('..'),
-    app     = ellipse({ etag: false })
+var Ellipse = require('..'),
+    app     = new Ellipse({ etag: false })
 
 // number of middleware
 
@@ -25,4 +25,3 @@ app.use(function *() {
 })
 
 app.listen(3333)
-

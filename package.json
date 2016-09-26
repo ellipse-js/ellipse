@@ -8,7 +8,8 @@
   "main": "lib/ellipse.js",
   "scripts": {
     "test": "tap --node-arg=--harmony test/**.js",
-    "cover": "npm test -- --cov --coverage-report=lcov"
+    "cover": "npm test -- --cov --coverage-report=lcov",
+    "benchmarks": "make -C benchmarks"
   },
   "files": [
     "lib"
