@@ -3,7 +3,7 @@
 var test    = require('tap'),
     request = require('supertest'),
     Ellipse = require('../'),
-    app     = new Ellipse,
+    app     = new Ellipse({ upstream: true }),
     res     = []
 
 function done(n) {
