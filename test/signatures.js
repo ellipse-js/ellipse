@@ -49,37 +49,8 @@ app.get('/cm/4', function (ctx, req, res, next) {
 
 // generator middleware
 
-app.get('/gm/0', function *() {
+app.get('/gm', function *(next) {
     test.type(this, Context, '`this` should be a Context instance')
-    this.send()
-})
-
-app.get('/gm/1', function *(next) {
-    test.type(this, Context, '`this` should be a Context instance')
-    test.ok(isGen(next), '`next` should be a generator')
-    this.send()
-})
-
-app.get('/gm/2', function *(ctx, next) {
-    test.type(this, Context, '`this` should be a Context instance')
-    test.type(ctx, Context, '`ctx` should be a Context instance')
-    test.ok(isGen(next), '`next` should be a generator')
-    this.send()
-})
-
-app.get('/gm/3', function *(req, res, next) {
-    test.type(this, Context, '`this` should be a Context instance')
-    test.type(req, Request, '`req` should be a Request instance')
-    test.type(res, Response, '`res` should be a Response instance')
-    test.ok(isGen(next), '`next` should be a generator')
-    this.send()
-})
-
-app.get('/gm/4', function *(ctx, req, res, next) {
-    test.type(this, Context, '`this` should be a Context instance')
-    test.type(ctx, Context, '`ctx` should be a Context instance')
-    test.type(req, Request, '`req` should be a Request instance')
-    test.type(res, Response, '`res` should be a Response instance')
     test.ok(isGen(next), '`next` should be a generator')
     this.send()
 })
@@ -137,52 +108,14 @@ app.get('/cp/:c0/:c1/:c2/:c3/:c4/:c5/', function () {
 
 // generator param processor
 
-app.param('g0', function *() {
-    test.type(this, Context, '`this` should be a Context instance')
-    yield *this.next
-})
-
-app.param('g1', function *(value) {
-    test.type(this, Context, '`this` should be a Context instance')
-    test.equals(value, 't', '`value` should be passed')
-    yield *this.next
-})
-
-app.param('g2', function *(next, value) {
+app.param('g', function *(next, value) {
     test.type(this, Context, '`this` should be a Context instance')
     test.ok(isGen(next), '`next` should be a generator')
     test.equals(value, 't', '`value` should be passed')
     yield *next
 })
 
-app.param('g3', function *(ctx, next, value) {
-    test.type(this, Context, '`this` should be a Context instance')
-    test.type(ctx, Context, '`ctx` should be a Context instance')
-    test.ok(isGen(next), '`next` should be a generator')
-    test.equals(value, 't', '`value` should be passed')
-    yield *next
-})
-
-app.param('g4', function *(req, res, next, value) {
-    test.type(this, Context, '`this` should be a Context instance')
-    test.type(req, Request, '`req` should be a Request instance')
-    test.type(res, Response, '`res` should be a Response instance')
-    test.ok(isGen(next), '`next` should be a generator')
-    test.equals(value, 't', '`value` should be passed')
-    yield *next
-})
-
-app.param('g5', function *(ctx, req, res, next, value) {
-    test.type(this, Context, '`this` should be a Context instance')
-    test.type(ctx, Context, '`ctx` should be a Context instance')
-    test.type(req, Request, '`req` should be a Request instance')
-    test.type(res, Response, '`res` should be a Response instance')
-    test.ok(isGen(next), '`next` should be a generator')
-    test.equals(value, 't', '`value` should be passed')
-    yield *next
-})
-
-app.get('/gp/:g0/:g1/:g2/:g3/:g4/:g5/', function () {
+app.get('/gp/:g', function () {
     this.send()
 })
 
@@ -190,7 +123,7 @@ app.get('/gp/:g0/:g1/:g2/:g3/:g4/:g5/', function () {
 
 app = app.listen()
 
-test.plan(84)
+test.plan(49)
 test.tearDown(() => app.close())
 
 get('/cm/0')
@@ -198,13 +131,9 @@ get('/cm/1')
 get('/cm/2')
 get('/cm/3')
 get('/cm/4')
-get('/gm/0')
-get('/gm/1')
-get('/gm/2')
-get('/gm/3')
-get('/gm/4')
+get('/gm')
 get('/cp/t/t/t/t/t/t')
-get('/gp/t/t/t/t/t/t')
+get('/gp/t')
 
 function get(path) {
     request(app)
