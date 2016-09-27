@@ -1,11 +1,12 @@
 'use strict'
 
-var AE      = require('assert').AssertionError,
-    root    = require('path').resolve('.'),
-    test    = require('tap'),
-    Ellipse = require('../'),
-    app     = new Ellipse,
-    env     = process.env.NODE_ENV || 'development'
+const AE      = require('assert').AssertionError,
+      root    = require('path').resolve('.'),
+      test    = require('tap'),
+      Ellipse = require('../'),
+      env     = process.env.NODE_ENV || 'development'
+
+var app = new Ellipse
 
 // todo: what about app.keys?
 
@@ -22,7 +23,7 @@ test.test('properties & getters', function (test) {
     test.type(app.listen, 'function', 'app should have a listen() method')
     test.type(app.toJSON, 'function', 'app should have a toJSON() method')
     test.type(app.inspect, 'function', 'app should have an inspect() method')
-    var json = {
+    const json = {
         subdomainOffset: 2,
         proxy: false,
         etag: 'weak',

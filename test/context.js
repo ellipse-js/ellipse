@@ -1,13 +1,14 @@
 'use strict'
 
-var test    = require('tap'),
-    request = require('supertest'),
-    Cookies = require('cookies'),
-    Ellipse = require('../'),
-    app     = new Ellipse
+const test    = require('tap'),
+      request = require('supertest'),
+      Cookies = require('cookies'),
+      Ellipse = require('../')
+      
+var app = new Ellipse
 
 app.get('/', function (next) {
-    var ctx = this
+    const ctx = this
 
     test.type(ctx, Ellipse.Context, '`this` should be a Context instance')
     test.type(ctx.req, Ellipse.Request, 'ctx.req should be a Request instance')
@@ -81,7 +82,7 @@ app.get('/', function (next) {
         test.equals(ex.statusCode, 404, 'http status should be set on error')
     }
 
-    var json = {
+    const json = {
         request:     this._req.toJSON(),
         response:    this._res.toJSON(),
         app:         this.app.toJSON(),

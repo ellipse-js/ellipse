@@ -1,9 +1,9 @@
 'use strict'
 
-var http    = require('http'),
-    test    = require('tap'),
-    request = require('supertest'),
-    app     = require('../')()
+const test    = require('tap'),
+      request = require('supertest')
+      
+var app = require('../')()
 
 test.plan(1)
 

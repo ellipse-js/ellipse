@@ -1,9 +1,10 @@
 'use strict'
 
-var test    = require('tap'),
-    request = require('supertest'),
-    app     = require('../')(),
-    err     = new Error('test error')
+const test    = require('tap'),
+      request = require('supertest'),
+      err     = new Error('test error')
+
+var app = require('../')()
 
 test.plan(3)
 
@@ -27,14 +28,14 @@ app.on('error', function (er, ctx) {
     ctx.send()
 })
 
-var server = app.listen()
+app = app.listen()
 
 test.tearDown(function () {
-    server.close()
+    app.close()
 })
 
 function get(path) {
-    request(server)
+    request(app)
         .get(path)
         .expect(200)
         .end(onend)

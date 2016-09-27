@@ -1,10 +1,11 @@
 'use strict'
 
-var test    = require('tap'),
-    request = require('supertest'),
-    Ellipse = require('../'),
-    app     = new Ellipse({ upstream: true }),
-    res     = []
+const test    = require('tap'),
+      request = require('supertest'),
+      Ellipse = require('../'),
+      res     = []
+
+var app = new Ellipse({ upstream: true })
 
 function done(n) {
     return function () {
@@ -70,7 +71,7 @@ app.get('/:test',
     }
 )
 
-var sub = new Ellipse.Router
+const sub = new Ellipse.Router
 app.use(sub)
 
 sub.use(function (next) {
@@ -94,7 +95,7 @@ request(app = app.listen())
         if (err)
             throw err
         else {
-            var expected = [
+            const expected = [
                 1,  2,  3,  4,
                 5,  6,  7,  8,
                 9,  10, 11, 12,

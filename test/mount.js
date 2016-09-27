@@ -1,8 +1,9 @@
 'use strict'
 
-var test    = require('tap'),
-    request = require('supertest'),
-    app     = require('../')()
+const test    = require('tap'),
+      request = require('supertest')
+      
+var app = require('../')()
 
 test.plan(2)
 

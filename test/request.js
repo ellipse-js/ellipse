@@ -1,10 +1,11 @@
 'use strict'
 
-var AE      = require('assert').AssertionError,
-    test    = require('tap'),
-    request = require('supertest'),
-    Ellipse = require('../'),
-    app     = new Ellipse
+const AE      = require('assert').AssertionError,
+      test    = require('tap'),
+      request = require('supertest'),
+      Ellipse = require('../')
+      
+var app = new Ellipse
 
 test.plan(31)
 

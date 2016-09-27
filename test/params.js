@@ -1,8 +1,9 @@
 'use strict'
 
-var test    = require('tap'),
-    request = require('supertest'),
-    app     = require('../')()
+const test    = require('tap'),
+      request = require('supertest')
+
+var app = require('../')()
 
 test.plan(7)
 
@@ -32,14 +33,14 @@ app.get('/3/:p1/:p2', function (next) {
     this.send()
 })
 
-var server = app.listen()
+app = app.listen()
 
 test.tearDown(function () {
-    server.close()
+    app.close()
 })
 
 function get(path) {
-    request(server)
+    request(app)
         .get(path)
         .expect(200)
         .end(onend)
