@@ -5,7 +5,7 @@
   "name": "ellipse",
   "version": "0.16.0-alpha.0",
   "description": "Minimalistic, high-performance web framework that supports both classic and generator middleware.",
-  "main": "lib/ellipse.js",
+  "main": "index.js",
   "scripts": {
     "test": "tap --node-arg=--harmony test/**.js",
     "cover": "npm test -- --cov --coverage-report=lcov",
