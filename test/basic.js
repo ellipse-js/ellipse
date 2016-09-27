@@ -2,13 +2,13 @@
 
 const test    = require('tap'),
       request = require('supertest')
-      
+
 var app = require('../')()
 
 test.plan(1)
 
-app.get('/', function (next) {
-    this.body = 'Hello World!'
+app.get('/', (req, res, next) => {
+    res.body = 'Hello World!'
     next()
 })
 
@@ -19,7 +19,7 @@ request(app = app.listen())
     .expect('etag', 'W/"c-7Qdih1MuhjZehB6Sv8UNjA"')
     .expect('content-type', 'text/html; charset=utf-8')
     .expect('x-powered-by', 'Ellipse/' + require('../package.json').version)
-    .end(function (err) {
+    .end(err => {
         if (err)
             test.threw(err)
         else {

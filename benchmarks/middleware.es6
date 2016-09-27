@@ -1,7 +1,3 @@
-/**
- * Created by schwarzkopfb on 15/11/15.
- */
-
 'use strict'
 
 var Ellipse = require('..'),

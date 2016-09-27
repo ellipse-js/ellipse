@@ -1,7 +1,3 @@
-/**
- * Created by schwarzkopfb on 15/11/15.
- */
-
 var Ellipse = require('..'),
     app     = new Ellipse
 
@@ -11,15 +7,9 @@ var n = parseInt(process.env.MW || '1', 10)
 console.log('  %s middleware', n)
 
 while (n--)
-    app.use(function (next) {
-        next()
-    })
+    app.use(next => next())
 
 var body = new Buffer('Hello World')
 
-app.use(function () {
-    this.body = body
-    this.send()
-})
-
-app.listen(3333)
+app.use((req, res) => res.send(body))
+   .listen(3333)

@@ -191,10 +191,7 @@ app.get('/gp/:g0/:g1/:g2/:g3/:g4/:g5/', function () {
 app = app.listen()
 
 test.plan(84)
-
-test.tearDown(function () {
-    app.close()
-})
+test.tearDown(() => app.close())
 
 get('/cm/0')
 get('/cm/1')

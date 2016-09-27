@@ -8,11 +8,9 @@ var app = require('../')()
 
 test.plan(3)
 
-app.get('/1/a', function (next) {
-    next(err)
-})
+app.get('/1/a', next => next(err))
 
-app.get('/1/b', function (next) {
+app.get('/1/b', next => {
     throw err
 })
 
@@ -20,7 +18,7 @@ app.get('/2', function *(next) {
     throw err
 })
 
-app.on('error', function (er, ctx) {
+app.on('error', (er, ctx) => {
     test.equals(er, err, 'original error should be caught')
 
     ctx.status = 200
@@ -30,9 +28,7 @@ app.on('error', function (er, ctx) {
 
 app = app.listen()
 
-test.tearDown(function () {
-    app.close()
-})
+test.tearDown(() => app.close())
 
 function get(path) {
     request(app)

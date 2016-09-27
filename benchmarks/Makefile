@@ -1,5 +1,6 @@
 all: export NODE_ENV = test
 all:
+	@echo " node:" `node -v`
 	@echo
 	@echo " koa-style middleware"
 

@@ -10,8 +10,8 @@ var app = require('../')()
 
 app.root = __dirname
 
-app.get('/', function () {
-    this.sendFile('./sendFile.js')
+app.get('/', (req, res) => {
+    res.sendFile('./sendFile.js')
 })
 
 test.plan(1)

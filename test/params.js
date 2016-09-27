@@ -7,7 +7,7 @@ var app = require('../')()
 
 test.plan(7)
 
-app.param('p1', function (next, param) {
+app.param('p1', (next, param) => {
     test.equals(param, 'foo', 'param p1 should be "foo"')
     next()
 })
@@ -17,27 +17,25 @@ app.param('p2', function *(next, param) {
     yield *next
 })
 
-app.get('/1/:p1', function (next) {
-    test.equals(this.params.p1, 'foo', 'param p1 should be "foo"')
-    this.send()
+app.get('/1/:p1', (req, res, next) => {
+    test.equals(req.params.p1, 'foo', 'param p1 should be "foo"')
+    res.send()
 })
 
-app.get(/^\/2\/([a-z]{3})$/, function (next) {
-    test.equals(this.params[ 0 ], 'bar', 'param 0 should be "bar"')
-    this.send()
+app.get(/^\/2\/([a-z]{3})$/, (req, res, next) => {
+    test.equals(req.params[ 0 ], 'bar', 'param 0 should be "bar"')
+    res.send()
 })
 
-app.get('/3/:p1/:p2', function (next) {
-    test.equals(this.params.p1, 'foo', 'param p1 should be "foo"')
-    test.equals(this.params.p2, 'bar', 'param p2 should be "bar"')
-    this.send()
+app.get('/3/:p1/:p2', (req, res, next) => {
+    test.equals(req.params.p1, 'foo', 'param p1 should be "foo"')
+    test.equals(req.params.p2, 'bar', 'param p2 should be "bar"')
+    res.send()
 })
 
 app = app.listen()
 
-test.tearDown(function () {
-    app.close()
-})
+test.tearDown(() => app.close())
 
 function get(path) {
     request(app)

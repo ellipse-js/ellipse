@@ -2,14 +2,14 @@
 
 const test    = require('tap'),
       request = require('supertest')
-      
+
 var app = require('../')()
 
 test.plan(2)
 
-app.use('/1/*', function (next) {
-    test.equal(this.url, 'foo', 'route should be mounted')
-    this.body = 'ok'
+app.use('/1/*', (req, res, next) => {
+    test.equal(req.url, 'foo', 'route should be mounted')
+    res.body = 'ok'
     next()
 })
 
@@ -34,6 +34,4 @@ function onend(err) {
         test.threw(err)
 }
 
-test.tearDown(function () {
-    app.close()
-})
+test.tearDown(() => app.close())

@@ -4,12 +4,10 @@ const test    = require('tap'),
       request = require('supertest'),
       Cookies = require('cookies'),
       Ellipse = require('../')
-      
+
 var app = new Ellipse
 
-app.get('/', function (next) {
-    const ctx = this
-
+app.get('/', (ctx, req, res, next) => {
     test.type(ctx, Ellipse.Context, '`this` should be a Context instance')
     test.type(ctx.req, Ellipse.Request, 'ctx.req should be a Request instance')
     test.type(ctx.request, Ellipse.Request, 'ctx.request should be a Request instance')
@@ -18,33 +16,33 @@ app.get('/', function (next) {
     test.type(ctx.cookies, Cookies, 'ctx.cookies should be a Cookies instance')
 
     test.same(ctx.state, {}, 'ctx.state should default to an empty object')
-    test.doesNotThrow(function () {
+    test.doesNotThrow(() => {
         ctx.state = 42
     }, 'ctx.state should be set to any value')
     test.equals(ctx.state, 42, 'ctx.state should persist')
 
     test.equals(ctx.type, 'text/html', 'default content type should be html')
-    test.doesNotThrow(function () {
+    test.doesNotThrow(() => {
         ctx.type = 'application/json'
     }, 'ctx.type should be set to any string')
     test.equals(ctx.type, 'application/json', 'content type should perisist')
 
     test.strictEquals(ctx.text, '', 'ctx.text should default to ctx.body')
-    test.doesNotThrow(function () {
+    test.doesNotThrow(() => {
         ctx.text = 'Hello World!'
     }, 'ctx.text should be set to any string')
     test.equals(ctx.text, 'Hello World!', 'text body should perisist')
     test.equals(ctx.type, 'text/plain', 'content type should be updated when setting ctx.text')
 
     test.strictEquals(ctx.html, 'Hello World!', 'ctx.html default to ctx.body')
-    test.doesNotThrow(function () {
+    test.doesNotThrow(() => {
         ctx.html = '<h1>Hello World!</h1>'
     }, 'ctx.html should be set to any string')
     test.equals(ctx.html, '<h1>Hello World!</h1>', 'html body should perisist')
     test.equals(ctx.type, 'text/html', 'content type should be updated when setting ctx.html')
 
     test.strictEquals(ctx.json, '<h1>Hello World!</h1>', 'ctx.json default to ctx.body')
-    test.doesNotThrow(function () {
+    test.doesNotThrow(() => {
         ctx.json = { Hello: 'World!' }
     }, 'ctx.json should be set to any object')
     test.same(ctx.json, { Hello: 'World!' }, 'json body should perisist')
@@ -63,29 +61,29 @@ app.get('/', function (next) {
     test.equals(ctx.type, 'application/json', 'content type should be updated on access')
 
     test.doesNotThrow(
-        function () {
+        () => {
             ctx.assert(true, 400)
         },
         'assert should not throw when a truthy value is passed to it'
     )
     try {
-        this.assert(false, 400)
+        ctx.assert(false, 400)
     }
     catch (ex) {
         test.equals(ex.statusCode, 400, 'http status should be set on error')
     }
 
     try {
-        this.throw(404)
+        ctx.throw(404)
     }
     catch (ex) {
         test.equals(ex.statusCode, 404, 'http status should be set on error')
     }
 
     const json = {
-        request:     this._req.toJSON(),
-        response:    this._res.toJSON(),
-        app:         this.app.toJSON(),
+        request:     ctx.req.toJSON(),
+        response:    ctx.res.toJSON(),
+        app:         ctx.app.toJSON(),
         originalUrl: '/'
     }
 
@@ -94,13 +92,13 @@ app.get('/', function (next) {
 
     // TODO: aliases!
 
-    this.send()
+    ctx.send()
 })
 
 request(app = app.listen())
     .get('/')
     .expect(200)
-    .end(function (err) {
+    .end(err => {
         if (err)
             test.threw(err)
         else
