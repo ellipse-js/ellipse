@@ -2,7 +2,7 @@
 
 const Ellipse = require('..'),
       body    = new Buffer('Hello World'),
-      app     = new Ellipse
+      app     = new Ellipse({ etag: false })
 
 var num = parseInt(process.env.MW || '1', 10)
 
