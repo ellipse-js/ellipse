@@ -1,15 +1,15 @@
-var Ellipse = require('..'),
-    app     = new Ellipse
+'use strict'
 
-// number of middleware
+const Ellipse = require('..'),
+      body    = new Buffer('Hello World'),
+      app     = new Ellipse
 
-var n = parseInt(process.env.MW || '1', 10)
-console.log('  %s middleware', n)
+var num = parseInt(process.env.MW || '1', 10)
 
-while (n--)
+console.log('  %s middleware', num)
+
+while (num--)
     app.use(next => next())
-
-var body = new Buffer('Hello World')
 
 app.use((req, res) => res.send(body))
    .listen(3333)
