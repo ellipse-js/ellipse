@@ -46,7 +46,7 @@ app.get('/greet/:name', function *(next) {
     this.send()
 })
 
-app.on('not found', ctx => {
+app.on('notFound', ctx => {
     ctx.status = 404
     ctx.send('Page not found.')
 })
@@ -59,7 +59,7 @@ For more information, see the [examples](/examples) folder.
 
 ## Installation
 
-You're reading about the upcoming `v0.16` release-line of Ellipse which is `alpha` software.
+You're reading about the upcoming `v0.17` release-line of Ellipse which is `alpha` software.
 If you want to try out these new features presented above, then you should use the `next` tag:
 
     npm install ellipse@next
@@ -71,9 +71,7 @@ But please note that, those early versions (`<=0.5`) are deprecated and no longe
 
 ## Compatibility
 
-Ellipse is compatible with Node.js `>=0.12`, but the support of ES6 features
-is opt-in and - of course - related to the corresponding node releases.
-Please consider that in `0.12`, you have to use the `--harmony` flag to enable generator support.
+Ellipse is compatible with Node.js `>=0.12`, but please consider that in `0.12`, you have to use the `--harmony` flag to enable generator support.
 
 ## License
 
