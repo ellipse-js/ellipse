@@ -2,7 +2,7 @@ all: export NODE_ENV = test
 all:
 	@echo " node:" `node -v`
 	@echo
-	@echo " koa-style middleware"
+	@echo " generator middleware"
 
 	@./run es6 1
 	@./run es6 5
@@ -14,7 +14,7 @@ all:
 	@./run es6 100
 
 	@echo
-	@echo " express-style middleware"
+	@echo " classic middleware"
 
 	@./run js 1
 	@./run js 5

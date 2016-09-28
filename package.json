@@ -3,7 +3,7 @@
     "tag": "next"
   },
   "name": "ellipse",
-  "version": "0.17.0-alpha.0",
+  "version": "0.17.0-alpha.1",
   "description": "Minimalistic, high-performance web framework that supports both classic and generator middleware.",
   "main": "index.js",
   "scripts": {

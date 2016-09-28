@@ -1,15 +1,36 @@
 'use strict'
 
-const AE      = require('assert').AssertionError,
+// for https testing
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
+
+const fs      = require('fs'),
+      os      = require('os'),
+      dns     = require('dns'),
+      AE      = require('assert').AssertionError,
+      join    = require('path').join,
+      https   = require('https'),
       test    = require('tap'),
       request = require('supertest'),
       Ellipse = require('../')
 
-var app = new Ellipse
+var app1 = new Ellipse,
+    app2 = new Ellipse
 
-test.plan(31)
+test.plan(65)
 
-app.get('/test', (req, res, next) => {
+app1.post('/test', (req, res, next) => {
+    var body = ''
+    req.setEncoding('utf8')
+    req.on('data', data => body += data)
+    req.on('end', () => test.equals(body, 'test', 'request body should be received'))
+
+    test.equals(req.type, 'text/plain', 'content type should be detected')
+    test.equals(req.length, 4, 'content length should be detected')
+    req.length = 42
+    test.equals(req.length, 42, 'content length should have a setter')
+    test.equals(req.get('x-test'), 'test', 'headers should be accessible via `req.get()`')
+    test.equals(req.get('absent'), '', 'getting an absent header should return an empty string')
+
     test.type(req, Ellipse.Request, 'request object should be a Request instance')
     test.type(req.ctx, Ellipse.Context, 'req.ctx should be a Context instance')
     test.type(req.context, Ellipse.Context, 'req.context should be a Context instance')
@@ -64,16 +85,126 @@ app.get('/test', (req, res, next) => {
     test.same(req.search, '?hello=world', 'req.search should be updated')
     test.same(req.querystring, 'hello=world', 'req.querystring should be updated')
     test.equals(req.url, '/test2?hello=world', 'req.url should be updated')
+    test.equals(req.protocol, 'http', 'http protocol should be detected')
+    test.match(req.ip, /127\.0\.0\.1/, 'req.ip should be localhost')
+    test.same(req.ips, [], 'req.ips should be an empty array when `app.proxy` is false')
 
-    res.send()
+    const hostname   = '127.0.0.1',
+          host       = hostname + ':' + app1.address().port,
+          subdomains = req.subdomains
+
+    test.equals(req.host, host, 'req.host should be recognised')
+    test.equals(req.hostname, hostname, 'req.hostname should be recognised')
+    test.equals(req.origin, 'http://' + host, 'req.origin should be recognised')
+    test.equals(req.href, 'http://' + host + '/test?test=test', 'req.href should be recognised')
+    test.same(subdomains, [ '0', '127' ], 'req.subdomains should be recognised')
+    test.strictEquals(req.subdomains, subdomains, 'req.subdomains should be cached')
+
+    test.equals(req.is(), 'text/plain', 'request type should be recognised')
+    test.equals(req.is('text'), 'text', 'request type should be recognised')
+    test.equals(req.is([ 'json', 'text' ]), 'text', 'req.is() should accept an array as well')
+    test.notEquals(req.is('json'), 'json', 'request type should be recognised')
+    test.equals(req.accepts('json'), 'json', '`accept` header should be recognised')
+    test.equals(req.acceptsCharsets('utf8'), 'utf8', '`accept-charset` header should be recognised')
+    test.equals(req.acceptsEncodings('gzip'), 'gzip', '`accept-encoding` header should be recognised')
+    test.equals(req.acceptsLanguages('en'), 'en', '`accept-language` header should be recognised')
+
+    res.json({ test: 'test' })
 })
 
-test.tearDown(() => app.close())
+app1.get('/default', (req, res) => {
+    test.strictEquals(req.type, '', 'req.type should default to `undefined`')
+    test.strictEquals(req.length, undefined, 'req.length should default to `undefined`')
+    res.send('ok')
+})
 
-request(app = app.listen())
-    .get('/test?test=test')
+app1.get('/fresh/1', (req, res) => {
+    res.status(304)
+    test.notOk(req.fresh, 'req.fresh should be falsy if status code is 304')
+    test.not(req.stale, 'req.stale should be truthy if status code is 304')
+    res.send('ok')
+})
+
+app1.get('/fresh/2', (req, res) => {
+    res.status(404)
+    test.notOk(req.fresh, 'req.fresh should be falsy if status code is 404')
+    test.not(req.stale, 'req.stale should be truthy if status code is 404')
+    res.send('ok')
+})
+
+app1.get('/xhr', (req, res) => {
+    test.ok(req.xhr, 'XHR requests should be detected')
+    res.send('ok')
+})
+
+app1.get('/serialize', (req, res) => {
+    const expected = {
+        method: 'GET',
+        url: '/serialize',
+        headers: req.headers
+    }
+    test.same(req.toJSON(), expected, 'req json representation should be correct')
+    test.same(req.toJSON(), req.inspect(), '`inspect()` should be an alias for `toJSON()`')
+    res.send('ok')
+})
+
+app2.get('/test', (req, res) => {
+    test.equals(req.protocol, 'https', 'https prtocol should be detected')
+    test.ok(req.secure, 'request should be considered as secure')
+    res.send('ok')
+})
+
+test.tearDown(() => {
+    app1.close()
+    app2.close()
+})
+
+request(app1 = app1.listen())
+    .post('/test?test=test')
     .set('accept', 'application/json, */*')
-    .expect(200, err => {
-        if (err)
-            test.threw(err)
-    })
+    .set('accept-charset', 'utf8')
+    .set('accept-encoding', 'gzip')
+    .set('accept-language', 'en')
+    .set('content-type', 'text/plain')
+    .set('content-length', 4)
+    .set('x-test', 'test')
+    .send('test')
+    .expect(200)
+    .expect({ test: 'test' }, onend)
+
+request(app1)
+    .get('/default')
+    .expect(200, onend)
+
+request(app1)
+    .get('/xhr')
+    .set('x-requested-with', 'XMLHttpRequest')
+    .expect(200, onend)
+
+request(app1)
+    .get('/serialize')
+    .expect(200, onend)
+
+request(app1)
+    .get('/fresh/1')
+    .expect(304, onend)
+
+request(app1)
+    .get('/fresh/2')
+    .expect(404, onend)
+
+app2 = https.createServer({
+    key:  fs.readFileSync(join(__dirname, 'test.key')),
+    cert: fs.readFileSync(join(__dirname, 'test.crt')),
+    passphrase: 'test'
+}, app2.callback())
+
+request(app2 = app2.listen())
+    .get('/test')
+    .expect(200)
+    .expect('ok', onend)
+
+function onend(err) {
+    if (err)
+        test.threw(err)
+}
