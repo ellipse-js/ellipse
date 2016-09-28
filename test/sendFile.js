@@ -6,7 +6,7 @@ const fs      = require('fs'),
       text    = fs.readFileSync(__filename, 'utf8'),
       length  = Buffer.byteLength(text).toString()
 
-var app = require('../')({ root: __dirname })
+var app = require('..')({ root: __dirname })
 
 app.get('/', (req, res) => {
     res.sendFile('./sendFile.js')

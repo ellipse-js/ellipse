@@ -3,7 +3,7 @@
 const test    = require('tap'),
       request = require('supertest')
 
-var app = require('../')()
+var app = require('..')()
 
 test.plan(1)
 

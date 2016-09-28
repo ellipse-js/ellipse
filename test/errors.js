@@ -4,8 +4,8 @@ const test    = require('tap'),
       request = require('supertest'),
       err     = new Error('test error')
 
-var app1 = require('../')(),
-    app2 = require('../')()
+var app1 = require('..')(),
+    app2 = require('..')()
 
 app2.env = 'test'
 

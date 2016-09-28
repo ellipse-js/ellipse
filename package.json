@@ -3,11 +3,11 @@
     "tag": "next"
   },
   "name": "ellipse",
-  "version": "0.17.0-alpha.1",
+  "version": "0.17.0-alpha.2",
   "description": "Minimalistic, high-performance web framework that supports both classic and generator middleware.",
   "main": "index.js",
   "scripts": {
-    "test": "tap --node-arg=--harmony test/**.js",
+    "test": "NODE_ENV=test tap --node-arg=--harmony test/**.js",
     "cover": "npm test -- --cov --coverage-report=lcov",
     "benchmarks": "make -C benchmarks"
   },

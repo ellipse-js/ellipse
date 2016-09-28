@@ -2,7 +2,7 @@
 
 const test    = require('tap'),
       request = require('supertest'),
-      Ellipse = require('../'),
+      Ellipse = require('..'),
       result  = []
 
 var app = new Ellipse({ upstream: true })

@@ -2,7 +2,7 @@
 
 const request  = require('supertest'),
       test     = require('tap'),
-      Ellipse  = require('../'),
+      Ellipse  = require('..'),
       Request  = Ellipse.Request,
       Response = Ellipse.Response,
       Context  = Ellipse.Context,

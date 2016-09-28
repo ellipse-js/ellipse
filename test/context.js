@@ -3,7 +3,7 @@
 const test    = require('tap'),
       request = require('supertest'),
       Cookies = require('cookies'),
-      Ellipse = require('../')
+      Ellipse = require('..')
 
 var app = new Ellipse
 

@@ -3,7 +3,7 @@
 const AE      = require('assert').AssertionError,
       root    = require('path').resolve('.'),
       test    = require('tap'),
-      Ellipse = require('../'),
+      Ellipse = require('..'),
       env     = process.env.NODE_ENV || 'development'
 
 var app = new Ellipse

@@ -11,7 +11,7 @@ const fs      = require('fs'),
       https   = require('https'),
       test    = require('tap'),
       request = require('supertest'),
-      Ellipse = require('../')
+      Ellipse = require('..')
 
 var app1 = new Ellipse,
     app2 = new Ellipse
@@ -19,6 +19,12 @@ var app1 = new Ellipse,
 test.plan(65)
 
 app1.post('/test', (req, res, next) => {
+    test.type(req, Ellipse.Request, 'request object should be a Request instance')
+    test.type(req.ctx, Ellipse.Context, 'req.ctx should be a Context instance')
+    test.type(req.context, Ellipse.Context, 'req.context should be a Context instance')
+    test.type(req.res, Ellipse.Response, 'req.res should be a Response instance')
+    test.type(req.response, Ellipse.Response, 'req.response should be a Response instance')
+
     var body = ''
     req.setEncoding('utf8')
     req.on('data', data => body += data)
@@ -30,12 +36,6 @@ app1.post('/test', (req, res, next) => {
     test.equals(req.length, 42, 'content length should have a setter')
     test.equals(req.get('x-test'), 'test', 'headers should be accessible via `req.get()`')
     test.equals(req.get('absent'), '', 'getting an absent header should return an empty string')
-
-    test.type(req, Ellipse.Request, 'request object should be a Request instance')
-    test.type(req.ctx, Ellipse.Context, 'req.ctx should be a Context instance')
-    test.type(req.context, Ellipse.Context, 'req.context should be a Context instance')
-    test.type(req.res, Ellipse.Response, 'req.res should be a Response instance')
-    test.type(req.response, Ellipse.Response, 'req.response should be a Response instance')
 
     test.equal(req.pathLength, 5, 'req.pathLength should not count search string')
     test.equal(req.path, '/test', 'req.path should not contain search string')
