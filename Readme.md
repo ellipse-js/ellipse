@@ -1,6 +1,6 @@
 [![view on npm](http://img.shields.io/npm/v/ellipse.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
 [![npm module downloads per month](http://img.shields.io/npm/dm/ellipse.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
-[![node version](https://img.shields.io/badge/node-%3E%3D%200.12-brightgreen.svg?style=flat-square)](https://nodejs.org/download)
+[![node version](https://img.shields.io/badge/node-%3E%3D%204-brightgreen.svg?style=flat-square)](https://nodejs.org/download)
 [![license](https://img.shields.io/npm/l/express.svg?style=flat-square)](https://github.com/schwarzkopfb/ellipse/blob/development/LICENSE)
 
 # Ellipse
@@ -59,7 +59,7 @@ For more information, see the [examples](/examples) folder.
 
 ## Installation
 
-You're reading about the upcoming `v0.17` release-line of Ellipse which is `alpha` software.
+You're reading about the upcoming `v0.18` release-line of Ellipse which is `alpha` software.
 If you want to try out these new features presented above, then you should use the `next` tag:
 
     npm install ellipse@next
@@ -68,10 +68,6 @@ Or simply install `v0.5` which is the latest version, considered as stable.
 But please note that, those early versions (`<=0.5`) are deprecated and no longer supported.
 
     npm install ellipse
-
-## Compatibility
-
-Ellipse is compatible with Node.js `>=0.12`, but please consider that in `0.12`, you have to use the `--harmony` flag to enable generator support.
 
 ## License
 
