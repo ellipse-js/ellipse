@@ -1,7 +1,7 @@
 'use strict'
 
 const AE      = require('assert').AssertionError,
-      root    = require('path').resolve('.'),
+      root    = __dirname,
       test    = require('tap'),
       Ellipse = require('..'),
       env     = process.env.NODE_ENV || 'development'
@@ -100,14 +100,17 @@ test.test('setters', test => {
 
     test.test('app.root', test => {
         test.doesNotThrow(() => {
-            app.root = '.'
-        }, 'app.root should be set to a path')
+            app.root = __dirname
+        }, 'app.root should be set to an absolute path')
         test.throws(() => {
             app.root = true
         }, AE, 'app.root should only accept strings')
         test.throws(() => {
             app.root = ''
         }, AE, 'app.root should not accept empty strings')
+        test.throws(() => {
+            app.root = '.'
+        }, AE, 'app.root should not accept relative paths')
         test.equals(app.root, root, 'value for app.root should be resolved and stored')
 
         test.end()

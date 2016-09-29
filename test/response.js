@@ -2,11 +2,13 @@
 
 const fs      = require('fs'),
       file    = fs.readFileSync(__filename, 'utf8'),
+      size    = Buffer.byteLength(file).toString(),
       request = require('supertest'),
       test    = require('tap'),
       Ellipse = require('..')
 
-var app = new Ellipse
+var app    = new Ellipse({ env: 'production' }),
+    devApp = new Ellipse({ env: 'development' })
 
 app.get('/', (req, res) => {
     test.type(res, Ellipse.Response, 'response object should be a Response instance')
@@ -18,7 +20,7 @@ app.get('/', (req, res) => {
     test.equals(res.message, '', 'res.message should default to an empty string')
     res.message = 'hello world'
     test.equals(res.statusCode, 200, 'res.statusCode should default to 200')
-    res.statusCode = 400
+    res.status(400)
 
     test.strictEquals(res.lastModified, undefined, 'res.lastModified should default to `undefined`')
     res.lastModified = new Date().toUTCString()
@@ -47,8 +49,11 @@ app.get('/', (req, res) => {
     res.append('x-test-4', 'test3')
     // add multiple items to that array
     res.append('x-test-4', [ 'test4', 'test5' ])
+    res.set('x-test-5', 'test')
+    res.remove('x-test-5')
     res.type('text/plain')
     res.type(null)
+
     const expected = {
         status: 400,
         message: 'hello world',
@@ -114,8 +119,73 @@ app.get('/html', (req, res) => {
     res.html('<h1>ok</h1>')
 })
 
-test.plan(23)
-test.tearDown(() => app.close())
+app.get('/json1', (req, res) => {
+    test.pass('json body')
+    res.json({ hello: 'world' })
+})
+
+app.get('/json2', (req, res) => {
+    test.pass('json body as string')
+    res.json('{  "hello" :"world"}')
+})
+
+devApp.get('/json', (req, res) => {
+    test.pass('json response in development mode')
+    res.json({ hello: 'world' })
+})
+
+app.get('/redirect', (req, res) => {
+    const url = req.query.url,
+          alt = req.query.alt
+
+    test.pass('redirect: ' + url + ' - ' + alt)
+    res.redirect(url, alt)
+})
+
+app.get('/attachment', (req, res) => {
+    const path = req.query.path
+    test.pass('attachment: ' + path)
+    res.attachment(path)
+    res.send()
+})
+
+app.get('/download', (req, res) => {
+    test.pass('download')
+    res.download(__filename)
+})
+
+app.get('/download-callback', (req, res) => {
+    res.download('response.js', ondownloadend)
+})
+
+app.get('/download-options-callback', (req, res) => {
+    res.download('response', { extensions: 'js' }, ondownloadend)
+})
+
+app.get('/set-cookie', (req, res) => {
+    test.pass('set cookie')
+    res.cookie('test', 'test')
+    res.send('ok')
+})
+
+app.get('/clear-cookie', (req, res) => {
+    test.pass('clear cookie')
+    res.clearCookie('test')
+    res.send('ok')
+})
+
+function ondownloadend(err) {
+    if (err)
+        test.threw(err)
+    else
+        test.pass('download callback fired')
+}
+
+test.plan(38)
+test.tearDown(() => {
+    app.close()
+    devApp.close()
+})
 
 request(app = app.listen())
     .get('/')
@@ -171,6 +241,98 @@ request(app)
     .get('/html')
     .expect('content-type', 'text/html; charset=utf-8')
     .expect(200, '<h1>ok</h1>', onend)
+
+request(app)
+    .get('/json1')
+    .expect('content-type', 'application/json; charset=utf-8')
+    .expect(200, '{"hello":"world"}', onend)
+
+request(app)
+    .get('/json2')
+    .expect('content-type', 'application/json; charset=utf-8')
+    .expect(200, '{  "hello" :"world"}', onend)
+
+request(devApp = devApp.listen())
+    .get('/json')
+    .expect('content-type', 'application/json; charset=utf-8')
+    .expect(200, '{\n    "hello": "world"\n}', onend)
+
+request(app)
+    .get('/redirect?url=/')
+    .set('accept', 'text/plain')
+    .expect('content-type', 'text/plain; charset=utf-8')
+    .expect('location', '/')
+    .expect(302, 'Redirecting to /.', onend)
+
+request(app)
+    .get('/redirect?url=/test')
+    .set('accept', 'text/html')
+    .expect('content-type', 'text/html; charset=utf-8')
+    .expect('location', '/test')
+    .expect(302, '<p>Redirecting to <a href="/test">/test</a>.</p>', onend)
+
+request(app)
+    .get('/redirect?url=back')
+    .set('accept', 'text/plain')
+    .expect('content-type', 'text/plain; charset=utf-8')
+    .expect('location', '/')
+    .expect(302, 'Redirecting to /.', onend)
+
+request(app)
+    .get('/redirect?url=back&alt=/test')
+    .set('accept', 'text/plain')
+    .expect('content-type', 'text/plain; charset=utf-8')
+    .expect('location', '/test')
+    .expect(302, 'Redirecting to /test.', onend)
+
+request(app)
+    .get('/redirect?url=back')
+    .set('accept', 'text/plain')
+    .set('referrer', '/test')
+    .expect('content-type', 'text/plain; charset=utf-8')
+    .expect('location', '/test')
+    .expect(302, 'Redirecting to /test.', onend)
+
+request(app)
+    .get('/attachment')
+    .expect('content-disposition', 'attachment')
+    .expect(200, '', onend)
+
+request(app)
+    .get('/attachment?path=' + __filename)
+    .expect('content-disposition', 'attachment; filename="response.js"')
+    .expect(200, '', onend)
+
+request(app)
+    .get('/download')
+    .expect('content-type', 'application/javascript; charset=utf-8')
+    .expect('content-length', size)
+    .expect('content-disposition', 'attachment; filename="response.js"')
+    .expect(200, file, onend)
+
+request(app)
+    .get('/download-callback')
+    .expect('content-type', 'application/javascript; charset=utf-8')
+    .expect('content-length', size)
+    .expect('content-disposition', 'attachment; filename="response.js"')
+    .expect(200, file, onend)
+
+request(app)
+    .get('/download-options-callback')
+    .expect('content-type', 'application/javascript')
+    .expect('content-length', size)
+    .expect('content-disposition', 'attachment; filename="response"')
+    .expect(200, file, onend)
+
+request(app)
+    .get('/set-cookie')
+    .expect('set-cookie', 'test=test; path=/; httponly')
+    .expect(200, 'ok', onend)
+
+request(app)
+    .get('/clear-cookie')
+    .expect('set-cookie', 'test=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly')
+    .expect(200, 'ok', onend)
 
 function emptyResponse(res) {
     if (
