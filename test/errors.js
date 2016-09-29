@@ -9,18 +9,17 @@ var app1 = require('..')(),
 
 app2.env = 'test'
 
-test.plan(3)
+test.plan(5)
 
+app1.param('p1', (next, val) => next(err))
+app1.param('p2', (next, val) => { throw err })
 app1.get('/1/a', next => next(err))
-
-app1.get('/1/b', next => {
-    throw err
-})
-
+app1.get('/1/b', next => { throw err })
 app1.get('/2', function *(next) {
     throw err
 })
-
+app1.get('/3/1/:p1', noop)
+app1.get('/3/2/:p2', noop)
 app1.on('error', onerror)
 
 app2.get('/', next => next(err))
@@ -43,7 +42,6 @@ app2.get('/custom-http-error2', function *(next) {
     throw err
 })
 
-
 app1 = app1.listen()
 app2 = app2.listen()
 
@@ -52,9 +50,11 @@ test.tearDown(() => {
     app2.close()
 })
 
-get('/1/a')
-get('/1/b')
-get('/2')
+get(app1, '/1/a')
+get(app1, '/1/b')
+get(app1, '/2')
+get(app1, '/3/1/t')
+get(app1, '/3/2/t')
 
 request(app2)
     .get('/')
@@ -74,10 +74,12 @@ request(app2)
     .get('/custom-http-error2')
     .expect(409, onend)
 
-function get(path) {
-    request(app1)
+function noop() {}
+
+function get(app, path, status) {
+    request(app)
         .get(path)
-        .expect(200, onend)
+        .expect(status || 200, onend)
 }
 
 function onend(err) {
@@ -95,3 +97,4 @@ function onerror(er, ctx) {
 
 // todo: add a test for that case when an `error` event handler throws
 // note: that should be caught on emit: `try { emitter.emit('error', err) } catch (ex) { /* error in error handler */ }`
+// todo: test error bubbling
