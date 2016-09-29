@@ -1,33 +1,28 @@
-/**
- * Created by schwarzkopfb on 15/9/15.
- */
-
 'use strict'
 
-var Ellipse = require('../'),
-    app     = new Ellipse,
-    // simply use the official static server of Express
-    serve   = require('serve-static')
+const Ellipse = require('..'),
+      app     = new Ellipse,
+      serve   = require('serve-static') // Express' official static server middleware
 
 /*
     try:
     /examples/app.js
-    /examples/aliases.js
-    /examples/logger.js
+    /examples/https.js
+    /examples/params.js
     etc.
  */
 // include static file server middleware
 app.use('/examples', serve(__dirname))
 
-// main route
-app.get('/', function (req, res) {
-    res.send([
-        'try:',
-        '/examples/app.js',
-        '/examples/aliases.js',
-        '/examples/logger.js',
-        'etc.'
-    ].join('\n'))
+app.get('/', (req, res) => {
+    res.type('text/plain')
+        .send([
+            'try:',
+            '/examples/app.js',
+            '/examples/https.js',
+            '/examples/params.js',
+            'etc.'
+        ].join('\n'))
 })
 
 // start listening

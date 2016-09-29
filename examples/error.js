@@ -1,13 +1,9 @@
-/**
- * Created by schwarzkopfb on 15/9/15.
- */
-
 'use strict'
 
-var Ellipse = require('../'),
-    app1    = new Ellipse,
-    app2    = new Ellipse,
-    app3    = new Ellipse
+const Ellipse = require('..'),
+      app1    = new Ellipse,
+      app2    = new Ellipse,
+      app3    = new Ellipse
 
 /*
     `app1` will use the default error handler shipped with Ellipse
@@ -15,11 +11,10 @@ var Ellipse = require('../'),
     try:
     //localhost:3333/
  */
-app1.get('/', function (req, res, next) {
+app1.get('/', next =>
     // statusCode and statusMessage can be set here
     // with extra arguments passed to `next(err, [status], [message])`
-    next('fake error', 501, 'Too late...')
-})
+    next(new Error('fake'), 501, 'Too late...'))
 
 // start app1
 app1.listen(3333)
@@ -32,22 +27,23 @@ app1.listen(3333)
     //localhost:3334/
     //localhost:3334/error
  */
-app2.get('/', function () {
-    throw 'fake error'
+app2.get('/', () => {
+    throw new Error('fake')
 })
 
 // create a sub-router in `app2` under the '/error*' route
 var router = app2.mount('/error')
 
-router.get('/', function (req, res, next) {
+router.get('/', next => {
     // errors from sub-routers will bubble up to the parent router's error handler
-    next('fake error')
+    next(new Error('fake'))
 })
 
 // you can catch unhandled errors from middleware with `app.error(handler)`
-app2.error(function (err, req, res) {
+app2.on('error', (err, ctx) => {
     // receive errors from `app2` and `router` here
-    res.status(500).send('Ouch!')
+    ctx.status = 500
+    ctx.send('Ouch!')
 })
 
 // start app2
@@ -64,27 +60,26 @@ app2.listen(3334)
     //localhost:3335/
     //localhost:3335/error
  */
-app3.get('/', function (req, res, next) {
-    next('fake error', 502)
+app3.get('/', next => {
+    next(new Error('fake'), 502)
 })
 
 // create a sub-router in `app3` under the '/error*' route
 router = app3.mount('/error')
 
 // throw an error when any request hits this router
-router.all(function () {
-    throw 'fake error'
+router.all(() => {
+    throw new Error('fake')
 })
 
-// `app.catch(...)` is an alias of `app.error(...)`
-router.catch(function (err, req, res) {
+router.on('error', (err, ctx) => {
     // receive errors only from `router` here
-    res.status = 500
-    res.send('Something went wrong under the /error* route.')
+    ctx.status = 500
+    ctx.send('Something went wrong under the /error* route.')
 })
 
 // you can also use the `error` event directly to catch unhandled errors
-app3.on('error', function (err, ctx) {
+app3.on('error', (err, ctx) => {
     // receive errors only from `app3` here
     ctx.status = 500
     ctx.send('Something went wrong.')

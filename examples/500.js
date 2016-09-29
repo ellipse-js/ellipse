@@ -1,28 +1,29 @@
-/**
- * Created by schwarzkopfb on 15/9/12.
- */
-
 'use strict'
 
-var Ellipse = require('../'),
-    app     = new Ellipse
+const Ellipse = require('..'),
+      app     = new Ellipse
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     res.body = [
         'try:',
         '/next',
-        '/throw'
+        '/throw',
+        '/generator'
     ].join('\n')
 
-    res.send()
+    res.type('text/plain').send()
 })
 
-app.get('/throw', function () {
-    throw Error('fake')
+app.get('/throw', () => {
+    throw new Error('fake')
 })
 
-app.get('/next', function (req, res, next) {
-    next(Error('fake'))
+app.get('/next', (req, res, next) => {
+    next(new Error('fake'))
+})
+
+app.get('/generator', function *() {
+    this.throw(403, 'Why So Curious?')
 })
 
 /*
@@ -31,12 +32,14 @@ app.get('/next', function (req, res, next) {
     try:
     /next
     /throw
+    /generator
 */
-app.on('error', function (err, ctx) {
-    console.error(err.stack || err)
+app.on('error', (err, ctx) => {
+    if (ctx.status === 200)
+        ctx.status = 500
 
-    ctx.status = 500
-    ctx.send('Ouch!')
+    ctx.type = 'text/plain'
+    ctx.send('Ouch!\n\n' + err.stack)
 })
 
 app.listen(3333)

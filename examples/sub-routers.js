@@ -1,73 +1,64 @@
-/**
- * Created by schwarzkopfb on 15/9/13.
- */
-
 'use strict'
 
-var ellipse = require('../'),
-    app     = ellipse()
+const ellipse = require('..'),
+      app     = ellipse()
 
 // `app.mount(...)` returns a `Router` instance and
 // passes it to `app.use(...)` with the given path prefix
-var account = app.mount('/account')
+const account = app.mount('/account')
 
 /*
     try:
     /account
  */
-account.get('/', function (req, res) {
-    res.send('Hello there! It\'s your account!')
-})
+account.get('/', (req, res) =>
+    res.send('Hello there! It\'s your account!'))
 
 /*
     try:
     /account/profile
  */
-account.get('/profile', function (req, res) {
-    res.send('It\'s your profile page!')
-})
+account.get('/profile', (req, res) =>
+    res.send('It\'s your profile page!'))
 
 // create another sub-router under '/account'
-var bills = account.mount('/bills')
+const bills = account.mount('/bills')
 
 /*
     try:
     /account/bills
 */
-bills.get('/', function (req, res) {
-    res.send('Here are your bills!')
-})
+bills.get('/', (req, res) =>
+    res.send('Here are your bills!'))
 
 /*
     try:
     /account/bills/latest
 */
-bills.get('/latest', function (req, res) {
-    res.send('Here is your latest bill!')
-})
+bills.get('/latest', (req, res) =>
+    res.send('Here is your latest bill!'))
 
 // Express style sub-router usage is also supported
-var pages = new ellipse.Router
+const pages = new ellipse.Router
 app.use('/pages', pages)
 
 /*
     try:
     /pages
 */
-pages.get('/', function (req, res) {
-    res.send('What a beautiful homepage, isn\'t it?')
-})
+pages.get('/', (req, res) =>
+    res.send('What a beautiful homepage, isn\'t it?'))
 
 /*
     try:
     /pages/contact
 */
-pages.get('/contact', function (req, res) {
-    res.send('Drop us an email!')
-})
+pages.get('/contact', (req, res) =>
+    res.send('Drop us an email!'))
 
 // base route handler
 app.get('/', function () {
+    this.type = 'text/plain'
     this.body = [
         'try:',
         '/account',

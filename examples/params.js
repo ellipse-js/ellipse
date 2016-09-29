@@ -1,11 +1,7 @@
-/**
- * Created by schwarzkopfb on 16/3/22.
- */
-
 'use strict'
 
-var Ellipse = require('../'),
-    app     = new Ellipse
+const Ellipse = require('..'),
+      app     = new Ellipse
 
 function capitalize(str) {
     return str[ 0 ].toUpperCase() + str.toLowerCase().substring(1)
@@ -33,10 +29,10 @@ app.get('/', function () {
         '/user/1',
         '/user/2',
         '/batman',
-        '/bat%20man',
         '/john%20doe'
     ].join('\n')
 
+    this.type = 'text/plain'
     this.send()
 })
 
@@ -49,7 +45,7 @@ app.param('name', function (next, name) {
 // extend `ctx` based on `user_id` param
 app.param('user_id', function *(next, id) {
     this.user = yield *findUserById(id)
-    yield next
+    yield *next
 })
 
 /*
@@ -61,7 +57,7 @@ app.param('user_id', function *(next, id) {
     /male_is_wombat
     /female_is_a_wombat
 
-            |0 |     |1|   |2     |  |3      |             |4|                  */
+            |0-|     |1|   |--2---|  |---3---|             |4|                  */
 app.get(/^\/(fe)?male(s)?_?(is|are)_?(n't|not)?_?a?_?wombat(s)?/, function () {
     if (this.params[ 0 ])
         console.log('female')
@@ -99,7 +95,6 @@ app.get('/user/:user_id', function () {
 
     try:
     /batman
-    /bat%20man
     /john%20doe
 
     note: '%20' is the url escape code of the space (' ') char

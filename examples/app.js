@@ -1,17 +1,13 @@
-/**
- * Created by schwarzkopfb on 15/9/12.
- */
-
 'use strict'
 
-var Ellipse = require('../'),
-    app     = new Ellipse({ root: __dirname })
+const Ellipse = require('..'),
+      app     = new Ellipse
 
 /*
     try:
     /?name=John
  */
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
     var name = req.query.name || 'Ellipse'
 
     res.body = 'Welcome ' + name + '!'
@@ -27,7 +23,7 @@ app.get('/', function (req, res) {
         '/aloha/John'
     ].join('\n')
 
-    res.send()
+    res.type('text/plain').send()
 })
 
 /*
@@ -45,9 +41,8 @@ app.get('/source', function () {
     /John
     /Jack
  */
-app.get('/:name', function (req, res) {
-    res.html('<h1>Hello ' + req.params.name + '!</h1>')
-})
+app.get('/:name', (req, res) =>
+    res.html('<h1>Hello ' + req.params.name + '!</h1>'))
 
 /*
     try:
@@ -66,6 +61,5 @@ app.get('/:greeting/:name', function (req, res) {
 })
 
 // start listening
-app.listen(3333, function () {
-    console.log('server is ready to accept connections on port 3333')
-})
+app.listen(3333, () =>
+    console.log('server is ready to accept connections on port 3333'))

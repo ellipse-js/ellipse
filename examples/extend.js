@@ -1,11 +1,7 @@
-/**
- * Created by schwarzkopfb on 15/9/15.
- */
-
 'use strict'
 
-var ellipse = require('../'),
-    app     = ellipse()
+const ellipse = require('..'),
+      app     = ellipse()
 
 // extend app prototype
 
@@ -55,7 +51,7 @@ app.response.success = function (result) {
 
 // object containing example data
 
-var db = {
+const db = {
     users: {
         '1': {
             id: 1,
@@ -64,7 +60,7 @@ var db = {
     }
 }
 
-app.param('id', function (req, res, next, id) {
+app.param('id', (req, res, next, id) => {
     req.user = db.users[ id ]
     next()
 })
@@ -76,6 +72,7 @@ app.get('/', function *() {
         '/api/user/2'
     ].join('\n')
 
+    this.type = 'text/plain'
     this.send()
 })
 
@@ -88,7 +85,7 @@ app.wait(.5)
     /api/user/1
     /api/user/2
  */
-app.get('/api/user/:id', function (req, res) {
+app.get('/api/user/:id', (req, res) => {
     if(req.user)
         res.success(req.user)
     else
@@ -96,9 +93,8 @@ app.get('/api/user/:id', function (req, res) {
 })
 
 // start listening
-app.figureOutPortAndListen(function () {
-    console.log('server is ready to accept connections on port 3333')
-})
+app.figureOutPortAndListen(() =>
+    console.log('server is ready to accept connections on port 3333'))
 
 // `app2`'s purpose is to demonstrate that `app.response.success`
 // doesn't affect `ellipse.response.success`
@@ -109,4 +105,5 @@ app2.all(function () {
     this.res.success()
 })
 
-app2.listen(3334)
+app2.listen(3334, () =>
+    console.log('server is ready to accept connections on port 3334'))

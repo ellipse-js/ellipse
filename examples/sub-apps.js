@@ -1,20 +1,15 @@
-/**
- * Created by schwarzkopfb on 15/9/14.
- */
-
 'use strict'
 
-var ellipse = require('../'),
-    website = ellipse(),
-    blog    = ellipse(),
-    api     = ellipse(),
-    // we use this as a parent of our sub-apps
-    // children will do logging for themselves
-    app     = ellipse({ log: false })
+const ellipse = require('..'),
+      website = ellipse(),
+      blog    = ellipse(),
+      api     = ellipse(),
+      app     = ellipse()
 
 // website
 
-website.get('/', function (req, res) {
+website.get('/', (req, res) => {
+    res.type('text/plain')
     res.body = 'Hello there!'
     res.body += [
         '\n',
@@ -30,26 +25,24 @@ website.get('/', function (req, res) {
 
 // blog
 
-blog.get('/', function (req, res) {
+blog.get('/', (req, res) => {
     res.send('It\'s our blog!')
 })
 
-blog.get('/post/:id', function (req, res) {
+blog.get('/post/:id', (req, res) => {
     res.send('Blog post #' + req.params.id)
 })
 
-blog.error(function (err, req, res) {
-    res.send('Blog error!')
-})
+blog.on('error', (err, ctx) =>
+    ctx.send('Blog error!'))
 
 // api
 
-api.get('/me', function (req, res) {
+api.get('/me', (req, res) =>
     res.json({
         name: 'John Doe',
         age: 22
-    })
-})
+    }))
 
 // add sub-apps
 
@@ -73,11 +66,8 @@ app.all(function () {
 
 // 500
 
-app.error(function (err, req, res) {
-    console.log(err)
-
-    res.send('App error!')
-})
+app.on('error', (err, ctx) =>
+    ctx.send('App error!'))
 
 // start listening
 

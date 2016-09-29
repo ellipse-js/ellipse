@@ -1,13 +1,8 @@
-/**
- * Created by schwarzkopfb on 15/9/12.
- */
-
 'use strict'
 
-var Ellipse    = require('../'),
-    app        = new Ellipse,
-    // simply use the official body parser of Express
-    bodyParser = require('body-parser')
+const Ellipse    = require('..'),
+      app        = new Ellipse,
+      bodyParser = require('body-parser') // Express' official body parser
 
 app.get('/', function () {
     this.body = [
@@ -18,6 +13,7 @@ app.get('/', function () {
         'GET  /api/comment/latest'
     ].join('\n')
 
+    this.type = 'text/plain'
     this.send()
 })
 
@@ -31,9 +27,8 @@ app.use(bodyParser.json())
     try:
     /api/user/latest
  */
-app.get('/api/user/latest', function (req, res) {
-    res.json(user)
-})
+app.get('/api/user/latest', (req, res) =>
+    res.json(user))
 
 /*
     try:
@@ -57,9 +52,8 @@ app.get('/api/comment/latest', function () {
     try:
     POST /api/comment { "id": 1, "text": "lorem ipsum" }
  */
-app.post('/api/comment', function (req, res) {
-    res.json(comment = req.body)
-})
+app.post('/api/comment', (req, res) =>
+    res.json(comment = req.body))
 
 // start listening
 app.listen(3333)
