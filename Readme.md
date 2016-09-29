@@ -1,11 +1,13 @@
 [![view on npm](http://img.shields.io/npm/v/ellipse.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
 [![npm module downloads per month](http://img.shields.io/npm/dm/ellipse.svg?style=flat-square)](https://www.npmjs.com/package/ellipse)
 [![node version](https://img.shields.io/badge/node-%3E%3D%204-brightgreen.svg?style=flat-square)](https://nodejs.org/download)
-[![license](https://img.shields.io/npm/l/express.svg?style=flat-square)](https://github.com/schwarzkopfb/ellipse/blob/development/LICENSE)
+[![build status](https://img.shields.io/travis/ellipse-js/ellipse.svg?style=flat-square)](https://travis-ci.org/ellipse-js/ellipse)
+[![test coverage](https://img.shields.io/coveralls/ellipse-js/ellipse.svg?style=flat-square)](https://coveralls.io/github/ellipse-js/ellipse)
+[![license](https://img.shields.io/npm/l/express.svg?style=flat-square)](/LICENSE)
 
 # Ellipse
 
-Unobtrusive web framework for [node.js](https://nodejs.org) that consolidates APIs of [Koa](http://koajs.com/) and [Express](http://expressjs.com/) whilst performs better than both.
+Unobtrusive web framework for [node](https://nodejs.org) that consolidates APIs of [Koa](http://koajs.com/) and [Express](http://expressjs.com/) whilst performs better than both.
 
 ## Features
 
