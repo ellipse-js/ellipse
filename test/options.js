@@ -4,7 +4,9 @@ const request = require('supertest'),
       test    = require('tap'),
       Ellipse = require('..')
 
-var app = new Ellipse
+var app  = new Ellipse,
+    sub1 = Ellipse.Router(),
+    sub2 = Ellipse.Router()
 
 app.get('/', handler)
 app.route('/1')
@@ -15,21 +17,29 @@ app.put('/2', handler)
 app.patch('/2', handler)
 app.head('/2', handler)
 app.route('/3')
-   .get(handler)
    .post(handler)
    .delete(handler)
-app.all('/4', handler)
 
-test.plan(6)
+app.use('/4', sub1)
+sub1.put('/', handler)
+
+app.use(sub2)
+sub2.patch('/5', handler)
+
+sub2.mount('/6').get('/', handler)
+
+test.plan(8)
 test.tearDown(() => app.close())
 
 app = app.listen()
-doTest('/', 'GET')
-doTest('/1', 'POST,GET')
+doTest('/', 'GET,HEAD')
+doTest('/1', 'POST,GET,HEAD')
 doTest('/2', 'GET,PUT,PATCH,HEAD')
-doTest('/3', 'GET,POST,DELETE')
-doTest('/4', '*')
-doTest('/5', '')
+doTest('/3', 'POST,DELETE')
+doTest('/4', 'PUT')
+doTest('/5', 'PATCH')
+doTest('/6', 'GET,HEAD')
+doTest('/7', '')
 
 function doTest(path, body) {
     const req = request(app).options(path)
