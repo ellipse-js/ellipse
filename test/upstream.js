@@ -11,6 +11,22 @@ function done(n) {
     return () => result.push(n)
 }
 
+// errors //
+
+app.use('/error',
+    function *(next) {
+        yield *next
+        throw new Error('test')
+    },
+    (req, res) => res.send('ok')
+)
+
+app.on('error', err => {
+    test.pass('upstream error caught')
+})
+
+// control flow //
+
 app.use(next => {
     result.push(1)
     next().then(done(26))
@@ -84,13 +100,14 @@ sub.use(function *(next) {
     result.push(14)
 })
 
-test.plan(1)
+test.plan(3)
+test.tearDown(() => app.close())
 
 request(app = app.listen())
     .get('/test')
     .expect(200, err => {
         if (err)
-            throw err
+            test.threw(err)
         else {
             const expected = [
                 1,  2,  3,  4,
@@ -102,6 +119,14 @@ request(app = app.listen())
                 25, 26
             ]
             test.same(result, expected, 'control should flow as expected')
-            app.close()
         }
+    })
+
+request(app)
+    .get('/error')
+    .expect(200, 'ok', err => {
+        if (err)
+            test.threw(err)
+        else
+            test.pass('response received')
     })
