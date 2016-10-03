@@ -25,13 +25,13 @@ Unobtrusive web framework for [node](https://nodejs.org) that consolidates APIs 
 const Ellipse = require('ellipse'),
       app     = new Ellipse
 
-app.use(function(req, res, next) {
-    req.sessionId = this.cookies.get('session')
+app.use(function(next) {
+    this.state.sessionId = this.cookies.get('session')
     next()
 })
 
 app.use(function *(next) {
-    this.user = yield *findUserBySessionId(this.request.sessionId)
+    this.user = yield *findUserBySessionId(this.state.sessionId)
     yield *next
 })
 
@@ -39,8 +39,8 @@ app.get('/', (req, res) => {
     res.send('Hello Ellipse!')
 })
 
-app.get('/me', function(next) {
-    this.json(this.user)
+app.get('/me', (req, res) => {
+    res.json(req.ctx.user)
 })
 
 app.get('/greet/:name', function *(next) {
@@ -56,7 +56,7 @@ app.on('notFound', ctx => {
 app.listen(3333)
 
 ```
-
+Note: `this` refers to a context object - except in arrow functions. Context is similar but not identical to [Koa's](http://koajs.com/#context).<br/>
 For more information, see the [examples](/examples) folder.
 
 ## Installation
