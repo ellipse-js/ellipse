@@ -1,9 +1,10 @@
 'use strict'
 
-const test    = require('tap'),
-      request = require('supertest'),
-      Ellipse = require('..'),
-      result  = []
+const test      = require('tap'),
+      request   = require('supertest'),
+      Ellipse   = require('..'),
+      result    = [],
+      errResult = []
 
 var app = new Ellipse({ upstream: true })
 
@@ -13,7 +14,7 @@ function done(n) {
 
 // errors //
 
-app.use('/error',
+app.get('/error',
     function *(next) {
         yield *next
         throw new Error('test')
@@ -21,8 +22,25 @@ app.use('/error',
     (req, res) => res.send('ok')
 )
 
-app.on('error', err => {
+app.get('/error2',
+    (req, res, next) => {
+        errResult.push(1)
+        next().catch(err => errResult.push(5))
+    },
+    (req, res, next) => {
+        errResult.push(2)
+        next().catch(err => errResult.push(4))
+    },
+    function () {
+        errResult.push(3)
+        throw new Error('test')
+    }
+)
+
+app.on('error', (err, ctx) => {
     test.pass('upstream error caught')
+    ctx.status = 500
+    ctx.send()
 })
 
 // control flow //
@@ -100,7 +118,7 @@ sub.use(function *(next) {
     result.push(14)
 })
 
-test.plan(3)
+test.plan(5)
 test.tearDown(() => app.close())
 
 request(app = app.listen())
@@ -129,4 +147,13 @@ request(app)
             test.threw(err)
         else
             test.pass('response received')
+    })
+
+request(app)
+    .get('/error2')
+    .expect(500, err => {
+        if (err)
+            test.threw(err)
+        else
+            test.same(errResult, [ 1, 2, 3, 4, 5 ], 'control should flow as expected (in case of error)')
     })
