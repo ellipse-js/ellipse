@@ -37,6 +37,17 @@ app.get('/error2',
     }
 )
 
+app.param('test1', (next, param) => {
+    throw new Error('test')
+})
+
+app.param('test2', (next, param) => {
+    next(new Error('test'))
+})
+
+app.get('/error3/1/:test1', () => {})
+app.get('/error3/2/:test2', () => {})
+
 app.on('error', (err, ctx) => {
     test.pass('upstream error caught')
     ctx.status = 500
@@ -118,7 +129,7 @@ sub.use(function *(next) {
     result.push(14)
 })
 
-test.plan(5)
+test.plan(9)
 test.tearDown(() => app.close())
 
 request(app = app.listen())
@@ -156,4 +167,22 @@ request(app)
             test.threw(err)
         else
             test.same(errResult, [ 1, 2, 3, 4, 5 ], 'control should flow as expected (in case of error)')
+    })
+
+request(app)
+    .get('/error3/1/t')
+    .expect(500, err => {
+        if (err)
+            test.threw(err)
+        else
+            test.pass('error caught in param processor (threw)')
+    })
+
+request(app)
+    .get('/error3/2/t')
+    .expect(500, err => {
+        if (err)
+            test.threw(err)
+        else
+            test.pass('error caught in param processor (next)')
     })
