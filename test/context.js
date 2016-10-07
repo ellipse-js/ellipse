@@ -3,12 +3,14 @@
 const test    = require('tap'),
       request = require('supertest'),
       Cookies = require('cookies'),
-      Ellipse = require('..')
-
-var app = new Ellipse
+      Ellipse = require('..'),
+      app     = new Ellipse,
+      server  = app.listen()
 
 app.get('/', (ctx, req, res, next) => {
-    test.type(ctx, Ellipse.Context, '`this` should be a Context instance')
+    test.type(ctx, Ellipse.Context, '`ctx` should be a Context instance')
+    test.equals(ctx.app, app, 'ctx.app should refer to its parent application')
+    test.equals(ctx.application, app, 'ctx.application should refer to its parent application')
     test.type(ctx.req, Ellipse.Request, 'ctx.req should be a Request instance')
     test.type(ctx.request, Ellipse.Request, 'ctx.request should be a Request instance')
     test.type(ctx.res, Ellipse.Response, 'ctx.res should be a Response instance')
@@ -95,12 +97,12 @@ app.get('/', (ctx, req, res, next) => {
     ctx.send()
 })
 
-request(app = app.listen())
+request(server)
     .get('/')
     .expect(200)
     .end(err => {
         if (err)
             test.threw(err)
         else
-            app.close()
+            server.close()
     })
