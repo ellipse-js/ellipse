@@ -33,6 +33,8 @@ app2.get('/bad', function *(next) {
     this.throw(400, 'sooo bad')
 })
 
+app2.get('/next-signature', next => next(403, "You don't have permission to see this"))
+
 app2.get('/custom-http-error1', function *(next) {
     const err = new Error('fake')
     err.message = 'fake error'
@@ -88,6 +90,7 @@ get(app1, '/3/1/t')
 get(app1, '/3/2/t')
 get(app2, '/', 500, /^Internal Server Error/)
 get(app2, '/bad', 400, 'sooo bad')
+get(app2, '/next-signature', 403, "You don't have permission to see this")
 get(app2, '/custom-http-error1', 500)
 get(app2, '/custom-http-error2', 409)
 get(app2, '/sub/sub', 500)
