@@ -73,6 +73,10 @@ app.get('/', (req, res) => {
     test.same(res.toJSON(), expected, 'json representation should be correct')
     test.same(res.toJSON(), res.inspect(), '`toJSON()` and `inspect()` should be alises')
 
+    test.throws(() => {
+        res.status = 400
+    }, /overwrite/, 'user should be warned when tries to use a method as a setter')
+
     res.send()
 })
 
@@ -181,7 +185,7 @@ function ondownloadend(err) {
         test.pass('download callback fired')
 }
 
-test.plan(38)
+test.plan(39)
 test.tearDown(() => {
     app.close()
     devApp.close()

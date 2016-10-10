@@ -31,6 +31,7 @@ app3.get('/', (req, res, next) => {
        .send()
 })
 
+// intercept ongoing response before it gets sent
 app3.on('respond', ctx => {
     ctx.status  = 418
     ctx.message = 'help me!'
