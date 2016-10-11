@@ -15,8 +15,9 @@ Unobtrusive web framework for [node](https://nodejs.org) that consolidates APIs 
   * Focus on high performance
   * HTTP helpers (redirection, caching, etc.)
   * Content negotiation
-  * Support for ES6 Generators
-  * HTTP Contexts
+  * Centralised error handling
+  * Support for generator and async middleware
+  * Use of contexts
 
 ## Usage
 
@@ -25,14 +26,14 @@ Unobtrusive web framework for [node](https://nodejs.org) that consolidates APIs 
 const Ellipse = require('ellipse'),
       app     = new Ellipse
 
-app.use(function(next) {
-    this.state.sessionId = this.cookies.get('session')
+app.use(function(req, res, next) {
+    req.sessionId = this.cookies.get('session')
     next()
 })
 
-app.use(function *(next) {
-    this.user = yield *findUserBySessionId(this.state.sessionId)
-    yield *next
+app.use(async (req, res, next) => {
+    req.user = await findUserBySessionId(req.sessionId)
+    next()
 })
 
 app.get('/', (req, res) => {
@@ -40,11 +41,12 @@ app.get('/', (req, res) => {
 })
 
 app.get('/me', (req, res) => {
-    res.json(req.ctx.user)
+    res.json(req.user)
 })
 
 app.get('/greet/:name', function *(next) {
     this.html = `<h1>Hello ${this.params.name}!</h1>`
+    yield doSomething()
     this.send()
 })
 
@@ -56,8 +58,12 @@ app.on('notFound', ctx => {
 app.listen(3333)
 
 ```
-Note: `this` refers to a context object - except in arrow functions. Context is similar but not identical to [Koa's](http://koajs.com/#context).<br/>
-For more information, see the [examples](/examples) folder.
+
+For more information, take a look at the [examples](/examples) folder.
+
+Note: `this` refers to a context object - except in arrow functions. Context is similar but not quite identical to [Koa's](http://koajs.com/#context).
+
+Please consider that `async` is not yet supported natively by Node, so you need to [transpile](http://babeljs.io) it until this feature arrives. [This](/examples/async) shows how to do that.
 
 ## Installation
 
@@ -67,9 +73,13 @@ If you want to try out these new features presented above, then you should use t
     npm install ellipse@next
 
 Or simply install `v0.5` which is the latest version, considered as stable.
-But please note that, those early versions (`<=0.5`) are deprecated and no longer supported.
+But please notice that, those early versions (`<=0.5`) are deprecated and no longer supported.
 
     npm install ellipse
+
+## Tests and benchmarks
+
+Clone the repo, `npm install` and then `npm test` or `npm run benchmarks`.
 
 ## License
 

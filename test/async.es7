@@ -1,0 +1,82 @@
+'use strict'
+
+const request = require('supertest'),
+      test    = require('tap'),
+      app     = require('..')({ upstream: true }),
+      server  = app.listen(),
+      calls   = []
+
+app.param('test', async (next, param) => {
+    await error()
+    next()
+})
+
+app.get('/error1', async () => {
+    await error()
+})
+
+app.get('/error2/:test', () =>
+    test.fail('handler should not be reached'))
+
+app.use(async next => {
+    calls.push(1)
+    await next()
+    calls.push(8)
+
+    const expected = [
+        1, 2, 3, 4,
+        5, 6, 7, 8
+    ]
+    test.same(calls, expected, 'control should flow as expected')
+})
+
+app.get('/', async (req, res) => {
+    calls.push(2)
+    await work()
+    calls.push(6)
+    res.send('whooooooooo!')
+    calls.push(7)
+})
+
+app.on('error', (err, ctx) => {
+    test.same(err.message, 'test', 'error should be caught')
+
+    ctx.status  = 500
+    ctx.message = 'something bad happened :('
+    ctx.send()
+})
+
+test.plan(3)
+test.tearDown(() => server.close())
+
+request(server)
+    .get('/')
+    .end(onend)
+
+request(server)
+    .get('/error1')
+    .expect(500)
+    .end(onend)
+
+request(server)
+    .get('/error2/test')
+    .expect(500)
+    .end(onend)
+
+function work() {
+    calls.push(3)
+    return new Promise((resolve, reject) => {
+        calls.push(4)
+        resolve()
+        calls.push(5)
+    })
+}
+
+function error() {
+    return Promise.reject(new Error('test'))
+}
+
+function onend(err) {
+    if (err)
+        test.threw(err)
+}

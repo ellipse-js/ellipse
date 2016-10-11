@@ -1,0 +1,29 @@
+'use strict'
+
+const fs      = require('fs'),
+      Ellipse = require('../..'),
+      app     = new Ellipse
+
+app.get('/', (req, res) =>
+    res.type('text/plain')
+       .send('try:\n\n/source'))
+
+app.get('/source', async (req, res) => {
+    const text = await read()
+
+    res.type('text/plain')
+       .send(text)
+})
+
+app.listen(3333)
+
+function read() {
+    return new Promise((resolve, reject) => {
+        fs.readFile(__filename, 'utf8', (err, content) => {
+            if (err)
+                reject(err)
+            else
+                resolve(content)
+        })
+    })
+}
