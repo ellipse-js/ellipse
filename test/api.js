@@ -17,11 +17,11 @@ test.test('constructors', test => {
 })
 
 test.test('prototypes', test => {
-    test.type(Ellipse.router, 'object', '`Router` prototype should be exposed')
-    test.type(Ellipse.request, 'object', '`Request` prototype should be exposed')
-    test.type(Ellipse.response, 'object', '`Response` prototype should be exposed')
-    test.type(Ellipse.context, 'object', '`Context` prototype should be exposed')
-    test.type(Ellipse.application, 'object', '`Application` prototype should be exposed')
+    test.equals(Ellipse.router, Ellipse.Router.prototype, '`Router` prototype should be exposed')
+    test.equals(Ellipse.request, Ellipse.Request.prototype, '`Request` prototype should be exposed')
+    test.equals(Ellipse.response, Ellipse.Response.prototype, '`Response` prototype should be exposed')
+    test.equals(Ellipse.context, Ellipse.Context.prototype, '`Context` prototype should be exposed')
+    test.equals(Ellipse.application, Ellipse.Application.prototype, '`Application` prototype should be exposed')
 
     test.end()
 })

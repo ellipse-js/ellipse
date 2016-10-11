@@ -3,7 +3,7 @@
     "tag": "next"
   },
   "name": "ellipse",
-  "version": "0.18.3-alpha.0",
+  "version": "0.18.3-alpha.1",
   "description": "Minimalistic, high-performance web framework that supports both classic, generator and async middleware.",
   "main": "lib/ellipse.js",
   "scripts": {
@@ -28,11 +28,13 @@
     "framework",
     "middleware",
     "light",
-    "generators",
+    "generator",
     "yield",
     "context",
     "request",
-    "response"
+    "response",
+    "async",
+    "promise"
   ],
   "author": "Schwarzkopf Balazs <schwarzkopfb@icloud.com>",
   "license": "MIT",
