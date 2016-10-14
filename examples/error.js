@@ -13,8 +13,8 @@ const Ellipse = require('..'),
  */
 app1.get('/', next =>
     // statusCode and statusMessage can be set here
-    // with extra arguments passed to `next(err, [status], [message])`
-    next(new Error('fake'), 501, 'Too late...'))
+    // if you pass a number or string to `next()`
+    next(501))
 
 // start app1
 app1.listen(3333)

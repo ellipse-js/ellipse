@@ -1,8 +1,20 @@
 all: export NODE_ENV = test
-all: header generator classic
+all: header generator classic async
 
 header:
 	@echo " node:" `node -v`
+	@echo
+
+async: header
+	@echo " async middleware"
+	@./run es7 1
+	@./run es7 5
+	@./run es7 10
+	@./run es7 15
+	@./run es7 20
+	@./run es7 30
+	@./run es7 50
+	@./run es7 100
 	@echo
 
 generator: header

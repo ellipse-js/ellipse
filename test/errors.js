@@ -1,6 +1,6 @@
 'use strict'
 
-const isStackTrace = /Error.*\n(\tat\s.*:[0-9]*:[0-9]*\n)*/i;
+const isStackTrace = /Error.*\n(\tat\s.*:[0-9]*:[0-9]*\n)*/i
 
 const test    = require('tap'),
       request = require('supertest'),
@@ -14,9 +14,10 @@ const test    = require('tap'),
 var app1 = new Ellipse,
     app2 = new Ellipse,
     app3 = new Ellipse,
-    app4 = new Ellipse({ env: 'development' })
+    app4 = new Ellipse({ env: 'development' }),
+    app5 = new Ellipse({ env: 'development' })
 
-test.plan(7)
+test.plan(22)
 
 app1.param('p1', (next, val) => next(err))
 app1.param('p2', (next, val) => { throw err })
@@ -32,8 +33,6 @@ app2.get('/', next => next(err))
 app2.get('/bad', function *(next) {
     this.throw(400, 'sooo bad')
 })
-
-app2.get('/next-signature', next => next(403, "You don't have permission to see this"))
 
 app2.get('/custom-http-error1', function *(next) {
     const err = new Error('fake')
@@ -67,6 +66,9 @@ app4.on('error', () => {
     throw err
 })
 
+app5.get('/next-signature1', next => next(403))
+app5.get('/next-signature2', next => next('Nothing to see here'))
+
 process.stderr.write = data => {
     test.ok(isStackTrace.test(data), 'stack trace should be written to stdout when app.env is development')
 }
@@ -75,12 +77,14 @@ app1 = app1.listen()
 app2 = app2.listen()
 app3 = app3.listen()
 app4 = app4.listen()
+app5 = app5.listen()
 
 test.tearDown(() => {
     app1.close()
     app2.close()
     app3.close()
     app4.close()
+    app5.close()
 })
 
 get(app1, '/1/a')
@@ -90,16 +94,17 @@ get(app1, '/3/1/t')
 get(app1, '/3/2/t')
 get(app2, '/', 500, /^Internal Server Error/)
 get(app2, '/bad', 400, 'sooo bad')
-get(app2, '/next-signature', 403, "You don't have permission to see this")
 get(app2, '/custom-http-error1', 500)
 get(app2, '/custom-http-error2', 409)
 get(app2, '/sub/sub', 500)
 get(app3, '/bubble', 200, "mare's nest")
 get(app4, '/', 500, isStackTrace)
+get(app5, '/next-signature1', 403, 'Forbidden')
+get(app5, '/next-signature2', 500, /Nothing to see here/)
 
 function noop() {}
 
-function get(app, path, status, body) {
+function get(app, path, status, body, message) {
     const req = request(app)
         .get(path)
         .expect(status || 200)
@@ -110,9 +115,11 @@ function get(app, path, status, body) {
     req.end(onend)
 }
 
-function onend(err) {
+function onend(err, res) {
     if (err)
         test.threw(err)
+    else
+        test.pass('expected response received')
 }
 
 function onerror(er, ctx) {

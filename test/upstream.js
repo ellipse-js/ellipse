@@ -6,7 +6,7 @@ const test      = require('tap'),
       result    = [],
       errResult = []
 
-var app = new Ellipse({ upstream: true })
+var app = new Ellipse
 
 function done(n) {
     return () => result.push(n)
@@ -25,11 +25,14 @@ app.get('/error',
 app.get('/error2',
     (req, res, next) => {
         errResult.push(1)
-        next().catch(err => errResult.push(5))
+        return next().catch(err => {
+            errResult.push(4)
+            res.status(500).send()
+        })
     },
     (req, res, next) => {
         errResult.push(2)
-        next().catch(err => errResult.push(4))
+        return next()
     },
     function () {
         errResult.push(3)
@@ -41,9 +44,8 @@ app.param('test1', (next, param) => {
     throw new Error('test')
 })
 
-app.param('test2', (next, param) => {
-    next(new Error('test'))
-})
+app.param('test2', (next, param) =>
+    next(new Error('test')))
 
 app.get('/error3/1/:test1', () => {})
 app.get('/error3/2/:test2', () => {})
@@ -58,12 +60,12 @@ app.on('error', (err, ctx) => {
 
 app.use(next => {
     result.push(1)
-    next().then(done(26))
+    return next().then(done(26))
 })
 
 app.use(next => {
     result.push(2)
-    next().then(done(25))
+    return next().then(done(25))
 })
 
 app.use(function *(next) {
@@ -80,17 +82,17 @@ app.use(function *(next) {
 
 app.param('test', (next, value) => {
     result.push(5)
-    next().then(done(22))
+    return next().then(done(22))
 })
 
 app.get('/:test',
     next => {
         result.push(6)
-        next().then(done(21))
+        return next().then(done(21))
     },
     next => {
         result.push(7)
-        next().then(done(20))
+        return next().then(done(20))
     },
     function *(next) {
         result.push(8)
@@ -104,7 +106,7 @@ app.get('/:test',
     },
     next => {
         result.push(10)
-        next().then(done(17))
+        return next().then(done(17))
     },
     function *(next) {
         result.push(11)
@@ -119,7 +121,7 @@ app.use(sub)
 
 sub.use(next => {
     result.push(12)
-    next().then(done(15))
+    return next().then(done(15))
 })
 
 sub.use(function *(next) {
@@ -129,7 +131,7 @@ sub.use(function *(next) {
     result.push(14)
 })
 
-test.plan(9)
+test.plan(8)
 test.tearDown(() => app.close())
 
 request(app = app.listen())
@@ -166,7 +168,7 @@ request(app)
         if (err)
             test.threw(err)
         else
-            test.same(errResult, [ 1, 2, 3, 4, 5 ], 'control should flow as expected (in case of error)')
+            test.same(errResult, [ 1, 2, 3, 4 ], 'control should flow as expected (in case of error)')
     })
 
 request(app)

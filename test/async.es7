@@ -21,21 +21,17 @@ app.get('/error2/:test', () =>
 app.use(async next => {
     calls.push(1)
     await next()
-    calls.push(8)
+    calls.push(6)
 
-    const expected = [
-        1, 2, 3, 4,
-        5, 6, 7, 8
-    ]
+    const expected = [ 1, 2, 3, 4, 5, 6 ]
     test.same(calls, expected, 'control should flow as expected')
 })
 
 app.get('/', async (req, res) => {
     calls.push(2)
     await work()
-    calls.push(6)
+    calls.push(5)
     res.send('whooooooooo!')
-    calls.push(7)
 })
 
 app.on('error', (err, ctx) => {
@@ -67,8 +63,7 @@ function work() {
     calls.push(3)
     return new Promise((resolve, reject) => {
         calls.push(4)
-        resolve()
-        calls.push(5)
+        setImmediate(resolve)
     })
 }
 
