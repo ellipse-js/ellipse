@@ -1,10 +1,8 @@
-// todo: test response manipulations in `respond` event handler
-
 'use strict'
 
-const request = require('supertest'),
-      test    = require('tap'),
-      Ellipse = require('..')
+const request  = require('supertest'),
+      test     = require('tap'),
+      Ellipse  = require('..')
 
 var app1 = new Ellipse,
     app2 = new Ellipse({ respond: false }),

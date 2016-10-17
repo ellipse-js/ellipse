@@ -1,13 +1,15 @@
 'use strict'
 
-const fs      = require('fs'),
-      file    = fs.readFileSync(__filename, 'utf8'),
-      size    = Buffer.byteLength(file).toString(),
-      request = require('supertest'),
-      test    = require('tap'),
-      Ellipse = require('..')
+const fs       = require('fs'),
+      Readable = require('stream').Readable,
+      file     = fs.readFileSync(__filename, 'utf8'),
+      size     = Buffer.byteLength(file).toString(),
+      request  = require('supertest'),
+      test     = require('tap'),
+      Ellipse  = require('..')
 
 var app    = new Ellipse({ env: 'production' }),
+    app2   = new Ellipse,
     devApp = new Ellipse({ env: 'development' })
 
 app.get('/', (req, res) => {
@@ -100,6 +102,10 @@ app.get('/stream', (req, res) => {
     res.send()
 })
 
+app2.get('/stream-error', (req, res) => {
+    res.body = stream()
+})
+
 app.get('/buffer', (req, res) => {
     test.pass('buffer body')
     res.body = new Buffer('hello world')
@@ -188,6 +194,7 @@ function ondownloadend(err) {
 test.plan(39)
 test.tearDown(() => {
     app.close()
+    app2.close()
     devApp.close()
 })
 
@@ -224,6 +231,10 @@ request(app)
             throw new Error('content-length should not be set on stream responses')
     })
     .expect(200, file, onend)
+
+request(app2 = app2.listen())
+    .get('/stream-error')
+    .expect(500, onend)
 
 request(app)
     .get('/buffer')
@@ -351,4 +362,12 @@ function emptyResponse(res) {
 function onend(err) {
     if (err)
         test.threw(err)
+}
+
+function stream() {
+    return new Readable({ read: onread })
+}
+
+function onread() {
+    this.emit('error', new Error('test'))
 }
