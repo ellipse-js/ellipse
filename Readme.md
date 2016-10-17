@@ -7,7 +7,7 @@
 
 # Ellipse
 
-Unobtrusive web framework for [node](https://nodejs.org) that consolidates APIs of [Koa](http://koajs.com/) and [Express](http://expressjs.com/) whilst performs better than both.
+Unobtrusive web framework that consolidates APIs of [Koa](http://koajs.com/) and [Express](http://expressjs.com/).
 
 ## Features
 

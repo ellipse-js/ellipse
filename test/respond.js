@@ -60,7 +60,7 @@ test.tearDown(() => {
 app1 = app1.listen()
 app2 = app2.listen()
 app3 = app3.listen()
-app4 = app4.listen(3333)
+app4 = app4.listen()
 
 request(app1)
     .get('/')
@@ -81,7 +81,7 @@ request(app3)
 request(app4)
     .get('/')
     .expect(res => {
-        if (!('x-powered-by' in res.headers))
+        if (!('x-powered-by' in res.headers) && !isNaN(res.headers[ 'x-powered-by' ]))
             throw new Error('x-powered-by header is expected, but missing')
     })
     .expect(200, onend)

@@ -6,7 +6,8 @@ const test      = require('tap'),
       result    = [],
       errResult = []
 
-var app = new Ellipse
+var app  = new Ellipse,
+    app2 = new Ellipse
 
 function done(n) {
     return () => result.push(n)
@@ -131,8 +132,25 @@ sub.use(function *(next) {
     result.push(14)
 })
 
-test.plan(8)
-test.tearDown(() => app.close())
+// manipulating response upstream
+
+app2.use((req, res, next) => {
+    const time = new Date
+    return next().then(() => {
+        res.set('x-response-time', new Date - time)
+    })
+})
+
+app2.get('/', (req, res, next) => {
+    res.body = 'yeah!'
+    return next()
+})
+
+test.plan(9)
+test.tearDown(() => {
+    app.close()
+    app2.close()
+})
 
 request(app = app.listen())
     .get('/test')
@@ -187,4 +205,17 @@ request(app)
             test.threw(err)
         else
             test.pass('error caught in param processor (next)')
+    })
+
+request(app2 = app2.listen())
+    .get('/')
+    .expect(res => {
+        if (!('x-powered-by' in res.headers) && !isNaN(res.headers[ 'x-powered-by' ]))
+            throw new Error('x-powered-by header is expected, but missing')
+    })
+    .expect(200, 'yeah!', err => {
+        if (err)
+            test.threw(err)
+        else
+            test.pass('response should be manipulated upstream')
     })
