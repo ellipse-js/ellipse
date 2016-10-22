@@ -23,7 +23,7 @@ function head(path) {
     request(app)
         .head(path)
         .expect(emptyResponse)
-        .expect(200, '', err => {
+        .expect(200, undefined, err => {
             if (err)
                 test.threw(err)
             else

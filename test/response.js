@@ -216,7 +216,7 @@ request(server1)
 request(server1)
     .head('/')
     .expect(emptyResponse)
-    .expect(200, '', onend)
+    .expect(200, undefined, onend)
 
 request(server1)
     .get('/custom-length')
