@@ -12,6 +12,7 @@ var app = new Ellipse
 
 test.test('properties & getters', test => {
     test.equal(app, app.application, 'application reference should be exposed')
+    test.equal(app, app.app, 'application reference should be exposed')
     test.equal(app, app.router, 'application itself should be its own router')
     test.equal(app.subdomainOffset, 2, 'app.subdomainOffset should default to 2')
     test.equal(app.etag, 'weak', 'app.etag should default to weak')

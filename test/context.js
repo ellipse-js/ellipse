@@ -15,6 +15,8 @@ app.get('/', (ctx, req, res, next) => {
     test.type(ctx.request, Ellipse.Request, 'ctx.request should be a Request instance')
     test.type(ctx.res, Ellipse.Response, 'ctx.res should be a Response instance')
     test.type(ctx.response, Ellipse.Response, 'ctx.response should be a Response instance')
+    test.equals(ctx.app, app, 'ctx.app should be an Application instance')
+    test.equals(ctx.application, app, 'ctx.application should be an Application instance')
     test.type(ctx.cookies, Cookies, 'ctx.cookies should be a Cookies instance')
 
     test.same(ctx.state, {}, 'ctx.state should default to an empty object')

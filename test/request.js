@@ -11,12 +11,11 @@ const fs      = require('fs'),
       https   = require('https'),
       test    = require('tap'),
       request = require('supertest'),
-      Ellipse = require('..')
+      Ellipse = require('..'),
+      app1 = new Ellipse,
+      app2 = new Ellipse
 
-var app1 = new Ellipse,
-    app2 = new Ellipse
-
-test.plan(65)
+test.plan(67)
 
 app1.post('/test', (req, res, next) => {
     test.type(req, Ellipse.Request, 'request object should be a Request instance')
@@ -24,6 +23,8 @@ app1.post('/test', (req, res, next) => {
     test.type(req.context, Ellipse.Context, 'req.context should be a Context instance')
     test.type(req.res, Ellipse.Response, 'req.res should be a Response instance')
     test.type(req.response, Ellipse.Response, 'req.response should be a Response instance')
+    test.equals(req.app, app1, 'req.app should be an Application instance')
+    test.equals(req.application, app1, 'req.application should be an Application instance')
 
     var body = ''
     req.setEncoding('utf8')
@@ -90,7 +91,7 @@ app1.post('/test', (req, res, next) => {
     test.same(req.ips, [], 'req.ips should be an empty array when `app.proxy` is false')
 
     const hostname   = '127.0.0.1',
-          host       = hostname + ':' + app1.address().port,
+          host       = hostname + ':' + server1.address().port,
           subdomains = req.subdomains
 
     test.equals(req.host, host, 'req.host should be recognised')
@@ -155,11 +156,13 @@ app2.get('/test', (req, res) => {
 })
 
 test.tearDown(() => {
-    app1.close()
-    app2.close()
+    server1.close()
+    server2.close()
 })
 
-request(app1 = app1.listen())
+const server1 = app1.listen()
+
+request(server1)
     .post('/test?test=test')
     .set('accept', 'application/json, */*')
     .set('accept-charset', 'utf8')
@@ -172,34 +175,34 @@ request(app1 = app1.listen())
     .expect(200)
     .expect({ test: 'test' }, onend)
 
-request(app1)
+request(server1)
     .get('/default')
     .expect(200, onend)
 
-request(app1)
+request(server1)
     .get('/xhr')
     .set('x-requested-with', 'XMLHttpRequest')
     .expect(200, onend)
 
-request(app1)
+request(server1)
     .get('/serialize')
     .expect(200, onend)
 
-request(app1)
+request(server1)
     .get('/fresh/1')
     .expect(304, onend)
 
-request(app1)
+request(server1)
     .get('/fresh/2')
     .expect(404, onend)
 
-app2 = https.createServer({
+const server2 = https.createServer({
     key:  fs.readFileSync(join(__dirname, 'test.key')),
     cert: fs.readFileSync(join(__dirname, 'test.crt')),
     passphrase: 'test'
-}, app2.callback())
+}, app2.callback()).listen()
 
-request(app2 = app2.listen())
+request(server2)
     .get('/test')
     .expect(200)
     .expect('ok', onend)

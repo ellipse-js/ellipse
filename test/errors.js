@@ -17,7 +17,7 @@ var app1 = new Ellipse,
     app4 = new Ellipse({ env: 'development' }),
     app5 = new Ellipse({ env: 'development' })
 
-test.plan(22)
+test.plan(28)
 
 app1.param('p1', (next, val) => next(err))
 app1.param('p2', (next, val) => { throw err })
@@ -68,6 +68,9 @@ app4.on('error', () => {
 
 app5.get('/next-signature1', next => next(403))
 app5.get('/next-signature2', next => next('Nothing to see here'))
+app5.get('/req.catch', (req, res) => req.catch(err))
+app5.get('/res.catch', (req, res) => res.catch(err))
+app5.get('/ctx.catch', (ctx, req, res, next) => ctx.catch(err))
 
 process.stderr.write = data => {
     test.ok(isStackTrace.test(data), 'stack trace should be written to stdout when app.env is development')
@@ -101,10 +104,13 @@ get(app3, '/bubble', 200, "mare's nest")
 get(app4, '/', 500, isStackTrace)
 get(app5, '/next-signature1', 403, 'Forbidden')
 get(app5, '/next-signature2', 500, /Nothing to see here/)
+get(app5, '/req.catch', 500)
+get(app5, '/res.catch', 500)
+get(app5, '/ctx.catch', 500)
 
 function noop() {}
 
-function get(app, path, status, body, message) {
+function get(app, path, status, body) {
     const req = request(app)
         .get(path)
         .expect(status || 200)
