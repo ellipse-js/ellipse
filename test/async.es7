@@ -2,7 +2,7 @@
 
 const request = require('supertest'),
       test    = require('tap'),
-      app     = require('..')({ upstream: true }),
+      app     = require('..')(),
       server  = app.listen(),
       calls   = []
 

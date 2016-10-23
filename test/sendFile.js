@@ -1,15 +1,14 @@
 'use strict'
 
-// todo: test errors and multiple signatures
-
 const fs      = require('fs'),
-      http    = require('http'),
+      net     = require('net'),
       request = require('supertest'),
       test    = require('tap'),
       text    = fs.readFileSync(__filename, 'utf8'),
-      length  = Buffer.byteLength(text).toString()
+      length  = Buffer.byteLength(text).toString(),
+      Ellipse = require('..')
 
-var app = require('..')()
+let app = new Ellipse
 
 app.get('/1', (req, res) => {
     res.sendFile(__filename)
@@ -79,15 +78,7 @@ error.get('/directory', (req, res) => {
     })
 })
 
-error.get('/abort', (req, res) => {
-    res.sendFile(__filename, err => {
-        test.type(err, Error, 'an error should be passed back (abort)')
-        test.equals(err.code, 'ECONNABORTED', 'error should be ENOENT (abort)')
-    })
-    res.end()
-})
-
-test.plan(21)
+test.plan(18)
 app = app.listen()
 test.tearDown(() => app.close())
 
@@ -99,7 +90,6 @@ getError('/error/basic')
 getError('/error/callback')
 getError('/error/yield')
 getError('/error/directory')
-getErrorAbort('/error/abort')
 
 function get(path, headers) {
     const req = request(app)
@@ -132,18 +122,5 @@ function getError(path) {
                 test.threw(err)
             else
                 test.pass('error response received')
-        })
-}
-
-function getErrorAbort(path) {
-    request(app)
-        .get(path)
-        // 200, beacause the server doesn't have a chance to
-        // change headers which are already sent
-        .expect(200, err => {
-            if (err)
-                test.threw(err)
-            else
-                test.pass('abort response received')
         })
 }

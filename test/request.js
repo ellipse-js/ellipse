@@ -197,8 +197,8 @@ request(server1)
     .expect(404, onend)
 
 const server2 = https.createServer({
-    key:  fs.readFileSync(join(__dirname, 'test.key')),
-    cert: fs.readFileSync(join(__dirname, 'test.crt')),
+    key:  fs.readFileSync(join(__dirname, 'fixtures/test.key')),
+    cert: fs.readFileSync(join(__dirname, 'fixtures/test.crt')),
     passphrase: 'test'
 }, app2.callback()).listen()
 
