@@ -3,7 +3,7 @@
     "tag": "next"
   },
   "name": "ellipse",
-  "version": "0.18.8-alpha.0",
+  "version": "0.18.8-alpha.1",
   "description": "Minimalistic, high-performance web framework that supports both classic, generator and async middleware.",
   "main": "lib/ellipse.js",
   "scripts": {
@@ -54,7 +54,8 @@
     "on-finished": "^2.3.0",
     "path-to-regexp": "^1.5.3",
     "send": "^0.14.1",
-    "type-is": "^1.6.13"
+    "type-is": "^1.6.13",
+    "vary": "^1.1.0"
   },
   "engines": {
     "node": ">=4"

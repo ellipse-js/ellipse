@@ -6,7 +6,7 @@ const fs       = require('fs'),
       size     = Buffer.byteLength(file).toString(),
       request  = require('supertest'),
       test     = require('tap'),
-      Ellipse  = require('..'),
+      Ellipse  = require('../..'),
       app1     = new Ellipse({ env: 'production' }),
       app2     = new Ellipse,
       devApp   = new Ellipse({ env: 'development' })
@@ -61,7 +61,7 @@ app1.get('/', (req, res) => {
         status: 400,
         message: 'hello world',
         headers: {
-            'x-powered-by': 'Ellipse/' + require('../package.json').version,
+            'x-powered-by': 'Ellipse/' + require('../../package.json').version,
             'last-modified': now.toUTCString(),
             etag: '"test2"',
             'x-test-1': [ 'test1', 'test2', 'test3' ],
@@ -166,11 +166,11 @@ app1.get('/download', (req, res) => {
 })
 
 app1.get('/download-callback', (req, res) => {
-    res.download('response.js', ondownloadend)
+    res.download('basic.js', ondownloadend)
 })
 
 app1.get('/download-options-callback', (req, res) => {
-    res.download('response', { extensions: 'js' }, ondownloadend)
+    res.download('basic', { extensions: 'js' }, ondownloadend)
 })
 
 app1.get('/set-cookie', (req, res) => {
@@ -320,28 +320,28 @@ request(server1)
 
 request(server1)
     .get('/attachment?path=' + __filename)
-    .expect('content-disposition', 'attachment; filename="response.js"')
+    .expect('content-disposition', 'attachment; filename="basic.js"')
     .expect(200, '', onend)
 
 request(server1)
     .get('/download')
     .expect('content-type', 'application/javascript; charset=utf-8')
     .expect('content-length', size)
-    .expect('content-disposition', 'attachment; filename="response.js"')
+    .expect('content-disposition', 'attachment; filename="basic.js"')
     .expect(200, file, onend)
 
 request(server1)
     .get('/download-callback')
     .expect('content-type', 'application/javascript; charset=utf-8')
     .expect('content-length', size)
-    .expect('content-disposition', 'attachment; filename="response.js"')
+    .expect('content-disposition', 'attachment; filename="basic.js"')
     .expect(200, file, onend)
 
 request(server1)
     .get('/download-options-callback')
     .expect('content-type', 'application/javascript')
     .expect('content-length', size)
-    .expect('content-disposition', 'attachment; filename="response"')
+    .expect('content-disposition', 'attachment; filename="basic"')
     .expect(200, file, onend)
 
 request(server1)
