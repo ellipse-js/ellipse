@@ -1,29 +1,55 @@
 'use strict'
 
-const test    = require('tap'),
-      request = require('supertest')
+const request = require('supertest'),
+      test    = require('tap'),
+      app     = require('..')(),
+      server  = app.listen()
 
-var app = require('..')()
-
-test.plan(1)
+test.plan(3)
 
 app.get('/', (req, res, next) => {
     res.body = 'Hello World!'
+    res.contentType('txt')
+
+    res.set('X-Test', 'test')
+    test.equals(res.get('X-test'), 'test', 'custom header should present')
+
+    res.remove('x-Test')
+    test.notOk(res.get('x-test'), 'custom header should not present')
+
+    // test header(object)
+    res.header({
+        'x-test':   'test',
+        'X-test-2': 'test2',
+        'x-Test-3': 'test3'
+    })
+    // test remove(array)
+    res.remove([ 'X-Test-2', 'X-Test-3' ])
+
     next()
 })
 
-request(app = app.listen())
+request(server)
     .get('/')
-    .expect(200)
+    .expect('x-test', 'test')
+    .expect(noHeader('x-test-2'))
+    .expect(noHeader('x-test-3'))
     .expect('content-length', '12')
     .expect('etag', 'W/"c-7Qdih1MuhjZehB6Sv8UNjA"')
-    .expect('content-type', 'text/html; charset=utf-8')
+    .expect('content-type', 'text/plain; charset=utf-8')
     .expect('x-powered-by', 'Ellipse/' + require('../package.json').version)
-    .end(err => {
+    .expect(200, 'Hello World!', err => {
         if (err)
             test.threw(err)
         else {
             test.pass('response received')
-            app.close()
+            server.close()
         }
     })
+
+function noHeader(field) {
+    return res => {
+        if (field in res.headers)
+            throw new Error(field + ' header should be removed')
+    }
+}

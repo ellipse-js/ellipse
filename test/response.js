@@ -31,7 +31,7 @@ app1.get('/', (req, res) => {
     const now = res.lastModified = new Date
     test.equals(res.lastModified.toUTCString(), now.toUTCString(), 'res.lastModified: previous value should be returned')
 
-    test.strictEquals(res.etag, '', 'res.etag should default to an empty string')
+    test.strictEquals(res.etag, undefined, 'res.etag should default to undefined')
     res.etag = 'test'
     test.equals(res.etag, '"test"', 'res.etag should be quoted')
     res.etag = '"test2"'
