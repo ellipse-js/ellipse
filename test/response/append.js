@@ -1,11 +1,10 @@
 'use strict'
 
 const test    = require('tap'),
-      request = require('supertest'),
-      Ellipse = require('../..'),
-      servers = []
-
-test.tearDown(() => servers.forEach(s => s.close()))
+      utils   = require('../utils'),
+      end     = utils.end,
+      create  = utils.create,
+      request = utils.request
 
 // note about these tests: "Link" and "X-*" are chosen because
 // the common node.js versions white list which _incoming_
@@ -13,7 +12,7 @@ test.tearDown(() => servers.forEach(s => s.close()))
 // for outgoing, though
 
 test.test('should append multiple headers', test => {
-    const app = createApp()
+    const app = create()
 
     app.use((req, res, next) => {
         res.append('Link', '<http://localhost/>')
@@ -23,27 +22,27 @@ test.test('should append multiple headers', test => {
     app.use((req, res) =>
         res.append('Link', '<http://localhost:80/>').end())
 
-    request(app.server)
+    request(app)
         .get('/')
-        .expect('Link', '<http://localhost/>, <http://localhost:80/>', () => test.end())
+        .expect('Link', '<http://localhost/>, <http://localhost:80/>', end(test))
 })
 
 test.test('should accept array of values', test => {
-    const app = createApp(),
+    const app = create(),
           arr = [ 'foo=bar', 'fizz=buzz' ]
 
     app.use((req, res) =>
         res.append('Set-Cookie', arr).end())
 
-    request(app.server)
+    request(app)
         .get('/')
         .expect(res =>
             test.same(res.headers[ 'set-cookie' ], arr, 'header should be set'))
-        .expect(200, () => test.end())
+        .expect(200, end(test))
 })
 
 test.test('should get reset by res.set(field, val)', test => {
-    const app = createApp()
+    const app = create()
 
     app.use((req, res, next) => {
         res.append('Link', '<http://localhost/>')
@@ -54,13 +53,13 @@ test.test('should get reset by res.set(field, val)', test => {
     app.use((req, res) =>
         res.set('Link', '<http://127.0.0.1/>').end())
 
-    request(app.server)
+    request(app)
         .get('/')
-        .expect('Link', '<http://127.0.0.1/>', () => test.end())
+        .expect('Link', '<http://127.0.0.1/>', end(test))
 })
 
 test.test('should work with res.set(field, val) first', test => {
-    const app = createApp()
+    const app = create()
 
     app.use((req, res, next) => {
         res.set('Link', '<http://localhost/>')
@@ -70,13 +69,13 @@ test.test('should work with res.set(field, val) first', test => {
     app.use((req, res) =>
         res.append('Link', '<http://localhost:80/>').end())
 
-    request(app.server)
+    request(app)
         .get('/')
-        .expect('Link', '<http://localhost/>, <http://localhost:80/>', () => test.end())
+        .expect('Link', '<http://localhost/>, <http://localhost:80/>', end(test))
 })
 
 test.test('should work with cookies', test => {
-    const app      = createApp(),
+    const app      = create(),
           expected = [ 'foo=bar; path=/; httponly', 'bar=baz' ]
 
     app.use((req, res, next) => {
@@ -87,18 +86,9 @@ test.test('should work with cookies', test => {
     app.use((req, res) =>
         res.append('Set-Cookie', 'bar=baz').end())
 
-    request(app.server)
+    request(app)
         .get('/')
         .expect(res =>
             test.same(expected, res.headers[ 'set-cookie' ], 'header should be set'))
-        .expect(200, () => test.end())
+        .expect(200, end(test))
 })
-
-function createApp() {
-    const app    = new Ellipse,
-          server = app.listen()
-
-    app.server = server
-    servers.push(server)
-    return app
-}

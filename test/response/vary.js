@@ -1,60 +1,62 @@
 'use strict'
 
-const request = require('supertest'),
-      test    = require('tap'),
-      Ellipse = require('../..'),
-      servers = []
-
-test.tearDown(() => servers.forEach(s => s.close()))
+const test     = require('tap'),
+      utils    = require('../utils'),
+      end      = utils.end,
+      create   = utils.create,
+      request  = utils.request,
+      noHeader = utils.shouldNotHaveHeader
 
 test.test('with no arguments should not set Vary', test => {
-    const app = createApp()
+    const app = create()
 
     app.use((req, res) =>
         res.vary().end())
 
-    request(app.server)
+    app.on('error', (err, ctx) => ctx.send('ok'))
+
+    request(app)
         .get('/')
         .expect(noHeader('vary'))
-        .expect(200, () => test.end())
+        .expect(200, end(test))
 })
 
 test.test('with an empty array should not set Vary', test => {
-    const app = createApp()
+    const app = create()
 
     app.use((req, res) => res.vary([]).end())
 
-    request(app.server)
+    request(app)
         .get('/')
         .expect(noHeader('vary'))
-        .expect(200, () => test.end())
+        .expect(200, end(test))
 })
 
 test.test('with an array should set the values', test => {
-    const app = createApp()
+    const app = create()
 
     app.use((req, res) =>
         res.vary(['Accept', 'Accept-Language', 'Accept-Encoding']).end())
 
-    request(app.server)
+    request(app)
         .get('/')
         .expect('vary', 'Accept, Accept-Language, Accept-Encoding')
-        .expect(200, () => test.end())
+        .expect(200, end(test))
 })
 
 test.test('with a string should set the value', test => {
-    const app = createApp()
+    const app = create()
 
     app.use((req, res) => res.vary('Accept').end())
 
-    request(app.server)
+    request(app)
         .get('/')
         .expect('vary', 'Accept')
-        .expect(200, () => test.end())
+        .expect(200, end(test))
 })
 
 test.test('when the value is present should not add it again', test => {
-    const app = createApp()
+    const app = create()
 
     app.use((req, res) =>
         res
@@ -65,24 +67,8 @@ test.test('when the value is present should not add it again', test => {
             .vary('Accept')
             .end())
 
-    request(app.server)
+    request(app)
         .get('/')
         .expect('vary', 'Accept, Accept-Encoding')
-        .expect(200, () => test.end())
+        .expect(200, end(test))
 })
-
-function noHeader(field) {
-    return res => {
-        if (field in res.headers)
-            throw new Error(field + ' should not present')
-    }
-}
-
-function createApp() {
-    const app    = new Ellipse,
-          server = app.listen()
-
-    app.server = server
-    servers.push(server)
-    return app
-}
