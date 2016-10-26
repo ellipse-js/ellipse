@@ -1,3 +1,7 @@
+/**
+ * Testing utilities.
+ */
+
 'use strict'
 
 const test = require('tap')
@@ -12,6 +16,7 @@ exports.request = createRequest
 exports.shouldNotHaveHeader = shouldNotHaveHeader
 
 const request = require('supertest'),
+      after   = require('after'),
       Ellipse = require('..'),
       servers = []
 
@@ -37,13 +42,17 @@ function merge(a, b) {
 
 function shouldNotHaveHeader(field) {
     return res => {
-        if (field in res.headers)
+        if (field.toLowerCase() in res.headers)
             throw new Error(field + ' header should not present in response')
     }
 }
 
-function endTest(test) {
-    return err => {
+function endTest(test, n) {
+    return n
+        ? after(n, done)
+        : done
+
+    function done(err) {
         if (err)
             test.threw(err)
         else
