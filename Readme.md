@@ -1,4 +1,4 @@
-[![Ellipse Logo](/assets/ellipse.svg)](https://github.com/ellipse-js/ellipse)
+[![Ellipse Logo](/assets/ellipse.png)](https://github.com/ellipse-js/ellipse)
 
 Minimalistic, high-performance web framework that supports both classic, generator and async middleware.
 
