@@ -3,4 +3,4 @@
 require('babel-register')({
     plugins: [ 'transform-async-to-generator' ]
 })
-require('./async.es7')
+require('./format.es7')

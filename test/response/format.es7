@@ -1,0 +1,137 @@
+'use strict'
+
+const test    = require('tap'),
+      utils   = require('../utils'),
+      end     = utils.end,
+      create  = utils.create,
+      request = utils.request
+
+test.test('.format() should throw', test => {
+    const app = create().use((req, res) => {
+        test.throws(() => {
+            res.format()
+        })
+
+        res.send('ok')
+    })
+
+    request(app)
+        .get('/')
+        .expect(200, 'ok', end(test))
+})
+
+test.test('req.accepts() /w switch statement should work with classic middleware', test => {
+    const app  = create(),
+          done = end(test, 3)
+
+    app.use((req, res) => {
+        switch (res.ctx.accepts('text', 'json')) {
+            case 'text':
+                res.type('text')
+                res.send('text')
+                break
+
+            case 'json':
+                res.json({ ok: true })
+                break
+
+            default:
+                res.status(406).send('Not Acceptable')
+        }
+    })
+
+    request(app)
+        .get('/')
+        .set('accept', 'text/plain')
+        .expect('content-type', 'text/plain; charset=utf-8')
+        .expect(200, 'text', done)
+
+    request(app)
+        .get('/')
+        .set('accept', 'application/json')
+        .expect('content-type', 'application/json; charset=utf-8')
+        .expect(200, '{"ok":true}', done)
+
+    request(app)
+        .get('/')
+        .set('accept', 'application/xml')
+        .expect(406, 'Not Acceptable', done)
+})
+
+test.test('req.accepts() /w switch statement should work with generator middleware', test => {
+    const app  = create(),
+          done = end(test, 3)
+
+    app.use(function *() {
+        switch (this.accepts('text', 'json')) {
+            case 'text':
+                this.type = 'text'
+                this.body = 'text'
+                break
+
+            case 'json':
+                this.body = { ok: true }
+                break
+
+            default:
+                this.throw(406)
+        }
+    })
+
+    request(app)
+        .get('/')
+        .set('accept', 'text/plain')
+        .expect('content-type', 'text/plain; charset=utf-8')
+        .expect(200, 'text', done)
+
+    request(app)
+        .get('/')
+        .set('accept', 'application/json')
+        .expect('content-type', 'application/json; charset=utf-8')
+        .expect(200, '{"ok":true}', done)
+
+    request(app)
+        .get('/')
+        .set('accept', 'application/xml')
+        .expect(406, 'Not Acceptable', done)
+})
+
+test.test('req.accepts() /w switch statement should work with async middleware', test => {
+    const app  = create(),
+          done = end(test, 3)
+
+    app.use(async (req, res) => {
+        const ctx = req.ctx
+
+        switch (ctx.accepts('text', 'json')) {
+            case 'text':
+                ctx.type = 'text'
+                ctx.body = 'text'
+                break
+
+            case 'json':
+                ctx.body = { ok: true }
+                break
+
+            default:
+                ctx.throw(406)
+        }
+    })
+
+    request(app)
+        .get('/')
+        .set('accept', 'text/plain')
+        .expect('content-type', 'text/plain; charset=utf-8')
+        .expect(200, 'text', done)
+
+    request(app)
+        .get('/')
+        .set('accept', 'application/json')
+        .expect('content-type', 'application/json; charset=utf-8')
+        .expect(200, '{"ok":true}', done)
+
+    request(app)
+        .get('/')
+        .set('accept', 'application/xml')
+        .expect(406, 'Not Acceptable', done)
+})
