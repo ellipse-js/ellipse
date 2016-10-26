@@ -270,7 +270,7 @@ request(server1)
 request(server1)
     .get('/json2')
     .expect('content-type', 'application/json; charset=utf-8')
-    .expect(200, '{  "hello" :"world"}', onend)
+    .expect(200, '"{  \\"hello\\" :\\"world\\"}"', onend)
 
 request(devServer)
     .get('/json')
