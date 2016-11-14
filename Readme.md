@@ -63,8 +63,6 @@ For more information, take a look at the [examples](/examples) folder.
 
 Note: `this` refers to a context object - except in arrow functions. Context is similar but not quite identical to [Koa's](http://koajs.com/#context).
 
-Please consider that `async` is not yet supported natively by Node, so you need to [transpile](http://babeljs.io) it until this feature arrives. [This](/examples/async) shows how to do that.
-
 ## Installation
 
 You're reading about the upcoming `v0.18` release-line of Ellipse which is `alpha` software.
@@ -76,6 +74,17 @@ Or simply install `v0.5` which is the latest version, considered as stable.
 But please notice that, those early versions (`<=0.5`) are deprecated and no longer supported.
 
     npm install ellipse
+
+## Async/await
+
+Please consider that `async` and `await` are not supported natively by Node prior to the latest `v7` release,
+so you need to [transpile](http://babeljs.io) it as long as this feature is in `staged` state.
+[This](/examples/async) example shows a convenient way to do that.
+
+Native support has been arrived recently with Node `v7`,
+but behind the `--harmony_async_await` flag and you can use it at your own risk:
+
+    node --harmony_async_await ./foo.js # no need to transpile
 
 ## Tests and benchmarks
 

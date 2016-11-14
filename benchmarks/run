@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 
 echo
-MW=$2 node "middleware.$1" &
+
+if [[ `node --v8-options | grep async-await` ]]; then
+    flags='--harmony_async_await'
+fi
+
+MW=$2 node $flags "middleware.$1" &
 pid=$!
 
 sleep 2
