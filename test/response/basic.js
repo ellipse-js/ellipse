@@ -18,7 +18,7 @@ app1.get('/', (req, res) => {
     test.type(res.req, Ellipse.Request, 'req.req should be a Request instance')
     test.type(res.request, Ellipse.Request, 'req.request should be a Request instance')
     test.equals(res.app, app1, 'req.app should be an Application instance')
-    test.equals(res.application, app1, 'req.applicatino should be an Application instance')
+    test.equals(res.application, app1, 'req.application should be an Application instance')
 
     test.equals(res.message, '', 'res.message should default to an empty string')
     res.message = 'hello world'
@@ -91,6 +91,13 @@ app1.get('/custom-length', (req, res) => {
     res.send('ok')
 })
 
+app1.get('/remove-length', (req, res) => {
+    res.length = 2
+    res.length = null
+    test.equals(res.get('content-length'), undefined, 'content-length header should be removed')
+    res.send('ok')
+})
+
 app1.get('/number', (req, res) => {
     test.pass('number body')
     res.body = 42
@@ -109,7 +116,7 @@ app2.get('/stream-error', (req, res) => {
 
 app1.get('/buffer', (req, res) => {
     test.pass('buffer body')
-    res.body = new Buffer('hello world')
+    res.body = Buffer.from('hello world')
     res.send()
 })
 
@@ -192,7 +199,7 @@ function ondownloadend(err) {
         test.pass('download callback fired')
 }
 
-test.plan(41)
+test.plan(42)
 test.tearDown(() => {
     server1.close()
     server2.close()
@@ -215,11 +222,16 @@ request(server1)
 
 request(server1)
     .head('/')
-    .expect(emptyResponse)
+    .expect('content-length', '2')
     .expect(200, undefined, onend)
 
 request(server1)
     .get('/custom-length')
+    .expect('content-length', '2')
+    .expect(200, 'ok', onend)
+
+request(server1)
+    .get('/remove-length')
     .expect('content-length', '2')
     .expect(200, 'ok', onend)
 
@@ -361,7 +373,7 @@ function emptyResponse(res) {
         'content-encoding' in res.headers ||
         'transfer-encoding' in res.headers
     )
-        throw new Error('content related headers should not be set on HEAD responses')
+        throw new Error('content related headers should not be set responses')
 }
 
 function onend(err) {

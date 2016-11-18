@@ -28,7 +28,7 @@ test.test('.json(object)', test => {
 
         request(app)
             .get('/')
-            .expect('Content-Type', 'application/vnd.example+json')
+            .expect('Content-Type', 'application/vnd.example+json; charset=utf-8')
             .expect(200, '{"hello":"world"}', end(test))
     })
 

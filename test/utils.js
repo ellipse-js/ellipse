@@ -26,6 +26,9 @@ else {
         const app    = new Ellipse,
               server = app.listen()
 
+        if (opts)
+            merge(app, opts)
+
         app.server = server
         servers.push(server)
         return app
@@ -42,8 +45,10 @@ else {
 
     function shouldNotHaveHeader(field) {
         return res => {
-            if (field.toLowerCase() in res.headers)
-                throw new Error(field + ' header should not present in response')
+            field = field.toLowerCase()
+
+            if (field in res.headers)
+                throw new Error(`${field} header should not present in response, but it is "${res.headers[ field ]}"`)
         }
     }
 

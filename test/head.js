@@ -22,7 +22,8 @@ head('/fallback')
 function head(path) {
     request(app)
         .head(path)
-        .expect(emptyResponse)
+        .expect('content-length', '4')
+        .expect('content-type', 'text/html; charset=utf-8')
         .expect(200, undefined, err => {
             if (err)
                 test.threw(err)
@@ -34,14 +35,4 @@ function head(path) {
 function handler() {
     this.body = 'test'
     this.send()
-}
-
-function emptyResponse(res) {
-    if (
-        'content-length' in res.headers ||
-        'content-type' in res.headers ||
-        'content-encoding' in res.headers ||
-        'transfer-encoding' in res.headers
-    )
-        throw new Error('content related headers should not be set on HEAD responses')
 }

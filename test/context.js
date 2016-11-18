@@ -25,44 +25,44 @@ app.get('/', (ctx, req, res, next) => {
     }, 'ctx.state should be set to any value')
     test.equals(ctx.state, 42, 'ctx.state should persist')
 
-    test.equals(ctx.type, 'text/html', 'default content type should be html')
+    test.equals(ctx.type, 'text/html; charset=utf-8', 'default content type should be html')
     test.doesNotThrow(() => {
         ctx.type = 'application/json'
     }, 'ctx.type should be set to any string')
-    test.equals(ctx.type, 'application/json', 'content type should perisist')
+    test.equals(ctx.type, 'application/json; charset=utf-8', 'content type should perisist')
 
     test.strictEquals(ctx.text, '', 'ctx.text should default to ctx.body')
     test.doesNotThrow(() => {
         ctx.text = 'Hello World!'
     }, 'ctx.text should be set to any string')
     test.equals(ctx.text, 'Hello World!', 'text body should perisist')
-    test.equals(ctx.type, 'text/plain', 'content type should be updated when setting ctx.text')
+    test.equals(ctx.type, 'text/plain; charset=utf-8', 'content type should be updated when setting ctx.text')
 
     test.strictEquals(ctx.html, 'Hello World!', 'ctx.html default to ctx.body')
     test.doesNotThrow(() => {
         ctx.html = '<h1>Hello World!</h1>'
     }, 'ctx.html should be set to any string')
     test.equals(ctx.html, '<h1>Hello World!</h1>', 'html body should perisist')
-    test.equals(ctx.type, 'text/html', 'content type should be updated when setting ctx.html')
+    test.equals(ctx.type, 'text/html; charset=utf-8', 'content type should be updated when setting ctx.html')
 
     test.strictEquals(ctx.json, '<h1>Hello World!</h1>', 'ctx.json default to ctx.body')
     test.doesNotThrow(() => {
         ctx.json = { Hello: 'World!' }
     }, 'ctx.json should be set to any object')
     test.same(ctx.json, { Hello: 'World!' }, 'json body should perisist')
-    test.equals(ctx.type, 'application/json', 'content type should be updated when setting ctx.json')
+    test.equals(ctx.type, 'application/json; charset=utf-8', 'content type should be updated when setting ctx.json')
 
     ctx.body = null
     test.strictEquals(ctx.text, '', 'ctx.text should default to an empty string if body is `null`')
-    test.equals(ctx.type, 'text/plain', 'content type should be updated on access')
+    test.equals(ctx.type, 'text/plain; charset=utf-8', 'content type should be updated on access')
 
     ctx.body = null
     test.strictEquals(ctx.html, '', 'ctx.html should default to an empty string if body is `null`')
-    test.equals(ctx.type, 'text/html', 'content type should be updated on access')
+    test.equals(ctx.type, 'text/html; charset=utf-8', 'content type should be updated on access')
 
     ctx.body = null
     test.same(ctx.json, {}, 'ctx.json should default to an empty object if body is `null`')
-    test.equals(ctx.type, 'application/json', 'content type should be updated on access')
+    test.equals(ctx.type, 'application/json; charset=utf-8', 'content type should be updated on access')
 
     test.doesNotThrow(
         () => {

@@ -34,7 +34,7 @@ test.test('.attachment(filename)', test => {
 
         app.use((req, res) => {
             res.attachment('/path/to/image.png')
-            res.send(new Buffer(4))
+            res.send(Buffer.alloc(4))
         })
 
         request(app)

@@ -1,7 +1,7 @@
 'use strict'
 
 const Ellipse = require('..'),
-      body    = new Buffer('Hello World'),
+      body    = Buffer.from('Hello World'),
       app     = new Ellipse
 
 var num = parseInt(process.env.MW || '1', 10)
