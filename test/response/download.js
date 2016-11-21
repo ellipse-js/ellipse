@@ -1,6 +1,13 @@
+/* These tests are ported from Express.
+ * https://github.com/expressjs/express
+ */
+
 'use strict'
 
-const test                = require('tap'),
+const path                = require('path'),
+      test                = require('tap'),
+      fixtures            = path.resolve(__dirname, '..', 'fixtures'),
+      html                = path.resolve(fixtures, 'user.html'),
       utils               = require('../utils'),
       end                 = utils.end,
       create              = utils.create,
@@ -10,13 +17,12 @@ const test                = require('tap'),
 test.test('.download(path) should transfer as an attachment', test => {
       const app = create()
 
-      app.use((req, res) =>
-        res.download(__filename))
+      app.use((req, res) => res.download(html))
 
       request(app)
           .get('/')
-          .expect('Content-Type', 'application/javascript; charset=utf-8')
-          .expect('Content-Disposition', 'attachment; filename="download.js"')
+          .expect('Content-Type', 'text/html; charset=UTF-8')
+          .expect('Content-Disposition', 'attachment; filename="user.html"')
           .expect(200, end(test))
 })
 
@@ -24,11 +30,11 @@ test.test('.download(path, filename) should provide an alternate filename', test
     const app = create()
 
     app.use((req, res) =>
-        res.download(__filename, 'document'))
+        res.download(html, 'document'))
 
     request(app)
         .get('/')
-        .expect('Content-Type', 'application/javascript')
+        .expect('Content-Type', 'text/html; charset=UTF-8')
         .expect('Content-Disposition', 'attachment; filename="document"')
         .expect(200, end(test))
 })
@@ -38,12 +44,12 @@ test.test('.download(path, fn) should invoke the callback', test => {
           done = end(test, 2)
 
     app.use((req, res) =>
-        res.download(__filename, done))
+        res.download(html, done))
 
     request(app)
         .get('/')
-        .expect('Content-Type', 'application/javascript; charset=utf-8')
-        .expect('Content-Disposition', 'attachment; filename="download.js"')
+        .expect('Content-Type', 'text/html; charset=UTF-8')
+        .expect('Content-Disposition', 'attachment; filename="user.html"')
         .expect(200, done)
 })
 
@@ -52,11 +58,11 @@ test.test('.download(path, filename, fn) should invoke the callback', test => {
           done = end(test, 2)
 
     app.use((req, res) =>
-        res.download(__filename, 'document', done))
+        res.download(html, 'document', done))
 
     request(app)
         .get('/')
-        .expect('Content-Type', 'application/javascript')
+        .expect('Content-Type', 'text/html; charset=UTF-8')
         .expect('Content-Disposition', 'attachment; filename="document"')
         .expect(200, done)
 })
@@ -65,12 +71,12 @@ test.test('.download(path, options) should pass options to .sendFile()', test =>
     const app = create()
 
     app.use((req, res) =>
-        res.download(__filename, { headers: { 'x-test': 'test' } }))
+        res.download(html, { headers: { 'x-test': 'test' } }))
 
     request(app)
         .get('/')
-        .expect('Content-Type', 'application/javascript; charset=utf-8')
-        .expect('Content-Disposition', 'attachment; filename="download.js"')
+        .expect('Content-Type', 'text/html; charset=UTF-8')
+        .expect('Content-Disposition', 'attachment; filename="user.html"')
         .expect('X-Test', 'test')
         .expect(200, end(test))
 })

@@ -1,60 +1,63 @@
-/* These tests are migrated from Express.
+/* These tests are ported from Express.
  * https://github.com/expressjs/express
  */
 
 'use strict'
 
 const path       = require('path'),
-      assert     = require('assert'),
-      after      = require('after'),
       test       = require('tap'),
-      Ellipse    = require('../'),
-      request    = require('supertest'),
       onFinished = require('on-finished'),
-      fixtures   = path.join(__dirname, 'fixtures'),
-      servers    = []
-
-test.tearDown(() => servers.forEach(s => s.close()))
+      fixtures   = path.join(__dirname, '..', 'fixtures'),
+      utils      = require('../utils'),
+      end        = utils.end,
+      create     = utils.create,
+      request    = utils.request
 
 test.test('res', test => {
     test.test('.sendFile(path)', test => {
         test.test('should error missing path', test => {
             const app = createApp(null)
 
-            request(app.server)
+            app.on('error', (err, ctx) => {
+                test.match(err.stack, /path.*required/)
+                ctx.status = 500
+                ctx.send('Internal Server Error')
+            })
+
+            request(app)
                 .get('/')
-                .expect(500, /path.*required/, () => test.end())
+                .expect(500, 'Internal Server Error', end(test))
     })
 
     test.test('should transfer a file', test => {
         const app = createApp(path.resolve(fixtures, 'name.txt'))
 
-        request(app.server)
+        request(app)
             .get('/')
-            .expect(200, 'buggy', () => test.end())
+            .expect(200, 'buggy', end(test))
     })
 
     test.test('should transfer a file with special characters in string', test => {
         const app = createApp(path.resolve(fixtures, '% of cats.txt'))
 
-        request(app.server)
+        request(app)
             .get('/')
-            .expect(200, '42%', () => test.end())
+            .expect(200, '42%', end(test))
     })
 
     test.test('should include ETag', test => {
         const app = createApp(path.resolve(fixtures, 'name.txt'))
 
-        request(app.server)
+        request(app)
             .get('/')
             .expect('etag', /^(?:W\/)?"[^"]+"$/)
-            .expect(200, 'buggy', () => test.end())
+            .expect(200, 'buggy', end(test))
     })
 
     test.test('should 304 when ETag matches', test => {
         const app = createApp(path.resolve(fixtures, 'name.txt'))
 
-        request(app.server)
+        request(app)
             .get('/')
             .expect('ETag', /^(?:W\/)?"[^"]+"$/)
             .expect(200, 'buggy', function (err, res) {
@@ -65,19 +68,19 @@ test.test('res', test => {
 
                 const etag = res.headers.etag
 
-                request(app.server)
+                request(app)
                     .get('/')
                     .set('If-None-Match', etag)
-                    .expect(304, () => test.end())
+                    .expect(304, end(test))
             })
     })
 
     test.test('should 404 for directory', test => {
         const app = createApp(path.resolve(fixtures, 'blog'))
 
-        request(app.server)
+        request(app)
             .get('/')
-            .expect(404, () => test.end())
+            .expect(404, end(test))
     })
 
     test.test('should 404 when not found', test => {
@@ -88,9 +91,9 @@ test.test('res', test => {
             res.send('no!')
         })
 
-        request(app.server)
+        request(app)
             .get('/')
-            .expect(404, () => test.end())
+            .expect(404, end(test))
     })
 
     test.test('should not override manual content-types', test => {
@@ -101,10 +104,10 @@ test.test('res', test => {
             res.sendFile(path.resolve(fixtures, 'name.txt'))
         })
 
-        request(app.server)
+        request(app)
             .get('/')
             .expect('Content-Type', 'application/x-bogus')
-            .end(() => test.end())
+            .end(end(test))
     })
 
     test.test('should not error if the client aborts', test => {
@@ -118,25 +121,25 @@ test.test('res', test => {
             req.abort()
         })
 
-        const req = request(app.server).get('/')
+        const req = request(app).get('/')
         req.expect(200, done)
     })
 
     test.test('with "dotfiles" option', test => {
         test.test('should not serve dotfiles by default', test => {
-            const app = createApp(path.resolve(__dirname, 'fixtures/.name'))
+            const app = createApp(path.resolve(fixtures, '.name'))
 
-            request(app.server)
+            request(app)
                 .get('/')
-                .expect(404, () => test.end())
+                .expect(404, end(test))
         });
 
         test.test('should accept dotfiles option', test => {
-            const app = createApp(path.resolve(__dirname, 'fixtures/.name'), { dotfiles: 'allow' })
+            const app = createApp(path.resolve(fixtures, '.name'), { dotfiles: 'allow' })
 
-            request(app.server)
+            request(app)
                 .get('/')
-                .expect(200, 'buggy', () => test.end())
+                .expect(200, 'buggy', end(test))
         })
 
         test.end()
@@ -148,26 +151,26 @@ test.test('res', test => {
                'x-success': 'sent',
                'x-other': 'done'
             }
-            const app = createApp(path.resolve(__dirname, 'fixtures/name.txt'), { headers: headers })
+            const app = createApp(path.resolve(fixtures, 'name.txt'), { headers: headers })
 
-            request(app.server)
+            request(app)
                 .get('/')
                 .expect('x-success', 'sent')
                 .expect('x-other', 'done')
-                .expect(200, () => test.end())
+                .expect(200, end(test))
         })
 
         test.test('should ignore headers option on 404', test => {
             const headers = { 'x-success': 'sent' },
-                  app     = createApp(path.resolve(__dirname, 'fixtures/does-not-exist'), { headers: headers })
+                  app     = createApp(path.resolve(fixtures, 'does-not-exist'), { headers: headers })
 
-            request(app.server)
+            request(app)
                 .get('/')
                 .expect(res => {
                     if ('x-success' in res.headers)
                         throw new Error('x-success header should not present in response')
                 })
-                .expect(404, () => test.end())
+                .expect(404, end(test))
         })
 
         test.end()
@@ -177,17 +180,17 @@ test.test('res', test => {
         test.test('should serve relative to "root"', test => {
             const app = createApp('name.txt', { root: fixtures })
 
-            request(app.server)
+            request(app)
                 .get('/')
-                .expect(200, 'buggy', () => test.end())
+                .expect(200, 'buggy', end(test))
         })
 
         test.test('should disallow requesting out of "root"', test => {
             const app = createApp('foo/../../user.html', { root: fixtures })
 
-            request(app.server)
+            request(app)
                 .get('/')
-                .expect(403, () => test.end())
+                .expect(403, end(test))
         })
 
         test.end()
@@ -201,7 +204,7 @@ test.test('res', test => {
             const done = end(test, 2),
                   app  = createApp(path.resolve(fixtures, 'name.txt'), done)
 
-            request(app.server)
+            request(app)
                 .get('/')
                 .expect(200, done)
         })
@@ -217,7 +220,7 @@ test.test('res', test => {
                 req.abort()
             })
 
-            const req = request(app.server)
+            const req = request(app)
                 .get('/')
                 .end()
         })
@@ -233,7 +236,7 @@ test.test('res', test => {
                 req.abort()
             })
 
-            const req = request(app.server)
+            const req = request(app)
                 .get('/')
                 .end()
         })
@@ -242,7 +245,7 @@ test.test('res', test => {
             const done = end(test, 2),
                   app  = createApp(path.resolve(fixtures, 'name.txt'), done)
 
-            request(app.server)
+            request(app)
                 .head('/')
                 .expect(200, done)
         })
@@ -251,7 +254,7 @@ test.test('res', test => {
             const done = end(test, 3),
                   app  = createApp(path.resolve(fixtures, 'name.txt'), done)
 
-            request(app.server)
+            request(app)
                 .get('/')
                 .expect('etag', /^(?:W\/)?"[^"]+"$/)
                 .expect(200, 'buggy', (err, res) => {
@@ -260,7 +263,7 @@ test.test('res', test => {
 
                     const etag = res.headers.etag
 
-                    request(app.server)
+                    request(app)
                         .get('/')
                         .set('if-none-match', etag)
                         .expect(304, done)
@@ -279,7 +282,7 @@ test.test('res', test => {
                 })
             })
 
-            request(app.server)
+            request(app)
                 .get('/')
                 .expect(200, 'got it', done)
         })
@@ -291,9 +294,9 @@ test.test('res', test => {
         test.test('should pass options to send module', test => {
             const app = createApp(path.resolve(fixtures, 'name.txt'), { start: 0, end: 1 })
 
-            request(app.server)
+            request(app)
                 .get('/')
-                .expect(200, 'to', () => test.end())
+                .expect(200, 'bu', end(test))
         })
 
         test.end()
@@ -302,28 +305,12 @@ test.test('res', test => {
     test.end()
 })
 
-function end(test, n) {
-    return n
-        ? after(n, onend)
-        : onend
-
-    function onend(err) {
-        if (err)
-            throw err
-        else
-            test.end()
-    }
-}
-
 function createApp(path, options, fn) {
-  const app = new Ellipse
+  const app = create()
 
   if (arguments.length)
       app.use((req, res) =>
           res.sendFile(path, options, fn))
 
-  const server = app.listen()
-  app.server = server
-  servers.push(server)
   return app
 }
