@@ -39,15 +39,17 @@ doTest('/3', 'POST,DELETE')
 doTest('/4', 'PUT')
 doTest('/5', 'PATCH')
 doTest('/6', 'GET,HEAD')
-doTest('/7', '')
+doTest('/7', null, 404)
 
-function doTest(path, body) {
+function doTest(path, body, status) {
     const req = request(app).options(path)
 
-    if (body)
+    if (body) {
         req.expect('allow', body)
+        req.expect(body)
+    }
 
-    req.expect(200, body, onend)
+    req.expect(status || 200, onend)
 }
 
 function handler() {

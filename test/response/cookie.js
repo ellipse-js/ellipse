@@ -7,7 +7,7 @@
 const test         = require('tap'),
       cookie       = require('cookie'),
       cookieParser = require('cookie-parser'),
-      utils        = require('../utils'),
+      utils        = require('../support'),
       end          = utils.end,
       merge        = utils.merge,
       create       = utils.create,

@@ -6,7 +6,7 @@
 
 const test    = require('tap'),
       methods = require('methods'),
-      utils   = require('../utils'),
+      utils   = require('../support'),
       end     = utils.end,
       create  = utils.create,
       request = utils.request

@@ -18,7 +18,7 @@ else {
     const request = require('supertest'),
           after   = require('after'),
           Ellipse = require('..'),
-          servers = []
+          servers = exports.servers = []
 
     test.tearDown(() => servers.forEach(s => s.close()))
 

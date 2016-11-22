@@ -1,7 +1,7 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../utils'),
+      utils   = require('../support'),
       end     = utils.end,
       create  = utils.create,
       request = utils.request
