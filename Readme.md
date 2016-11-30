@@ -7,6 +7,7 @@ Minimalistic, high-performance web framework that supports both classic, generat
 [![node version](https://img.shields.io/badge/node-%3E%3D%204-brightgreen.svg?style=flat-square)](https://nodejs.org/download)
 [![build status](https://img.shields.io/travis/ellipse-js/ellipse.svg?style=flat-square)](https://travis-ci.org/ellipse-js/ellipse)
 [![test coverage](https://img.shields.io/coveralls/ellipse-js/ellipse.svg?style=flat-square)](https://coveralls.io/github/ellipse-js/ellipse)
+[![vulnerabilities](https://snyk.io/test/npm/ellipse/badge.svg?style=flat-square)](https://snyk.io/test/npm/ellipse)
 [![license](https://img.shields.io/npm/l/express.svg?style=flat-square)](/LICENSE)
 
 ## Features

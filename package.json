@@ -44,7 +44,7 @@
     "co": "^4.6.0",
     "content-disposition": "^0.5.0",
     "content-type": "^1.0.2",
-    "cookies": "^0.5.1",
+    "cookies": "^0.6.2",
     "destroy": "^1.0.4",
     "encodeurl": "^1.0.1",
     "escape-html": "^1.0.3",
@@ -79,6 +79,6 @@
     "cookie-parser": "^1.4.3",
     "supertest": "^2.0.1",
     "tap": "^7.1.2",
-    "snyk": "^1.21.0"
+    "snyk": "^1.21.2"
   }
 }
