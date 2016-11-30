@@ -8,7 +8,7 @@ const test    = require('tap'),
 
 
 test.test('yield *next should behave like Koa@1', test => {
-    const app   = create(),
+    const app   = create({ respond: false }),
           calls = [],
           expected = [
               'one', 'two', 'three',
@@ -30,7 +30,7 @@ test.test('yield *next should behave like Koa@1', test => {
     app.use((req, res) => {
         calls.push('three')
 
-        let buf = '';
+        let buf = ''
         res.setHeader('Content-Type', 'application/json')
         req.setEncoding('utf8')
         req.on('data', chunk => buf += chunk)

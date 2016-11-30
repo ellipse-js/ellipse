@@ -112,16 +112,21 @@ test.test('res', test => {
 
     test.test('should not error if the client aborts', test => {
         const done = end(test),
-              app  = createApp()
+              app  = createApp(),
+              req  = request(app).get('/')
 
         app.use((_, res) => {
+            // todo: document it!
+            // user must set ctx.respond to false manually,
+            // if need to respond in a callback (setImmediate)
+            res.ctx.respond = false
+
             setImmediate(() =>
                 res.sendFile(path.resolve(fixtures, 'name.txt'), done))
 
             req.abort()
         })
 
-        const req = request(app).get('/')
         req.expect(200, done)
     })
 
@@ -211,18 +216,22 @@ test.test('res', test => {
 
         test.test('should invoke the callback when client aborts', test => {
             const done = end(test),
-                  app  = createApp()
+                  app  = createApp(),
+                  req  = request(app).get('/')
 
             app.use((_, res) => {
+                // todo: document it!
+                // user must set ctx.respond to false manually,
+                // if need to respond in a callback (setImmediate)
+                res.ctx.respond = false
+
                 setImmediate(() =>
                     res.sendFile(path.resolve(fixtures, 'name.txt'), done))
 
                 req.abort()
             })
 
-            const req = request(app)
-                .get('/')
-                .end()
+            req.end()
         })
 
         test.test('should invoke the callback when client already aborted', test => {
@@ -230,6 +239,11 @@ test.test('res', test => {
                   app  = createApp()
 
             app.use((_, res) => {
+                // todo: document it!
+                // user must set ctx.respond to false manually,
+                // if need to respond in a callback (onFinished)
+                res.ctx.respond = false
+
                 onFinished(res, () =>
                         res.sendFile(path.resolve(fixtures, 'name.txt'), done))
 

@@ -23,11 +23,8 @@ else {
     test.tearDown(() => servers.forEach(s => s.close()))
 
     function createApp(opts) {
-        const app    = new Ellipse,
+        const app    = new Ellipse(opts),
               server = app.listen()
-
-        if (opts)
-            merge(app, opts)
 
         app.server = server
         servers.push(server)

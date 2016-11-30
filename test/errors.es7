@@ -1,0 +1,429 @@
+'use strict'
+
+const test       = require('tap'),
+      Router     = require('..').Router,
+      stackTrace = /Error.*\n(\tat\s.*:[0-9]*:[0-9]*\n)*/i,
+      utils      = require('./support'),
+      end        = utils.end,
+      create     = utils.create,
+      request    = utils.request
+
+function noop() {}
+
+function error() {
+    return new Error('test error')
+}
+
+function createApp(test, pattern) {
+    const app = create()
+
+    app.on('error', function onerror(err) {
+        test.match(err.stack, pattern || /test error/, 'original error should be returned')
+        throw err // test that case when a user-defined `error` event handler itself throws
+    })
+
+    return app
+}
+
+test.test('errors should be caught in middleware', test => {
+    test.test('classic', test => {
+        test.test('throw err', test => {
+            const app = createApp(test)
+
+            app.use(() => { throw error() })
+
+            request(app)
+                .get('/')
+                .expect(500, 'Internal Server Error', end(test))
+        })
+
+        test.test('next(err)', test => {
+            const app = createApp(test)
+
+            app.use((req, res, next) => next(error()))
+
+            request(app)
+                .get('/')
+                .expect(500, 'Internal Server Error', end(test))
+        })
+
+        test.test('return Promise.reject(err)', test => {
+            const app = createApp(test)
+
+            app.use(() => Promise.reject(error()))
+
+            request(app)
+                .get('/')
+                .expect(500, 'Internal Server Error', end(test))
+        })
+
+        test.test('ctx.throw()', test => {
+            const app = createApp(test, /BadRequestError: :\(/)
+
+            app.use((req, res, next) => req.ctx.throw(400, ':('))
+
+            request(app)
+                .get('/')
+                .expect(400, ':(', end(test))
+        })
+
+        test.end()
+    })
+
+    test.test('generator', test => {
+        test.test('throw err' , test => {
+            const app = createApp(test)
+
+            app.use(function *() {
+                throw error()
+            })
+
+            request(app)
+                .get('/')
+                .expect(500, 'Internal Server Error', end(test))
+        })
+
+        test.test('next.throw(err)', test => {
+            const app = createApp(test)
+
+            app.use(function *(next) {
+                next.throw(error())
+            })
+
+            request(app)
+                .get('/')
+                .expect(500, 'Internal Server Error', end(test))
+        })
+
+        test.test('ctx.throw()', test => {
+            const app = createApp(test, /BadRequestError: :\(/)
+
+            app.use(function *() {
+                this.throw(':(', 400)
+            })
+
+            request(app)
+                .get('/')
+                .expect(400, ':(', end(test))
+        })
+
+        test.end()
+    })
+
+    test.test('async', test => {
+        test.test('throw err', test => {
+            const app = createApp(test)
+
+            app.use(async () => { throw error() })
+
+            request(app)
+                .get('/')
+                .expect(500, 'Internal Server Error', end(test))
+        })
+
+        test.test('next(err)', test => {
+            const app = createApp(test)
+
+            app.use(async (req, res, next) => next(error()))
+
+            request(app)
+                .get('/')
+                .expect(500, 'Internal Server Error', end(test))
+        })
+
+        test.test('return Promise.reject(err)', test => {
+            const app = createApp(test)
+
+            app.use(async () => Promise.reject(error()))
+
+            request(app)
+                .get('/')
+                .expect(500, 'Internal Server Error', end(test))
+        })
+
+        test.test('ctx.throw()', test => {
+            const app = createApp(test, /BadRequestError: :\(/)
+
+            app.use(async (req, res) => res.ctx.throw(':(', 400))
+
+            request(app)
+                .get('/')
+                .expect(400, ':(', end(test))
+        })
+
+        test.end()
+    })
+
+    test.end()
+})
+
+test.test('errors should be caught in param processors', test => {
+    test.test('throw err', test => {
+        const app = createApp(test)
+
+        app.param('p', (next, val) => { throw error() })
+        app.use('/:p', noop)
+
+        request(app)
+            .get('/test')
+            .expect(500, 'Internal Server Error', end(test))
+    })
+
+    test.test('next(err)', test => {
+        const app = createApp(test)
+
+        app.param('p', (next, val) => next(error()))
+        app.use('/:p', noop)
+
+        request(app)
+            .get('/test')
+            .expect(500, 'Internal Server Error', end(test))
+    })
+
+    test.end()
+})
+
+test.test('custom errors should be used', test => {
+    test.test('err.status should default to 500', test => {
+        const app = createApp(test, /fake/)
+
+        app.use(() => {
+            throw new Error('fake')
+        })
+
+        request(app)
+            .get('/')
+            .expect(500, 'Internal Server Error', end(test))
+    })
+
+    test.test('err.status should not be overwritten', test => {
+        const app = createApp(test, /fake/)
+
+        app.use(() => {
+            const err = new Error('fake')
+            err.status = 418
+            throw err
+        })
+
+        request(app)
+            .get('/')
+            .expect(418, 'fake', end(test))
+    })
+
+    test.end()
+})
+
+test.test('errors should bubble up through sub-routers', test => {
+    test.test('error should bubble up to app if router does not have a handler', test => {
+        const app = create(),
+              sub = app.mount('/test')
+
+        sub.use((req, res) => { throw error() })
+
+        app.on('error', (err, ctx) => {
+            test.match(err.stack, /test error/, 'original error should be returned')
+
+            ctx.status = 200
+            ctx.send('yo')
+        })
+
+        request(app)
+            .get('/test')
+            .expect(200, 'yo', end(test))
+    })
+
+    test.test('error should not bubble up to app if router has a handler', test => {
+        const app = create(),
+              sub = app.mount('/test')
+
+        sub.use(() => { throw error() })
+
+        app.on('error', () => test.fail('error should not bubble up'))
+        sub.on('error', (err, ctx) => {
+            test.match(err.stack, /test error/, 'original error should be returned')
+
+            ctx.status = 200
+            ctx.send('yoyo')
+        })
+
+        request(app)
+            .get('/test')
+            .expect(200, 'yoyo', end(test))
+    })
+
+    test.test('multi-level error bubbling', test => {
+        const app  = create(),
+              sub1 = Router(),
+              sub2 = new Router,
+              sub3 = sub2.mount('/d')
+
+        app.use('/a', sub1)
+        sub1.use('/b', sub2)
+        sub2.use('/c', sub3)
+        sub3.use((req, res, next) => { throw error() })
+
+        app.on('error', () => test.fail('error should not bubble up to app'))
+        sub1.on('error', (err, ctx) => {
+            test.match(err.stack, /test error/, 'original error should be returned')
+
+            ctx.status = 200
+            ctx.send('yoyoyo')
+        })
+
+        request(app)
+            .get('/a/b/c/d')
+            .expect(200, 'yoyoyo', end(test))
+    })
+
+    test.end()
+})
+
+test.test('error should be caught with next().catch()', test => {
+    const app = createApp(test)
+
+    app.use((req, res, next) => {
+        next().catch(err => {
+            test.match(err.stack, /test error/, 'original error should be returned')
+
+            res.status(200)
+               .send('ily')
+        })
+    })
+
+    app.get('/', (req, res, next) => next(error()))
+
+    request(app)
+        .get('/')
+        .expect(200, 'ily', end(test))
+})
+
+test.test('next() should accept a `message` or `status`', test => {
+    test.test('next(status)', test => {
+        const app = createApp(test, /ForbiddenError: Forbidden/)
+
+        app.use((req, res, next) => next(403))
+
+        request(app)
+            .get('/')
+            .expect(403, 'Forbidden', end(test))
+    })
+
+    test.test('next(message)', test => {
+        const app = createApp(test, /InternalServerError: Nothing interesting/)
+
+        app.use((req, res, next) => next('Nothing interesting'))
+
+        request(app)
+            .get('/')
+            .expect(500, 'Internal Server Error', end(test))
+    })
+
+    test.end()
+})
+
+test.test('.catch(err) should be available', test => {
+    test.test('req.catch(err)', test => {
+        const app = createApp(test)
+
+        app.use((req, res) => {
+            req.catch(error())
+        })
+
+        request(app)
+            .get('/')
+            .expect(500, end(test))
+    })
+
+    test.test('res.catch(err)', test => {
+        const app = createApp(test)
+
+        app.use((req, res) => {
+            res.catch(error())
+        })
+
+        request(app)
+            .get('/')
+            .expect(500, end(test))
+    })
+
+    test.test('ctx.catch(err)', test => {
+        const app = createApp(test)
+
+        app.use((req, res) => {
+            req.ctx.catch(error())
+        })
+
+        request(app)
+            .get('/')
+            .expect(500, end(test))
+    })
+
+    test.end()
+})
+
+test.test('expose stack traces in development', test => {
+    const app = create({ env: 'development' })
+
+    test.plan(1)
+
+    process.stderr.write = data => {
+        test.ok(stackTrace.test(data), 'stack trace should be written to stdout when app.env is development')
+    }
+
+    app.use(() => { throw error() })
+
+    request(app)
+        .get('/')
+        .expect(500, stackTrace, end(test))
+})
+
+test.test('try/catch in middleware', test => {
+    test.test('generator', test => {
+        const app = create()
+
+        app.use(function *(next) {
+            try {
+                yield *next
+            }
+            catch (err) {
+                test.match(err.stack, /test error/, 'original error should be returned')
+                this.send('caught')
+            }
+        })
+
+        app.use(next => next())
+
+        app.use(() => {
+            throw error()
+        })
+
+        request(app)
+            .get('/')
+            .expect(200, 'caught', end(test))
+    })
+
+    test.test('async', test => {
+        const app = create()
+
+        app.use(async (req, res, next) => {
+            try {
+                await next()
+            }
+            catch (err) {
+                test.match(err.stack, /test error/, 'original error should be returned')
+                res.send('caught')
+            }
+        })
+
+        // note: it's important to pass back the promise returned by next()
+        app.use(next => next())
+
+        app.use(() => { throw error() })
+
+        request(app)
+            .get('/')
+            .expect(200, 'caught', end(test))
+    })
+
+    test.end()
+})

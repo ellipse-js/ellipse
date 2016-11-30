@@ -1,92 +1,129 @@
 'use strict'
 
-const request  = require('supertest'),
-      test     = require('tap'),
-      Ellipse  = require('..')
+const test    = require('tap'),
+      utils   = require('./support'),
+      end     = utils.end,
+      create  = utils.create,
+      request = utils.request
 
-var app1 = new Ellipse,
-    app2 = new Ellipse({ respond: false }),
-    app3 = new Ellipse,
-    app4 = new Ellipse
+test.test('app should respond if res.body is not empty', test => {
+    const app = create()
 
-app1.get('/', (req, res, next) => {
-    res.body = 'ok'
-    next()
-})
-
-app1.get('/per-request', function (req, res, next) {
-    this.respond = false
-    res.body = 'ok'
-    next()
-})
-
-app2.get('/', (req, res, next) => {
-    res.body = 'ok'
-    next()
-})
-
-app3.get('/', (req, res, next) => {
-    res.status(200, "everything's okay")
-       .send()
-})
-
-// intercept ongoing response before it gets sent
-app3.on('respond', ctx => {
-    ctx.status  = 418
-    ctx.message = 'help me!'
-})
-
-app4.use(function *(next) {
-    const now = new Date
-    yield *next
-    this.set('x-response-time', new Date - now)
-})
-
-app4.get('/', (req, res, next) => {
-    res.body = 'ok'
-    next()
-})
-
-test.plan(5)
-test.tearDown(() => {
-    app1.close()
-    app2.close()
-    app3.close()
-    app4.close()
-})
-
-app1 = app1.listen()
-app2 = app2.listen()
-app3 = app3.listen()
-app4 = app4.listen()
-
-request(app1)
-    .get('/')
-    .expect(200, 'ok', onend)
-
-request(app1)
-    .get('/per-request')
-    .expect(404, onend)
-
-request(app2)
-    .get('/')
-    .expect(404, onend)
-
-request(app3)
-    .get('/')
-    .expect(418, onend)
-
-request(app4)
-    .get('/')
-    .expect(res => {
-        if (!('x-powered-by' in res.headers) && !isNaN(res.headers[ 'x-powered-by' ]))
-            throw new Error('x-powered-by header is expected, but missing')
+    app.get('/', (req, res) => {
+        res.body = 'ok'
     })
-    .expect(200, onend)
 
-function onend(err) {
-    if (err)
-        test.threw(err)
-    else
-        test.pass('expected result received')
-}
+    request(app)
+        .get('/')
+        .expect(200, 'ok', end(test))
+})
+
+test.test('app should respond if res.body is not empty and next() is called', test => {
+    const app = create()
+
+    app.get('/', (req, res, next) => {
+        res.body = 'ok'
+        next()
+    })
+
+    request(app)
+        .get('/')
+        .expect(200, 'ok', end(test))
+})
+
+test.test('app should respond with 404 if res.body is empty', test => {
+    const app = create()
+
+    app.get('/', (req, res, next) => next())
+
+    request(app)
+        .get('/')
+        .expect(404, end(test))
+})
+
+test.test('app should not respond if response is already sent', test => {
+    const app = create()
+
+    app.get('/', (req, res, next) => {
+        res.status(200, "everything's okay")
+           .send()
+    })
+
+    request(app)
+        .get('/')
+        .expect(200, end(test))
+})
+
+test.test('response should be manipulated befor it gets sent', test => {
+    const app = create()
+
+    app.get('/', (req, res, next) => res.send('hola'))
+
+    app.on('respond', ctx => {
+        ctx.status  = 418
+        ctx.message = 'help me!'
+    })
+
+    request(app)
+        .get('/')
+        .expect(418, end(test))
+})
+
+test.test('implicit response should be manipulated by middleware', test => {
+    const app = create()
+
+    app.use(function *(next) {
+        const now = new Date
+        yield *next
+        this.set('x-response-time', new Date - now)
+        this.body = null
+    })
+
+    app.get('/', (req, res, next) => res.body = 'hola')
+
+    request(app)
+        .get('/')
+        .expect(res => {
+            if (isNaN(res.headers[ 'x-response-time' ]))
+                throw new Error('x-response-time header is expected, but missing')
+        })
+        .expect(200, end(test))
+})
+
+test.test('app should not respond', test => {
+    test.test('if app.respond is false', test => {
+        const app = create({ respond: false })
+
+        app.get('/', (req, res) => {
+            let buf = ''
+            req.setEncoding('utf8')
+            req.on('data', chunk => buf += chunk)
+            req.on('end', () => res.end(buf))
+        })
+
+        request(app)
+            .get('/')
+            .send('hello')
+            .expect(200, 'hello', end(test))
+    })
+
+    test.test('if ctx.respond is false', test => {
+        const app = create()
+
+        app.get('/', (req, res) => {
+            res.ctx.respond = false
+
+            let buf = ''
+            req.setEncoding('utf8')
+            req.on('data', chunk => buf += chunk)
+            req.on('end', () => res.end(buf))
+        })
+
+        request(app)
+            .get('/')
+            .send('hello')
+            .expect(200, 'hello', end(test))
+    })
+
+    test.end()
+})

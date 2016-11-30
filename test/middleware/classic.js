@@ -12,7 +12,7 @@ const test    = require('tap'),
 
 
 test.test('next() should behave like Connect', test => {
-    const app   = create(),
+    const app   = create({ respond: false }),
           calls = []
 
     app.use((req, res, next) => {
@@ -28,7 +28,7 @@ test.test('next() should behave like Connect', test => {
     app.use((req, res) => {
         calls.push('three')
 
-        let buf = '';
+        let buf = ''
         res.setHeader('Content-Type', 'application/json')
         req.setEncoding('utf8')
         req.on('data', chunk => buf += chunk)
