@@ -278,23 +278,19 @@ test.test('errors should bubble up through sub-routers', test => {
     test.end()
 })
 
-test.test('error should be caught with next().catch()', test => {
+test.test('error should be caught, but cannot be handled with next().catch()', test => {
     const app = createApp(test)
 
     app.use((req, res, next) => {
-        next().catch(err => {
-            test.match(err.stack, /test error/, 'original error should be returned')
-
-            res.status(200)
-               .send('ily')
-        })
+        next().catch(err =>
+            test.match(err.stack, /test error/, 'original error should be returned'))
     })
 
     app.get('/', (req, res, next) => next(error()))
 
     request(app)
         .get('/')
-        .expect(200, 'ily', end(test))
+        .expect(500, 'Internal Server Error', end(test))
 })
 
 test.test('next() should accept a `message` or `status`', test => {
