@@ -66,7 +66,7 @@ Note: `this` refers to a context object - except in arrow functions. Context is 
 
 ## Installation
 
-You're reading about the upcoming `v0.18` release-line of Ellipse which is `alpha` software.
+You're reading about the upcoming `v0.20` release-line of Ellipse which is `alpha` software.
 If you want to try out these new features presented above, then you should use the `next` tag:
 
     npm install ellipse@next
