@@ -11,34 +11,12 @@ test.test('app should respond if res.body is not empty', test => {
 
     app.get('/', (req, res) => {
         res.body = 'ok'
+        res.send()
     })
 
     request(app)
         .get('/')
         .expect(200, 'ok', end(test))
-})
-
-test.test('app should respond if res.body is not empty and next() is called', test => {
-    const app = create()
-
-    app.get('/', (req, res, next) => {
-        res.body = 'ok'
-        next()
-    })
-
-    request(app)
-        .get('/')
-        .expect(200, 'ok', end(test))
-})
-
-test.test('app should respond with 404 if res.body is empty', test => {
-    const app = create()
-
-    app.get('/', (req, res, next) => next())
-
-    request(app)
-        .get('/')
-        .expect(404, end(test))
 })
 
 test.test('app should not respond if response is already sent', test => {
@@ -77,6 +55,7 @@ test.test('implicit response should be manipulated by middleware', test => {
         yield *next
         this.set('x-response-time', new Date - now)
         this.body = null
+        this.send()
     })
 
     app.get('/', (req, res, next) => res.body = 'hola')

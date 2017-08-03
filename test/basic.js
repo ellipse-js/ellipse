@@ -26,7 +26,7 @@ app.get('/', (req, res, next) => {
     // test remove(array)
     res.remove([ 'X-Test-2', 'X-Test-3' ])
 
-    next()
+    res.send()
 })
 
 request(server)
@@ -35,7 +35,7 @@ request(server)
     .expect(noHeader('x-test-2'))
     .expect(noHeader('x-test-3'))
     .expect('content-length', '12')
-    .expect('etag', 'W/"c-7Qdih1MuhjZehB6Sv8UNjA"')
+    .expect('etag', 'W/"c-Lve95gjOVATpfV8EL5X4nxwjKHE"')
     .expect('content-type', 'text/plain; charset=utf-8')
     .expect('x-powered-by', 'Ellipse/' + require('../package.json').version)
     .expect(200, 'Hello World!', err => {

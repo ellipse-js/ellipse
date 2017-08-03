@@ -33,7 +33,7 @@ function get(server, path) {
 
 function handle(req, res, next) {
     res.body = 'ok'
-    next()
+    res.send()
 }
 
 function onend(err) {

@@ -48,8 +48,8 @@ app.param('test1', (next, param) => {
 app.param('test2', (next, param) =>
     next(new Error('test')))
 
-app.get('/error3/1/:test1', () => {})
-app.get('/error3/2/:test2', () => {})
+app.get('/error3/1/:test1', (req, res) => res.send())
+app.get('/error3/2/:test2', (req, res) => res.send())
 
 app.on('error', (err, ctx) => {
     test.pass('upstream error caught')
@@ -130,6 +130,7 @@ sub.use(function *(next) {
     result.push(13)
     yield *next
     result.push(14)
+    this.send()
 })
 
 // manipulating response upstream
@@ -143,7 +144,7 @@ app2.use((req, res, next) => {
 
 app2.get('/', (req, res, next) => {
     res.body = 'yeah!'
-    return next()
+    res.send()
 })
 
 test.plan(9)

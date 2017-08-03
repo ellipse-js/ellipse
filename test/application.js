@@ -19,7 +19,7 @@ test.test('properties & getters', test => {
     test.equal(app.env, env, 'app.env should default to `NODE_ENV` or development')
     test.equal(app.root, root, 'app.root should default to the fullpath of cwd')
     test.equal(app.xPoweredBy, 'Ellipse/' + require('../package.json').version, 'app.xPoweredBy should default to "Ellipse/version"')
-    test.strictEqual(app.respond, true, 'app.respond should default to true')
+    test.strictEqual(app.respond, false, 'app.respond should default to true')
     test.strictEqual(app.proxy, false, 'app.proxy should default to false')
     test.type(app.listen, 'function', 'app should have a listen() method')
     test.type(app.toJSON, 'function', 'app should have a toJSON() method')

@@ -39,10 +39,10 @@ test.test('it should run the callback for a method just once', test => {
         if (n++)
             return test.fail('DELETE called several times')
 
-        next()
+        res.send()
     })
 
     request(app)
         .delete('/buggy')
-        .expect(404, end(test))
+        .expect(200, end(test))
 })

@@ -66,7 +66,7 @@ test.test('.send(String)', test => {
 
         request(app)
             .get('/')
-            .expect('ETag', 'W/"3e7-VYgCBglFKiDVAcpzPNt4Sg"')
+            .expect('ETag', 'W/"3e7-qPnkJ3CVdVhFJQvUBfF10TmVA7g"')
             .expect(200, end(test))
     })
 
@@ -132,7 +132,7 @@ test.test('.send(Buffer)', test => {
 
         request(app)
             .get('/')
-            .expect('ETag', 'W/"3e7-VYgCBglFKiDVAcpzPNt4Sg"')
+            .expect('ETag', 'W/"3e7-qPnkJ3CVdVhFJQvUBfF10TmVA7g"')
             .expect(200, end(test))
     })
 
@@ -271,7 +271,7 @@ test.test('"etag" setting', test => {
 
             request(app)
                 .get('/')
-                .expect('ETag', 'W/"c-ZUfd0NJ26qwjlKF4r8qb2g"')
+                .expect('ETag', 'W/"c-IgR/L5SF7CJQff4wxKGF/vfPuZ0"')
                 .expect(200, end(test))
         });
 
@@ -289,7 +289,7 @@ test.test('"etag" setting', test => {
 
                     request(app)
                         [ method ]('/')
-                        .expect('ETag', 'W/"c-ZUfd0NJ26qwjlKF4r8qb2g"')
+                        .expect('ETag', 'W/"c-IgR/L5SF7CJQff4wxKGF/vfPuZ0"')
                         .expect(200, end(test))
                 })
             })
@@ -302,7 +302,7 @@ test.test('"etag" setting', test => {
 
             request(app)
                 .get('/')
-                .expect('ETag', 'W/"0-1B2M2Y8AsgTpgAmY7PhCfg"')
+                .expect('ETag', 'W/"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk"')
                 .expect(200, end(test))
         })
 
@@ -316,7 +316,7 @@ test.test('"etag" setting', test => {
 
             request(app)
                 .get('/')
-                .expect('ETag', 'W/"3e7-VYgCBglFKiDVAcpzPNt4Sg"')
+                .expect('ETag', 'W/"3e7-qPnkJ3CVdVhFJQvUBfF10TmVA7g"')
                 .expect(200, end(test))
         });
 
@@ -385,7 +385,7 @@ test.test('"etag" setting', test => {
 
         request(app)
             .get('/')
-            .expect('ETag', '"d-Otu60XkfuuPskIiUxJY4cA"')
+            .expect('ETag', '"d-HwnTDHB9U/PRbFMN1z1wps51lqk"')
             .expect(200, end(test))
     })
 
@@ -396,7 +396,7 @@ test.test('"etag" setting', test => {
 
         request(app)
             .get('/')
-            .expect('ETag', 'W/"d-Otu60XkfuuPskIiUxJY4cA"')
+            .expect('ETag', 'W/"d-HwnTDHB9U/PRbFMN1z1wps51lqk"')
             .expect(200, end(test))
     })
 

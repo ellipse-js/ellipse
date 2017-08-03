@@ -10,13 +10,13 @@ test.plan(2)
 app.use('/1/*', (req, res, next) => {
     test.equal(req.url, 'foo', 'route should be mounted')
     res.body = 'ok'
-    next()
+    res.send()
 })
 
-app.mount('/2').get('/:test', function *(next) {
+app.mount('/2').get('/:test', function *() {
     test.equal(this.url, '/bar', 'route should be mounted')
     this.body = 'ok'
-    yield *next
+    this.send()
 })
 
 request(app = app.listen())

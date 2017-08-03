@@ -4,8 +4,7 @@ const request = require('supertest'),
       test    = require('tap')
 
 var app1    = require('..')(),
-    app2    = require('..')(),
-    app3    = require('..')()
+    app2    = require('..')()
 
 app1.on('notFound', function (ctx) {
     ctx.status = 404
@@ -19,15 +18,13 @@ app2.all(function () {
     this.send()
 })
 
-app1 = app1.listen(3333)
-app2 = app2.listen(3334)
-app3 = app3.listen(3335)
+app1 = app1.listen()
+app2 = app2.listen()
 
-test.plan(3)
+test.plan(2)
 test.tearDown(() => {
     app1.close()
     app2.close()
-    app3.close()
 })
 
 request(app1)
@@ -39,11 +36,6 @@ request(app2)
     .get('/')
     .expect(404)
     .expect('catch-all middleware reached', onend)
-
-request(app3)
-    .get('/')
-    .expect(404)
-    .expect('Cannot GET /', onend)
 
 function onend(err) {
     if (err)

@@ -112,6 +112,7 @@ app1.get('/stream', (req, res) => {
 
 app2.get('/stream-error', (req, res) => {
     res.body = stream()
+    res.send()
 })
 
 app1.get('/buffer', (req, res) => {
