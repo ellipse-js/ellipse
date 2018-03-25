@@ -85,7 +85,7 @@ test.test('.download(path, options) should respect options.fileName', test => {
 
     request(app)
         .get('/')
-        .expect('Content-Type', 'application/javascript')
+        .expect('Content-Type', 'application/javascript; charset=UTF-8')
         .expect('Content-Disposition', 'attachment; filename="document"')
         .expect('X-Test', 'test')
         .expect(200, end(test))
@@ -100,7 +100,7 @@ test.test('.download(path, options, fn) should invoke the callback', test => {
 
     request(app)
         .get('/')
-        .expect('Content-Type', 'application/javascript')
+        .expect('Content-Type', 'application/javascript; charset=UTF-8')
         .expect('Content-Disposition', 'attachment; filename="document"')
         .expect('X-Test', 'test')
         .expect(200, done)
