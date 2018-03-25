@@ -5,17 +5,17 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.type(str)', test => {
     test.test('it should set the Content-Type based on a filename', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.type('foo.js')
+        app.use(ctx =>
+            ctx.res.type('foo.js')
                .end('var name = "ellipse";'))
 
         request(app)
@@ -26,8 +26,8 @@ test.test('.type(str)', test => {
     test.test('it should default to application/octet-stream', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.type('rawr')
+        app.use(ctx =>
+            ctx.res.type('rawr')
                .end('var name = "ellipse";'))
 
         request(app)
@@ -38,8 +38,8 @@ test.test('.type(str)', test => {
     test.test('it should set the Content-Type with type/subtype', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.type('application/vnd.amazon.ebook')
+        app.use(ctx =>
+            ctx.res.type('application/vnd.amazon.ebook')
                .end('var name = "ellipse";'))
 
         request(app)

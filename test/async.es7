@@ -6,7 +6,7 @@ const request = require('supertest'),
       server  = app.listen(),
       calls   = []
 
-app.param('test', async (next, param) => {
+app.param('test', async (ctx, next, param) => {
     await error()
     next()
 })
@@ -18,7 +18,7 @@ app.get('/error1', async () => {
 app.get('/error2/:test', () =>
     test.fail('handler should not be reached'))
 
-app.use(async next => {
+app.use(async (ctx, next) => {
     calls.push(1)
     await next()
     calls.push(6)
@@ -27,11 +27,11 @@ app.use(async next => {
     test.same(calls, expected, 'control should flow as expected')
 })
 
-app.get('/', async (req, res) => {
+app.get('/', async ctx => {
     calls.push(2)
     await work()
     calls.push(5)
-    res.send('whooooooooo!')
+    ctx.res.send('whooooooooo!')
 })
 
 app.on('error', (err, ctx) => {

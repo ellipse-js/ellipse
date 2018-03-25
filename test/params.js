@@ -7,30 +7,30 @@ var app = require('..')()
 
 test.plan(7)
 
-app.param('p1', (next, param) => {
+app.param('p1', (ctx, next, param) => {
     test.equals(param, 'foo', 'param p1 should be "foo"')
     next()
 })
 
-app.param('p2', function *(next, param) {
+app.param('p2', (ctx, next, param) => {
     test.equals(param, 'bar', 'param p2 should be "bar"')
-    yield *next
+    next()
 })
 
-app.get('/1/:p1', (req, res, next) => {
-    test.equals(req.params.p1, 'foo', 'param p1 should be "foo"')
-    res.send()
+app.get('/1/:p1', ctx => {
+    test.equals(ctx.params.p1, 'foo', 'param p1 should be "foo"')
+    ctx.send()
 })
 
-app.get(/^\/2\/([a-z]{3})$/, (req, res, next) => {
-    test.equals(req.params[ 0 ], 'bar', 'param 0 should be "bar"')
-    res.send()
+app.get(/^\/2\/([a-z]{3})$/, ctx => {
+    test.equals(ctx.params[ 0 ], 'bar', 'param 0 should be "bar"')
+    ctx.send()
 })
 
-app.get('/3/:p1/:p2', (req, res, next) => {
-    test.equals(req.params.p1, 'foo', 'param p1 should be "foo"')
-    test.equals(req.params.p2, 'bar', 'param p2 should be "bar"')
-    res.send()
+app.get('/3/:p1/:p2', ctx => {
+    test.equals(ctx.params.p1, 'foo', 'param p1 should be "foo"')
+    test.equals(ctx.params.p2, 'bar', 'param p2 should be "bar"')
+    ctx.send()
 })
 
 app = app.listen()

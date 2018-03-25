@@ -5,17 +5,18 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.set(field, value)', test => {
     test.test('it should set the response header field', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('Content-Type', 'text/x-foo; charset=utf-8')
+        app.use(ctx =>
+            ctx.res
+               .set('Content-Type', 'text/x-foo; charset=utf-8')
                .end())
 
         request(app)
@@ -27,9 +28,9 @@ test.test('.set(field, value)', test => {
     test.test('it should coerce to a string', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('X-Number', 123)
-               .end(typeof res.get('X-Number')))
+        app.use(ctx =>
+            ctx.res.set('X-Number', 123)
+               .end(typeof ctx.res.get('X-Number')))
 
         request(app)
             .get('/')
@@ -44,9 +45,9 @@ test.test('.set(field, values)', test => {
     test.test('it should set multiple response header fields', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('Set-Cookie', ["type=ninja", "language=javascript"])
-               .send(res.get('Set-Cookie')))
+        app.use(ctx =>
+            ctx.res.set('Set-Cookie', ["type=ninja", "language=javascript"])
+               .send(ctx.res.get('Set-Cookie')))
 
         request(app)
             .get('/')
@@ -56,9 +57,9 @@ test.test('.set(field, values)', test => {
     test.test('it should coerce to an array of strings', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('X-Numbers', [123, 456])
-               .end(JSON.stringify(res.get('X-Numbers'))))
+        app.use(ctx =>
+            ctx.res.set('X-Numbers', [123, 456])
+               .end(JSON.stringify(ctx.res.get('X-Numbers'))))
 
         request(app)
             .get('/')
@@ -69,8 +70,8 @@ test.test('.set(field, values)', test => {
     test.test('it should not set a charset of one is already set', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('Content-Type', 'text/html; charset=lol')
+        app.use(ctx =>
+            ctx.res.set('Content-Type', 'text/html; charset=lol')
                .end())
 
         request(app)
@@ -86,8 +87,8 @@ test.test('.set(object)', test => {
     test.test('it should set multiple fields', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set({
+        app.use(ctx =>
+            ctx.res.set({
                    'X-Foo': 'bar',
                    'X-Bar': 'baz'
                })
@@ -103,9 +104,9 @@ test.test('.set(object)', test => {
     test.test('it should coerce to a string', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set({ 'X-Number': 123 })
-               .end(typeof res.get('X-Number')))
+        app.use(ctx =>
+            ctx.res.set({ 'X-Number': 123 })
+               .end(typeof ctx.res.get('X-Number')))
 
         request(app)
             .get('/')

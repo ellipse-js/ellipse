@@ -5,17 +5,17 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.links(obj)', test => {
     test.test('should set Link header field', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.links({
+        app.use(ctx =>
+            ctx.res.links({
                 next: 'http://api.example.com/users?page=2',
                 last: 'http://api.example.com/users?page=5'
             }).end())
@@ -29,7 +29,9 @@ test.test('.links(obj)', test => {
     test.test('should set Link header field for multiple calls', test => {
         const app = create()
 
-        app.use((req, res) => {
+        app.use(ctx => {
+            const res = ctx.res
+
             res.links({
                 next: 'http://api.example.com/users?page=2',
                 last: 'http://api.example.com/users?page=5'
@@ -55,8 +57,8 @@ test.test('.link(link, rel)', test => {
     test.test('should set Link header field', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.link('next', 'http://api.example.com/users?page=2').end())
+        app.use(ctx =>
+            ctx.res.link('next', 'http://api.example.com/users?page=2').end())
 
         request(app)
             .get('/')
@@ -67,7 +69,9 @@ test.test('.link(link, rel)', test => {
     test.test('should set Link header field for multiple calls', test => {
         const app = create()
 
-        app.use((req, res) => {
+        app.use(ctx => {
+            const res = ctx.res
+
             res.link('next', 'http://api.example.com/users?page=2')
             res.link('last', 'http://api.example.com/users?page=5')
             res.link('prev', 'http://api.example.com/users?page=1')

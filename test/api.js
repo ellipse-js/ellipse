@@ -30,13 +30,13 @@ test.test('serialization', test => {
     const expected = {
         version: require('../package.json').version,
         Router: Ellipse.Router,
-        router: '<Router prototype>',
+        router: '[Router prototype]',
         Context: Ellipse.Context,
-        context: '<Context prototype>',
+        context: '[Context prototype]',
         Request: Ellipse.Request,
-        request: '<Request prototype>',
+        request: '[Request prototype]',
         Response: Ellipse.Response,
-        response: '<Response prototype>'
+        response: '[Response prototype]'
     }
 
     test.same(Ellipse.toJSON(), expected, 'json representation of main export should be correct')

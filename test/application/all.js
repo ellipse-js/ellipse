@@ -5,16 +5,16 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('it should add a router per method', test => {
     const app = create()
 
-    app.all('/buggy', (req, res) => {
-        res.end(req.method)
+    app.all('/buggy', ctx => {
+        ctx.res.end(ctx.req.method)
     })
 
     request(app)
@@ -35,11 +35,11 @@ test.test('it should run the callback for a method just once', test => {
     const app = create()
     let   n   = 0
 
-    app.all('/*', (req, res, next) => {
+    app.all('/*', ctx => {
         if (n++)
             return test.fail('DELETE called several times')
 
-        res.send()
+        ctx.send()
     })
 
     request(app)

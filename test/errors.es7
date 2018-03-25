@@ -3,10 +3,10 @@
 const test       = require('tap'),
       Router     = require('..').Router,
       stackTrace = /Error.*\n(\tat\s.*:[0-9]*:[0-9]*\n)*/i,
-      utils      = require('./support'),
-      end        = utils.end,
-      create     = utils.create,
-      request    = utils.request
+      helpers    = require('./helpers'),
+      end        = helpers.end,
+      create     = helpers.create,
+      request    = helpers.request
 
 function noop() {}
 
@@ -40,7 +40,7 @@ test.test('errors should be caught in middleware', test => {
         test.test('next(err)', test => {
             const app = createApp(test)
 
-            app.use((req, res, next) => next(error()))
+            app.use((ctx, next) => next(error()))
 
             request(app)
                 .get('/')
@@ -60,47 +60,7 @@ test.test('errors should be caught in middleware', test => {
         test.test('ctx.throw()', test => {
             const app = createApp(test, /BadRequestError: :\(/)
 
-            app.use((req, res, next) => req.ctx.throw(400, ':('))
-
-            request(app)
-                .get('/')
-                .expect(400, ':(', end(test))
-        })
-
-        test.end()
-    })
-
-    test.test('generator', test => {
-        test.test('throw err' , test => {
-            const app = createApp(test)
-
-            app.use(function *() {
-                throw error()
-            })
-
-            request(app)
-                .get('/')
-                .expect(500, 'Internal Server Error', end(test))
-        })
-
-        test.test('next.throw(err)', test => {
-            const app = createApp(test)
-
-            app.use(function *(next) {
-                next.throw(error())
-            })
-
-            request(app)
-                .get('/')
-                .expect(500, 'Internal Server Error', end(test))
-        })
-
-        test.test('ctx.throw()', test => {
-            const app = createApp(test, /BadRequestError: :\(/)
-
-            app.use(function *() {
-                this.throw(':(', 400)
-            })
+            app.use(ctx => ctx.throw(400, ':('))
 
             request(app)
                 .get('/')
@@ -124,7 +84,7 @@ test.test('errors should be caught in middleware', test => {
         test.test('next(err)', test => {
             const app = createApp(test)
 
-            app.use(async (req, res, next) => next(error()))
+            app.use(async (ctx, next) => next(error()))
 
             request(app)
                 .get('/')
@@ -144,7 +104,7 @@ test.test('errors should be caught in middleware', test => {
         test.test('ctx.throw()', test => {
             const app = createApp(test, /BadRequestError: :\(/)
 
-            app.use(async (req, res) => res.ctx.throw(':(', 400))
+            app.use(async ctx => ctx.throw(':(', 400))
 
             request(app)
                 .get('/')
@@ -161,7 +121,7 @@ test.test('errors should be caught in param processors', test => {
     test.test('throw err', test => {
         const app = createApp(test)
 
-        app.param('p', (next, val) => { throw error() })
+        app.param('p', () => { throw error() })
         app.use('/:p', noop)
 
         request(app)
@@ -172,7 +132,7 @@ test.test('errors should be caught in param processors', test => {
     test.test('next(err)', test => {
         const app = createApp(test)
 
-        app.param('p', (next, val) => next(error()))
+        app.param('p', (ctx, next) => next(error()))
         app.use('/:p', noop)
 
         request(app)
@@ -218,7 +178,7 @@ test.test('errors should bubble up through sub-routers', test => {
         const app = create(),
               sub = app.mount('/test')
 
-        sub.use((req, res) => { throw error() })
+        sub.use(() => { throw error() })
 
         app.on('error', (err, ctx) => {
             test.match(err.stack, /test error/, 'original error should be returned')
@@ -260,7 +220,7 @@ test.test('errors should bubble up through sub-routers', test => {
         app.use('/a', sub1)
         sub1.use('/b', sub2)
         sub2.use('/c', sub3)
-        sub3.use((req, res, next) => { throw error() })
+        sub3.use(() => { throw error() })
 
         app.on('error', () => test.fail('error should not bubble up to app'))
         sub1.on('error', (err, ctx) => {
@@ -281,12 +241,12 @@ test.test('errors should bubble up through sub-routers', test => {
 test.test('error should be caught, but cannot be handled with next().catch()', test => {
     const app = createApp(test)
 
-    app.use((req, res, next) => {
+    app.use((ctx, next) => {
         next().catch(err =>
             test.match(err.stack, /test error/, 'original error should be returned'))
     })
 
-    app.get('/', (req, res, next) => next(error()))
+    app.get('/', (ctx, next) => next(error()))
 
     request(app)
         .get('/')
@@ -297,7 +257,7 @@ test.test('next() should accept a `message` or `status`', test => {
     test.test('next(status)', test => {
         const app = createApp(test, /ForbiddenError: Forbidden/)
 
-        app.use((req, res, next) => next(403))
+        app.use((ctx, next) => next(403))
 
         request(app)
             .get('/')
@@ -307,7 +267,7 @@ test.test('next() should accept a `message` or `status`', test => {
     test.test('next(message)', test => {
         const app = createApp(test, /InternalServerError: Nothing interesting/)
 
-        app.use((req, res, next) => next('Nothing interesting'))
+        app.use((ctx, next) => next('Nothing interesting'))
 
         request(app)
             .get('/')
@@ -321,8 +281,8 @@ test.test('.catch(err) should be available', test => {
     test.test('req.catch(err)', test => {
         const app = createApp(test)
 
-        app.use((req, res) => {
-            req.catch(error())
+        app.use(ctx => {
+            ctx.req.catch(error())
         })
 
         request(app)
@@ -333,8 +293,8 @@ test.test('.catch(err) should be available', test => {
     test.test('res.catch(err)', test => {
         const app = createApp(test)
 
-        app.use((req, res) => {
-            res.catch(error())
+        app.use(ctx => {
+            ctx.res.catch(error())
         })
 
         request(app)
@@ -345,8 +305,8 @@ test.test('.catch(err) should be available', test => {
     test.test('ctx.catch(err)', test => {
         const app = createApp(test)
 
-        app.use((req, res) => {
-            req.ctx.catch(error())
+        app.use(ctx => {
+            ctx.catch(error())
         })
 
         request(app)
@@ -374,45 +334,21 @@ test.test('expose stack traces in development', test => {
 })
 
 test.test('try/catch in middleware', test => {
-    test.test('generator', test => {
-        const app = create()
-
-        app.use(function *(next) {
-            try {
-                yield *next
-            }
-            catch (err) {
-                test.match(err.stack, /test error/, 'original error should be returned')
-                this.send('caught')
-            }
-        })
-
-        app.use(next => next())
-
-        app.use(() => {
-            throw error()
-        })
-
-        request(app)
-            .get('/')
-            .expect(200, 'caught', end(test))
-    })
-
     test.test('async', test => {
         const app = create()
 
-        app.use(async (req, res, next) => {
+        app.use(async (ctx, next) => {
             try {
                 await next()
             }
             catch (err) {
                 test.match(err.stack, /test error/, 'original error should be returned')
-                res.send('caught')
+                ctx.res.send('caught')
             }
         })
 
         // note: it's important to pass back the promise returned by next()
-        app.use(next => next())
+        app.use((ctx, next) => next())
 
         app.use(() => { throw error() })
 

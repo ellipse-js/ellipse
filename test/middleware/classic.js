@@ -5,27 +5,29 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      create  = helpers.create,
+      request = helpers.request
 
 
 test.test('next() should behave like Connect', test => {
     const app   = create({ respond: false }),
           calls = []
 
-    app.use((req, res, next) => {
+    app.use((ctx, next) => {
         calls.push('one')
         next()
     })
 
-    app.use((req, res, next) => {
+    app.use((ctx, next) => {
         calls.push('two')
         next()
     })
 
-    app.use((req, res) => {
+    app.use(ctx => {
+        const req = ctx.req,
+              res = ctx.res
+
         calls.push('three')
 
         let buf = ''

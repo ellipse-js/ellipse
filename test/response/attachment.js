@@ -5,16 +5,16 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('should Content-Disposition to attachment', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.attachment().send('foo'))
+    app.use(ctx =>
+        ctx.attachment().send('foo'))
 
     request(app)
         .get('/')
@@ -25,8 +25,8 @@ test.test('.attachment(filename)', test => {
     test.test('should add the filename param', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.attachment('/path/to/image.png').send('foo'))
+        app.use(ctx =>
+            ctx.attachment('/path/to/image.png').send('foo'))
 
         request(app)
             .get('/')
@@ -36,9 +36,9 @@ test.test('.attachment(filename)', test => {
     test.test('should set the Content-Type', test => {
         const app = create()
 
-        app.use((req, res) => {
-            res.attachment('/path/to/image.png')
-            res.send(Buffer.alloc(4))
+        app.use(ctx => {
+            ctx.attachment('/path/to/image.png')
+            ctx.send(Buffer.alloc(4))
         })
 
         request(app)
@@ -53,9 +53,9 @@ test.test('.attachment(utf8filename)', test => {
     test.test('should add the filename and filename* params', test => {
         const app = create()
 
-        app.use((req, res) => {
-            res.attachment('/locales/日本語.txt')
-            res.send('japanese')
+        app.use(ctx => {
+            ctx.attachment('/locales/日本語.txt')
+            ctx.send('japanese')
         })
 
         request(app)
@@ -67,9 +67,9 @@ test.test('.attachment(utf8filename)', test => {
     test.test('should set the Content-Type', test => {
         const app = create()
 
-        app.use((req, res) => {
-            res.attachment('/locales/日本語.txt')
-            res.send('japanese')
+        app.use(ctx => {
+            ctx.attachment('/locales/日本語.txt')
+            ctx.send('japanese')
         })
 
         request(app)

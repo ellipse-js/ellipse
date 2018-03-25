@@ -5,17 +5,16 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.json(object)', test => {
     test.test('should not support jsonp callbacks', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.json({ foo: 'bar' }))
+        app.use(ctx => ctx.res.json({ foo: 'bar' }))
 
         request(app)
             .get('/?callback=foo')
@@ -25,7 +24,9 @@ test.test('.json(object)', test => {
     test.test('should not override previous Content-Types', test => {
         const app = create()
 
-        app.get('/', (req, res) => {
+        app.get('/', ctx => {
+            const res = ctx.res
+
             res.type('application/vnd.example+json')
             res.json({ hello: 'world' })
         })
@@ -43,7 +44,7 @@ test.test('when given primitives', test => {
     test.test('should respond with json for null', test => {
         const app = create()
 
-        app.use((req, res) => res.json(null))
+        app.use(ctx => ctx.res.json(null))
 
         request(app)
             .get('/')
@@ -54,7 +55,7 @@ test.test('when given primitives', test => {
     test.test('should respond with json for Number', test => {
         const app = create()
 
-        app.use((req, res) => res.json(300))
+        app.use(ctx => ctx.res.json(300))
 
         request(app)
             .get('/')
@@ -65,7 +66,7 @@ test.test('when given primitives', test => {
     test.test('should respond with json for String', test => {
         const app = create()
 
-        app.use((req, res) => res.json('str'))
+        app.use(ctx => ctx.res.json('str'))
 
         request(app)
             .get('/')
@@ -79,8 +80,7 @@ test.test('when given primitives', test => {
 test.test('when given an array, it should respond with json', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.json([ 'foo', 'bar', 'baz' ]))
+    app.use(ctx => ctx.res.json([ 'foo', 'bar', 'baz' ]))
 
     request(app)
         .get('/')
@@ -91,8 +91,7 @@ test.test('when given an array, it should respond with json', test => {
 test.test('when given an object, it should respond with json', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.json({ name: 'buggy' }))
+    app.use(ctx => ctx.res.json({ name: 'buggy' }))
 
     request(app)
         .get('/')

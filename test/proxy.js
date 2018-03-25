@@ -5,19 +5,19 @@ const request = require('supertest'),
 
 var app = require('..')({ proxy: true })
 
-app.get('/', (req, res) => {
-    test.equals(req.protocol, 'http', 'protocol should default to `x-forwarded-proto` header')
-    res.send('ok')
+app.get('/', ctx => {
+    test.equals(ctx.protocol, 'http', 'protocol should default to `x-forwarded-proto` header')
+    ctx.send('ok')
 })
 
-app.get('/host', (req, res) => {
-    test.equals(req.host, 'localhost', 'host should default to `x-forwarded-host` header')
-    res.send('ok')
+app.get('/host', ctx => {
+    test.equals(ctx.host, 'localhost', 'host should default to `x-forwarded-host` header')
+    ctx.send('ok')
 })
 
-app.get('/ips', (req, res) => {
-    test.same(req.ips, [ 't1', 't2' ], 'req.ips should default to `x-forwarded-for` header')
-    res.send('ok')
+app.get('/ips', ctx => {
+    test.same(ctx.ips, [ 't1', 't2' ], 'req.ips should default to `x-forwarded-for` header')
+    ctx.send('ok')
 })
 
 test.plan(4)

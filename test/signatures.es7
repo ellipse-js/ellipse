@@ -1,0 +1,90 @@
+'use strict'
+
+const request  = require('supertest'),
+      test     = require('tap'),
+      Ellipse  = require('..'),
+      Context  = Ellipse.Context
+
+var app = new Ellipse()
+
+// classic middleware
+
+app.get('/cm', (ctx, next) => {
+    test.type(ctx, Context, '`this` should be a Context instance')
+    test.type(next, 'function', '`next()` should be a method')
+    ctx.send()
+})
+
+// async middleware
+
+app.get('/am', async (ctx, next) => {
+    test.type(ctx, Context, '`this` should be a Context instance')
+    test.type(next, 'function', '`next()` should be a method')
+    ctx.send()
+})
+
+// classic param processor
+
+app.param('cp', function (ctx, next, value) {
+    test.type(this, Context, '`this` should be a Context instance')
+    test.type(ctx, Context, '`ctx` should be a Context instance')
+    test.type(next, 'function', '`next()` should be a method')
+    test.equals(value, 't', '`value` should be passed')
+    next() // test that next() is correct in param processor
+})
+
+// test that ctx.next() is correct in param processor
+app.param('cp2', ctx => ctx.next())
+
+app.get('/cp/:cp', function (ctx) {
+    ctx.send()
+})
+
+app.get('/cp2/:cp2', function (ctx) {
+    ctx.send()
+})
+
+// async param processor
+
+app.param('ap', async function (ctx, next, value) {
+    test.type(ctx, Context, '`this` should be a Context instance')
+    test.type(next, 'function', '`next()` should be a method')
+    test.equals(value, 't', '`value` should be passed')
+    await next() // test that next() is correct in async param processor
+})
+
+// test that ctx.next() is correct in async param processor
+app.param('ap2', async ctx => await ctx.next())
+
+app.get('/ap/:ap', function (ctx) {
+    ctx.send()
+})
+
+app.get('/ap2/:ap2', function (ctx) {
+    ctx.send()
+})
+
+// requests
+
+app = app.listen()
+
+test.plan(17)
+test.tearDown(() => app.close())
+
+get('/cm')
+get('/am')
+get('/cp/t')
+get('/cp2/t')
+get('/ap/t')
+get('/ap2/t')
+
+function get(path) {
+    request(app)
+        .get(path)
+        .expect(200, err => {
+            if (err)
+                test.threw(err)
+            else
+                test.pass('GET ' + path + ' succeeded')
+        })
+}

@@ -8,16 +8,16 @@ const path                = require('path'),
       test                = require('tap'),
       fixtures            = path.resolve(__dirname, '..', 'fixtures'),
       html                = path.resolve(fixtures, 'user.html'),
-      utils               = require('../support'),
-      end                 = utils.end,
-      create              = utils.create,
-      request             = utils.request,
-      shouldNotHaveHeader = utils.shouldNotHaveHeader
+      helpers             = require('../helpers'),
+      end                 = helpers.end,
+      create              = helpers.create,
+      request             = helpers.request,
+      shouldNotHaveHeader = helpers.shouldNotHaveHeader
 
 test.test('.download(path) should transfer as an attachment', test => {
       const app = create()
 
-      app.use((req, res) => res.download(html))
+      app.use(ctx => ctx.download(html))
 
       request(app)
           .get('/')
@@ -29,8 +29,7 @@ test.test('.download(path) should transfer as an attachment', test => {
 test.test('.download(path, filename) should provide an alternate filename', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.download(html, 'document'))
+    app.use(ctx => ctx.download(html, 'document'))
 
     request(app)
         .get('/')
@@ -43,8 +42,7 @@ test.test('.download(path, fn) should invoke the callback', test => {
     const app  = create(),
           done = end(test, 2)
 
-    app.use((req, res) =>
-        res.download(html, done))
+    app.use(ctx => ctx.download(html, done))
 
     request(app)
         .get('/')
@@ -57,8 +55,7 @@ test.test('.download(path, filename, fn) should invoke the callback', test => {
     const app  = create(),
           done = end(test, 2)
 
-    app.use((req, res) =>
-        res.download(html, 'document', done))
+    app.use(ctx => ctx.download(html, 'document', done))
 
     request(app)
         .get('/')
@@ -70,8 +67,7 @@ test.test('.download(path, filename, fn) should invoke the callback', test => {
 test.test('.download(path, options) should pass options to .sendFile()', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.download(html, { headers: { 'x-test': 'test' } }))
+    app.use(ctx => ctx.download(html, { headers: { 'x-test': 'test' } }))
 
     request(app)
         .get('/')
@@ -85,8 +81,7 @@ test.test('.download(path, options) should respect options.fileName', test => {
     const app     = create(),
           options = { fileName: 'document', headers: { 'x-test': 'test' } }
 
-    app.use((req, res) =>
-        res.download(__filename, options))
+    app.use(ctx => ctx.download(__filename, options))
 
     request(app)
         .get('/')
@@ -101,8 +96,7 @@ test.test('.download(path, options, fn) should invoke the callback', test => {
           done    = end(test, 2),
           options = { fileName: 'document', headers: { 'x-test': 'test' } }
 
-    app.use((req, res) =>
-        res.download(__filename, options, done))
+    app.use(ctx => ctx.download(__filename, options, done))
 
     request(app)
         .get('/')
@@ -113,16 +107,16 @@ test.test('.download(path, options, fn) should invoke the callback', test => {
 })
 
 test.test('invalid argument should be asserted', test => {
-    const app = create().use((req, res) => {
+    const app = create().use(ctx => {
         test.throws(() => {
-            res.download(__filename, true)
+            ctx.download(__filename, true)
         }, TypeError, 'invalid argument should be asserted')
 
         test.throws(() => {
-            res.download(__filename, true, () => {})
+            ctx.download(__filename, true, () => {})
         }, TypeError, 'invalid argument should be asserted')
 
-        res.send('ok')
+        ctx.send('ok')
     })
 
     request(app)
@@ -134,12 +128,12 @@ test.test('on failure', test => {
     test.test('should invoke the callback', test => {
         const app = create()
 
-        app.use((req, res, next) =>
-            res.download('/non/existing/file', err => {
+        app.use((ctx, next) =>
+            ctx.download('/non/existing/file', err => {
                 if (!err)
                     next(new Error('expected error'))
                 else
-                    res.send(`got ${err.status} ${err.code}`)
+                    ctx.send(`got ${err.status} ${err.code}`)
             }))
 
         request(app)
@@ -149,19 +143,18 @@ test.test('on failure', test => {
 
     test.test('should remove Content-Disposition', test => {
         const app = create()
-        let calls = 0
 
-        app.use((req, res, next) =>
-            res.download('/non/existing/file', err => {
+        app.use((ctx, next) =>
+            ctx.download('/non/existing/file', err => {
                 if (!err)
                     next(new Error('expected error'))
                 else
-                    res.end('failed')
+                    ctx.res.end('failed')
             }))
 
         request(app)
             .get('/')
-            .expect(utils.shouldNotHaveHeader('Content-Disposition'))
+            .expect(shouldNotHaveHeader('Content-Disposition'))
             .expect(200, 'failed', end(test))
     })
 

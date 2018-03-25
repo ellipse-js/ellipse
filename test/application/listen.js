@@ -10,10 +10,8 @@ const test    = require('tap'),
 test.test('app.listen() should wrap with an HTTP server', test => {
     const app = new Ellipse
 
-    app.delete('/buggy', (req, res) =>
-        res.end('deleted buggy!'))
+    app.delete('/buggy', ctx =>
+        ctx.res.end('deleted buggy!'))
 
-    const server = app.listen(() =>
-        server.close(() =>
-            test.end()))
+    const server = app.listen(() => server.close(() => test.end()))
 })

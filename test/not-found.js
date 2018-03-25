@@ -12,10 +12,10 @@ app1.on('notFound', function (ctx) {
     ctx.send()
 })
 
-app2.all(function () {
-    this.status = 404
-    this.body = 'catch-all middleware reached'
-    this.send()
+app2.all(ctx => {
+    ctx.status = 404
+    ctx.body = 'catch-all middleware reached'
+    ctx.send()
 })
 
 app1 = app1.listen()

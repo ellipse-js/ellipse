@@ -5,17 +5,17 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.clearCookie(name) should set a cookie passed expiry', test => {
     const app      = create(),
           expected = 'sid=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly'
 
-    app.use((req, res) =>
-        res.clearCookie('sid').end())
+    app.use(ctx =>
+        ctx.res.clearCookie('sid').end())
 
     request(app)
         .get('/')
@@ -27,8 +27,8 @@ test.test('.clearCookie(name, options) should set the given params', test => {
     const app      = create(),
           expected = 'sid=; path=/admin; expires=Thu, 01 Jan 1970 00:00:00 GMT; httponly'
 
-    app.use((req, res) =>
-        res.clearCookie('sid', { path: '/admin' }).end())
+    app.use(ctx =>
+        ctx.res.clearCookie('sid', { path: '/admin' }).end())
 
     request(app)
         .get('/')

@@ -5,15 +5,17 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.get(field) should get the response header field', test => {
     const app = create()
 
-    app.use((req, res) => {
+    app.use(ctx => {
+        const res = ctx.res
+
         res.set('x-Test-1', 'test1')
         res.header('X-test-2', 'test2')
         res.setHeader({

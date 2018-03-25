@@ -8,10 +8,10 @@ const path       = require('path'),
       test       = require('tap'),
       onFinished = require('on-finished'),
       fixtures   = path.join(__dirname, '..', 'fixtures'),
-      utils      = require('../support'),
-      end        = utils.end,
-      create     = utils.create,
-      request    = utils.request
+      helpers    = require('../helpers'),
+      end        = helpers.end,
+      create     = helpers.create,
+      request    = helpers.request
 
 test.test('res', test => {
     test.test('.sendFile(path)', test => {
@@ -86,7 +86,9 @@ test.test('res', test => {
     test.test('should 404 when not found', test => {
         const app = createApp(path.resolve(fixtures, 'does-no-exist'))
 
-        app.use((req, res) => {
+        app.use(ctx => {
+            const res = ctx.res
+
             res.statusCode = 200
             res.send('no!')
         })
@@ -99,7 +101,9 @@ test.test('res', test => {
     test.test('should not override manual content-types', test => {
         const app = createApp()
 
-        app.use((req, res) => {
+        app.use(ctx => {
+            const res = ctx.res
+
             res.type('application/x-bogus')
             res.sendFile(path.resolve(fixtures, 'name.txt'))
         })
@@ -115,14 +119,13 @@ test.test('res', test => {
               app  = createApp(),
               req  = request(app).get('/')
 
-        app.use((_, res) => {
+        app.use(ctx => {
             // todo: document it!
             // user must set ctx.respond to false manually,
             // if need to respond in a callback (setImmediate)
-            res.ctx.respond = false
+            ctx.respond = false
 
-            setImmediate(() =>
-                res.sendFile(path.resolve(fixtures, 'name.txt'), done))
+            setImmediate(() => ctx.res.sendFile(path.resolve(fixtures, 'name.txt'), done))
 
             req.abort()
         })
@@ -144,7 +147,7 @@ test.test('res', test => {
 
             request(app)
                 .get('/')
-                .expect(200, 'buggy', end(test))
+                .expect(200, Buffer.from('buggy'), end(test))
         })
 
         test.end()
@@ -219,14 +222,13 @@ test.test('res', test => {
                   app  = createApp(),
                   req  = request(app).get('/')
 
-            app.use((_, res) => {
+            app.use(ctx => {
                 // todo: document it!
                 // user must set ctx.respond to false manually,
                 // if need to respond in a callback (setImmediate)
-                res.ctx.respond = false
+                ctx.respond = false
 
-                setImmediate(() =>
-                    res.sendFile(path.resolve(fixtures, 'name.txt'), done))
+                setImmediate(() => ctx.res.sendFile(path.resolve(fixtures, 'name.txt'), done))
 
                 req.abort()
             })
@@ -238,14 +240,13 @@ test.test('res', test => {
             const done = end(test),
                   app  = createApp()
 
-            app.use((_, res) => {
+            app.use(ctx => {
                 // todo: document it!
                 // user must set ctx.respond to false manually,
                 // if need to respond in a callback (onFinished)
-                res.ctx.respond = false
+                ctx.respond = false
 
-                onFinished(res, () =>
-                        res.sendFile(path.resolve(fixtures, 'name.txt'), done))
+                onFinished(ctx.res, () => ctx.res.sendFile(path.resolve(fixtures, 'name.txt'), done))
 
                 req.abort()
             })
@@ -288,11 +289,11 @@ test.test('res', test => {
             const done = end(test),
                   app  = createApp()
 
-            app.use((req, res) => {
-                res.sendFile(path.resolve(fixtures, 'does-not-exist'), err => {
+            app.use(ctx => {
+                ctx.res.sendFile(path.resolve(fixtures, 'does-not-exist'), err => {
                     test.ok(err, 'error should present')
                     test.equals(err.status, 404)
-                    res.send('got it')
+                    ctx.res.send('got it')
                 })
             })
 
@@ -323,8 +324,7 @@ function createApp(path, options, fn) {
   const app = create()
 
   if (arguments.length)
-      app.use((req, res) =>
-          res.sendFile(path, options, fn))
+      app.use(ctx => ctx.res.sendFile(path, options, fn))
 
   return app
 }

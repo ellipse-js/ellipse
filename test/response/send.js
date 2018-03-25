@@ -4,17 +4,18 @@
 
 'use strict'
 
-const test    = require('tap'),
-      methods = require('methods'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+const test                = require('tap'),
+      methods             = require('methods'),
+      helpers             = require('../helpers'),
+      end                 = helpers.end,
+      create              = helpers.create,
+      request             = helpers.request,
+      shouldNotHaveHeader = helpers.shouldNotHaveHeader
 
 test.test('.send() should set body to ""', test => {
     const app = create()
 
-    app.use((req, res) => res.send())
+    app.use(ctx => ctx.res.send())
 
     request(app)
         .get('/')
@@ -25,7 +26,7 @@ test.test('.send() should set body to ""', test => {
 test.test('.send(null) should set body to ""', test => {
     const app = create()
 
-    app.use((req, res) => res.send(null))
+    app.use(ctx => ctx.res.send(null))
 
     request(app)
         .get('/')
@@ -36,7 +37,7 @@ test.test('.send(null) should set body to ""', test => {
 test.test('.send(undefined) should set body to ""', test => {
     const app = create()
 
-    app.use((req, res) => res.send(undefined))
+    app.use(ctx => ctx.res.send(undefined))
 
     request(app)
         .get('/')
@@ -48,7 +49,7 @@ test.test('.send(String)', test => {
     test.test('should send as html', test => {
         const app = create()
 
-        app.use((req, res) => res.send('<p>hey</p>'))
+        app.use(ctx => ctx.res.send('<p>hey</p>'))
 
         request(app)
             .get('/')
@@ -59,9 +60,9 @@ test.test('.send(String)', test => {
     test.test('should set ETag', test => {
         const app = create()
 
-        app.use((req, res) => {
-            var str = Array(1000).join('-')
-            res.send(str)
+        app.use(ctx => {
+            const str = Array(1000).join('-')
+            ctx.res.send(str)
         })
 
         request(app)
@@ -73,8 +74,7 @@ test.test('.send(String)', test => {
     test.test('should not override Content-Type', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('Content-Type', 'text/plain').send('hey'))
+        app.use(ctx => ctx.res.set('Content-Type', 'text/plain').send('hey'))
 
         request(app)
             .get('/')
@@ -85,8 +85,7 @@ test.test('.send(String)', test => {
     test.test('should override charset in Content-Type', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('Content-Type', 'text/plain; charset=iso-8859-1').send('hey'))
+        app.use(ctx => ctx.res.set('Content-Type', 'text/plain; charset=iso-8859-1').send('hey'))
 
         request(app)
             .get('/')
@@ -97,8 +96,7 @@ test.test('.send(String)', test => {
     test.test('should keep charset in Content-Type for Buffers', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('Content-Type', 'text/plain; charset=iso-8859-1').send(Buffer.from('hi')))
+        app.use(ctx => ctx.res.set('Content-Type', 'text/plain; charset=iso-8859-1').send(Buffer.from('hi')))
 
         request(app)
             .get('/')
@@ -113,21 +111,20 @@ test.test('.send(Buffer)', test => {
     test.test('should send as octet-stream', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.send(Buffer.from('hello')))
+        app.use(ctx => ctx.res.send(Buffer.from('hello')))
 
         request(app)
             .get('/')
             .expect('Content-Type', 'application/octet-stream')
-            .expect(200, 'hello', end(test))
+            .expect(200, Buffer.from('hello'), end(test))
     })
 
     test.test('should set ETag', test => {
         const app = create()
 
-        app.use((req, res) => {
+        app.use(ctx => {
             const str = Array(1000).join('-')
-            res.send(Buffer.from(str))
+            ctx.res.send(Buffer.from(str))
         })
 
         request(app)
@@ -139,8 +136,8 @@ test.test('.send(Buffer)', test => {
     test.test('should not override Content-Type', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.set('Content-Type', 'text/plain')
+        app.use(ctx =>
+            ctx.res.set('Content-Type', 'text/plain')
                .send(Buffer.from('hey')))
 
         request(app)
@@ -155,8 +152,7 @@ test.test('.send(Buffer)', test => {
 test.test('.send(Object) should send as application/json', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.send({ name: 'buggy' }))
+    app.use(ctx => ctx.res.send({ name: 'buggy' }))
 
     request(app)
         .get('/')
@@ -167,7 +163,7 @@ test.test('.send(Object) should send as application/json', test => {
 test.test('when the request method is HEAD it should ignore the body', test => {
     const app = create()
 
-    app.use((req, res) => res.send('yay'))
+    app.use(ctx => ctx.res.send('yay'))
 
     request(app)
         .head('/')
@@ -177,32 +173,32 @@ test.test('when the request method is HEAD it should ignore the body', test => {
 test.test('when .statusCode is 204 it should strip Content-* fields, Transfer-Encoding field, and body', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.status(204)
+    app.use(ctx =>
+        ctx.res.status(204)
            .set('Transfer-Encoding', 'chunked')
            .send('foo'))
 
     request(app)
         .get('/')
-        .expect(utils.shouldNotHaveHeader('Content-Type'))
-        .expect(utils.shouldNotHaveHeader('Content-Length'))
-        .expect(utils.shouldNotHaveHeader('Transfer-Encoding'))
+        .expect(shouldNotHaveHeader('Content-Type'))
+        .expect(shouldNotHaveHeader('Content-Length'))
+        .expect(shouldNotHaveHeader('Transfer-Encoding'))
         .expect(204, '', end(test))
 })
 
 test.test('when .statusCode is 304 it should strip Content-* fields, Transfer-Encoding field, and body', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.status(304)
+    app.use(ctx =>
+        ctx.res.status(304)
            .set('Transfer-Encoding', 'chunked')
            .send('foo'))
 
     request(app)
         .get('/')
-        .expect(utils.shouldNotHaveHeader('Content-Type'))
-        .expect(utils.shouldNotHaveHeader('Content-Length'))
-        .expect(utils.shouldNotHaveHeader('Transfer-Encoding'))
+        .expect(shouldNotHaveHeader('Content-Type'))
+        .expect(shouldNotHaveHeader('Content-Length'))
+        .expect(shouldNotHaveHeader('Transfer-Encoding'))
         .expect(304, '', end(test))
 })
 
@@ -210,8 +206,8 @@ test.test('it should always check regardless of length', test => {
     const app  = create(),
           etag = '"asdf"'
 
-    app.use((req, res) =>
-        res.set('ETag', etag)
+    app.use(ctx =>
+        ctx.res.set('ETag', etag)
            .send('hey'))
 
     request(app)
@@ -224,10 +220,10 @@ test.test('it should respond with 304 Not Modified when fresh', test => {
     const app  = create(),
           etag = '"asdf"'
 
-    app.use((req, res) => {
+    app.use(ctx => {
         const str = Array(1000).join('-')
-        res.set('ETag', etag)
-        res.send(str)
+        ctx.res.set('ETag', etag)
+        ctx.res.send(str)
     })
 
     request(app)
@@ -240,8 +236,8 @@ test.test('it should not perform freshness check unless 2xx or 304', test => {
     const app  = create(),
           etag = '"asdf"'
 
-    app.use((req, res) =>
-        res.status(500)
+    app.use(ctx =>
+        ctx.res.status(500)
            .set('ETag', etag)
            .send('hey'))
 
@@ -255,7 +251,7 @@ test.test('it should not perform freshness check unless 2xx or 304', test => {
 test.test('it should not support jsonp callbacks', test => {
     const app = create()
 
-    app.use((req, res) =>  res.send({ foo: 'bar' }))
+    app.use(ctx => ctx.res.send({ foo: 'bar' }))
 
     request(app)
         .get('/?callback=foo')
@@ -267,7 +263,7 @@ test.test('"etag" setting', test => {
         test.test('it should send ETag', test => {
             const app = create({ etag: true })
 
-            app.use((req, res) => res.send('kajdslfkasdf'))
+            app.use(ctx => ctx.res.send('kajdslfkasdf'))
 
             request(app)
                 .get('/')
@@ -285,7 +281,7 @@ test.test('"etag" setting', test => {
                 test.test(`it should send ETag in response to ${method.toUpperCase()} request`, test => {
                     const app = create({ etag: true })
 
-                    app[ method ]('/', (req, res) => res.send('kajdslfkasdf'))
+                    app[ method ]('/', ctx => ctx.res.send('kajdslfkasdf'))
 
                     request(app)
                         [ method ]('/')
@@ -298,7 +294,7 @@ test.test('"etag" setting', test => {
         test.test('it should send ETag for empty string response', test => {
             const app = create({ etag: true })
 
-            app.use((req, res) => res.send(''))
+            app.use(ctx => ctx.res.send(''))
 
             request(app)
                 .get('/')
@@ -309,9 +305,9 @@ test.test('"etag" setting', test => {
         test.test('it should send ETag for long response', test => {
             const app = create({ etag: true })
 
-            app.use((req, res) => {
+            app.use(ctx => {
                 const str = Array(1000).join('-')
-                res.send(str)
+                ctx.res.send(str)
             })
 
             request(app)
@@ -323,8 +319,8 @@ test.test('"etag" setting', test => {
         test.test('it should not override ETag when manually set', test => {
             const app = create({ etag: true })
 
-            app.use((req, res) =>
-                res.set('etag', '"asdf"')
+            app.use(ctx =>
+                ctx.res.set('etag', '"asdf"')
                    .send(200))
 
             request(app)
@@ -336,11 +332,11 @@ test.test('"etag" setting', test => {
         test.test('it should not send ETag for res.send()', test => {
             const app = create({ etag: true })
 
-            app.use((req, res) => res.send())
+            app.use(ctx => ctx.res.send())
 
             request(app)
                 .get('/')
-                .expect(utils.shouldNotHaveHeader('ETag'))
+                .expect(shouldNotHaveHeader('ETag'))
                 .expect(200, end(test))
         })
 
@@ -351,22 +347,22 @@ test.test('"etag" setting', test => {
         test.test('it should not send ETag', test => {
             const app = create({ etag: false })
 
-            app.use((req, res) => {
+            app.use(ctx => {
                 const str = Array(1000).join('-')
-                res.send(str)
+                ctx.res.send(str)
             })
 
             request(app)
                 .get('/')
-                .expect(utils.shouldNotHaveHeader('ETag'))
+                .expect(shouldNotHaveHeader('ETag'))
                 .expect(200, end(test))
         })
 
         test.test('it should send ETag when manually set', test => {
             const app = create({ etag: false })
 
-            app.use((req, res) =>
-                res.set('etag', '"asdf"')
+            app.use(ctx =>
+                ctx.res.set('etag', '"asdf"')
                    .send(200))
 
             request(app)
@@ -381,7 +377,7 @@ test.test('"etag" setting', test => {
     test.test('when "strong" it should send strong ETag', test => {
         const app = create({ etag: 'strong' })
 
-        app.use((req, res) => res.send('hello, world!'))
+        app.use(ctx => ctx.res.send('hello, world!'))
 
         request(app)
             .get('/')
@@ -392,7 +388,7 @@ test.test('"etag" setting', test => {
     test.test('when "weak" it should send weak ETag', test => {
         const app = create({ etag: 'weak' })
 
-        app.use((req, res) => res.send('hello, world!'))
+        app.use(ctx => ctx.res.send('hello, world!'))
 
         request(app)
             .get('/')
@@ -414,7 +410,7 @@ test.test('"etag" setting', test => {
                 return '"custom"'
             }
 
-            app.use((req, res) => res.send('hello, world!'))
+            app.use(ctx => ctx.res.send('hello, world!'))
 
             request(app)
                 .get('/')
@@ -425,11 +421,11 @@ test.test('"etag" setting', test => {
         test.test('it should not send falsy ETag', test => {
             const app = create({ etag: () => {} })
 
-            app.use((req, res) => res.send('hello, world!'))
+            app.use(ctx => ctx.res.send('hello, world!'))
 
             request(app)
                 .get('/')
-                .expect(utils.shouldNotHaveHeader('ETag'))
+                .expect(shouldNotHaveHeader('ETag'))
                 .expect(200, end(test))
         })
 

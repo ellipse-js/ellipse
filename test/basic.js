@@ -7,7 +7,9 @@ const request = require('supertest'),
 
 test.plan(3)
 
-app.get('/', (req, res, next) => {
+app.get('/', ctx => {
+    const res = ctx.res
+
     res.body = 'Hello World!'
     res.contentType('txt')
 

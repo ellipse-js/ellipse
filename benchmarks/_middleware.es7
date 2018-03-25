@@ -9,10 +9,7 @@ var num = parseInt(process.env.MW || '1', 10)
 console.log('  %s middleware', num)
 
 while (num--)
-    app.use(async next => next())
+    app.use(async (ctx, next) => await next())
 
-app.use(async function() {
-    this.send(body)
-})
-
-app.listen(3333)
+app.use(async ctx => ctx.send(body))
+   .listen(3333)

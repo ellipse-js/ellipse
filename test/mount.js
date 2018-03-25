@@ -7,16 +7,16 @@ var app = require('..')()
 
 test.plan(2)
 
-app.use('/1/*', (req, res, next) => {
-    test.equal(req.url, 'foo', 'route should be mounted')
-    res.body = 'ok'
-    res.send()
+app.use('/1/*', ctx => {
+    test.equal(ctx.url, 'foo', 'route should be mounted')
+    ctx.body = 'ok'
+    ctx.send()
 })
 
-app.mount('/2').get('/:test', function *() {
-    test.equal(this.url, '/bar', 'route should be mounted')
-    this.body = 'ok'
-    this.send()
+app.mount('/2').get('/:test', ctx => {
+    test.equal(ctx.url, '/bar', 'route should be mounted')
+    ctx.body = 'ok'
+    ctx.send()
 })
 
 request(app = app.listen())

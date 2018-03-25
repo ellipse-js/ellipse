@@ -7,7 +7,7 @@ const test    = require('tap'),
       app     = new Ellipse,
       server  = app.listen()
 
-app.get('/', (ctx, req, res, next) => {
+app.get('/', ctx => {
     test.type(ctx, Ellipse.Context, '`ctx` should be a Context instance')
     test.equals(ctx.app, app, 'ctx.app should refer to its parent application')
     test.equals(ctx.application, app, 'ctx.application should refer to its parent application')

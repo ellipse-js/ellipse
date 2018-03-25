@@ -5,17 +5,17 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('HEAD should default to GET', test => {
     const app = create()
 
-    app.get('/buggy', (req, res) => {
+    app.get('/buggy', ctx => {
         // send() detects HEAD
-        res.send('buggy')
+        ctx.send('buggy')
     })
 
     request(app)
@@ -26,9 +26,9 @@ test.test('HEAD should default to GET', test => {
 test.test('HEAD requests should output the same headers as GET requests', test => {
     const app = create()
 
-    app.get('/buggy', (req, res) => {
+    app.get('/buggy', ctx => {
         // send() detects HEAD
-        res.send('buggy')
+        ctx.send('buggy')
     })
 
     request(app)
@@ -62,14 +62,14 @@ test.test('app.head() should override', test => {
     const app = create()
     let called
 
-    app.head('/buggy', (req, res) => {
+    app.head('/buggy', ctx => {
         called = true
-        res.end('')
+        ctx.res.end('')
     })
 
-    app.get('/buggy', (req, res) => {
+    app.get('/buggy', ctx => {
         test.fail('should not call GET')
-        res.send('buggy')
+        ctx.send('buggy')
     })
 
     request(app)

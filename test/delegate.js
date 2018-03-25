@@ -7,8 +7,8 @@ var app = require('..')()
 
 const delegate = app
     .route('/')
-    .use(function (next) {
-        this.body = 'o'
+    .use((ctx, next) => {
+        ctx.body = 'o'
         next()
     })
     .get(handler)

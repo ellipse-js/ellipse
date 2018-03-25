@@ -53,7 +53,10 @@ app2.response.test2 = function () {
     test.pass('response should be extensible per instance')
 }
 
-app1.get('/', (ctx, req, res, next) => {
+app1.get('/', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     ctx.test()
     ctx.test1()
     req.test()
@@ -67,7 +70,10 @@ app1.get('/', (ctx, req, res, next) => {
     res.send('ok')
 })
 
-app2.get('/', (ctx, req, res, next) => {
+app2.get('/', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     ctx.test()
     ctx.test2()
     req.test()

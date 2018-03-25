@@ -1,18 +1,18 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.jsonp() should throw', test => {
-    const app = create().use((req, res) => {
+    const app = create().use(ctx => {
         test.throws(() => {
-            res.jsonp()
+            ctx.res.jsonp()
         })
 
-        res.send('ok')
+        ctx.res.send('ok')
     })
 
     request(app)

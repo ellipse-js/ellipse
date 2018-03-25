@@ -5,16 +5,16 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.sendStatus(statusCode)', test => {
     test.test('it should send the status code and message as body', test => {
         const app = create()
 
-        app.use((req, res) => res.sendStatus(201))
+        app.use(ctx => ctx.res.sendStatus(201))
 
         request(app)
             .get('/')
@@ -24,7 +24,7 @@ test.test('.sendStatus(statusCode)', test => {
     test.test('it should work with unknown code', test => {
         const app = create()
 
-        app.use((req, res) => res.sendStatus(599))
+        app.use(ctx => ctx.res.sendStatus(599))
 
         request(app)
             .get('/')

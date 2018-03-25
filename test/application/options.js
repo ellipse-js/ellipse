@@ -5,11 +5,10 @@
 'use strict'
 
 const test    = require('tap'),
-      Ellipse = require('../..'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('OPTIONS', test => {
     test.test('it should default to the routes defined', test => {
@@ -52,7 +51,7 @@ test.test('OPTIONS', test => {
 
         request(app)
             .options('/users')
-            .expect(utils.shouldNotHaveHeader('x-hit')) // differs from Express
+            .expect(helpers.shouldNotHaveHeader('x-hit')) // differs from Express
             .expect('Allow', 'GET,PUT,HEAD')
             .expect(200, 'GET,PUT,HEAD', end(test))
     })
@@ -88,8 +87,8 @@ test.test('OPTIONS', test => {
 test.test('app.options() should override the default behavior', test => {
     const app = create()
 
-    app.options('/users', (req, res) =>
-        res.set('Allow', 'GET')
+    app.options('/users', ctx =>
+        ctx.set('Allow', 'GET')
            .send('GET'))
 
     app.get('/users', noop)

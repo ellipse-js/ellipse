@@ -5,10 +5,10 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 // note about these tests: "Link" and "X-*" are chosen because
 // the common node.js versions white list which _incoming_
@@ -18,13 +18,13 @@ const test    = require('tap'),
 test.test('should append multiple headers', test => {
     const app = create()
 
-    app.use((req, res, next) => {
-        res.append('Link', '<http://localhost/>')
+    app.use((ctx, next) => {
+        ctx.append('Link', '<http://localhost/>')
         next()
     })
 
-    app.use((req, res) =>
-        res.append('Link', '<http://localhost:80/>').end())
+    app.use(ctx =>
+        ctx.append('Link', '<http://localhost:80/>').send())
 
     request(app)
         .get('/')
@@ -35,8 +35,8 @@ test.test('should accept array of values', test => {
     const app = create(),
           arr = [ 'foo=bar', 'fizz=buzz' ]
 
-    app.use((req, res) =>
-        res.append('Set-Cookie', arr).end())
+    app.use(ctx =>
+        ctx.append('Set-Cookie', arr).send())
 
     request(app)
         .get('/')
@@ -48,14 +48,14 @@ test.test('should accept array of values', test => {
 test.test('should get reset by res.set(field, val)', test => {
     const app = create()
 
-    app.use((req, res, next) => {
-        res.append('Link', '<http://localhost/>')
-        res.append('Link', '<http://localhost:80/>')
+    app.use((ctx, next) => {
+        ctx.append('Link', '<http://localhost/>')
+        ctx.append('Link', '<http://localhost:80/>')
         next()
     })
 
-    app.use((req, res) =>
-        res.set('Link', '<http://127.0.0.1/>').end())
+    app.use(ctx =>
+        ctx.set('Link', '<http://127.0.0.1/>').send())
 
     request(app)
         .get('/')
@@ -65,13 +65,13 @@ test.test('should get reset by res.set(field, val)', test => {
 test.test('should work with res.set(field, val) first', test => {
     const app = create()
 
-    app.use((req, res, next) => {
-        res.set('Link', '<http://localhost/>')
+    app.use((ctx, next) => {
+        ctx.set('Link', '<http://localhost/>')
         next()
     })
 
-    app.use((req, res) =>
-        res.append('Link', '<http://localhost:80/>').end())
+    app.use(ctx =>
+        ctx.append('Link', '<http://localhost:80/>').send())
 
     request(app)
         .get('/')
@@ -82,17 +82,16 @@ test.test('should work with cookies', test => {
     const app      = create(),
           expected = [ 'foo=bar; path=/; httponly', 'bar=baz' ]
 
-    app.use((req, res, next) => {
-        res.cookie('foo', 'bar')
+    app.use((ctx, next) => {
+        ctx.cookies.set('foo', 'bar')
         next()
     })
 
-    app.use((req, res) =>
-        res.append('Set-Cookie', 'bar=baz').end())
+    app.use(ctx =>
+        ctx.append('Set-Cookie', 'bar=baz').send())
 
     request(app)
         .get('/')
-        .expect(res =>
-            test.same(expected, res.headers[ 'set-cookie' ], 'header should be set'))
+        .expect(res => test.same(expected, res.headers[ 'set-cookie' ], 'header should be set'))
         .expect(200, end(test))
 })

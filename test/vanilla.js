@@ -31,9 +31,9 @@ function get(server, path) {
         .expect(200, 'ok', onend)
 }
 
-function handle(req, res, next) {
-    res.body = 'ok'
-    res.send()
+function handle(ctx) {
+    ctx.body = 'ok'
+    ctx.send()
 }
 
 function onend(err) {

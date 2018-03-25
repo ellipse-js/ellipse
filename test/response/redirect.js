@@ -6,17 +6,16 @@
 
 const http    = require('http'),
       test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.redirect(url)', test => {
     test.test('should default to a 302 redirect', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect('http://google.com'))
+        app.use(ctx => ctx.res.redirect('http://google.com'))
 
         request(app)
             .get('/')
@@ -27,8 +26,7 @@ test.test('.redirect(url)', test => {
     test.test('should encode "url"', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect('https://google.com?q=\u2603 §10'))
+        app.use(ctx => ctx.res.redirect('https://google.com?q=\u2603 §10'))
 
         request(app)
             .get('/')
@@ -39,8 +37,7 @@ test.test('.redirect(url)', test => {
     test.test('should not touch already-encoded sequences in "url"', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect('https://google.com?q=%A710'))
+        app.use(ctx => ctx.res.redirect('https://google.com?q=%A710'))
 
         request(app)
             .get('/')
@@ -53,12 +50,8 @@ test.test('.redirect(url)', test => {
 
 test.test('when the request method is HEAD it should ignore the body', test => {
     const app = create()
-    // console.log(app.server.address())
 
-    app.use((req, res) =>
-        res.redirect('http://google.com'))
-
-    app.on('error', err => console.log(err.stack))
+    app.use(ctx => ctx.res.redirect('http://google.com'))
 
     request(app)
         .head('/')
@@ -70,8 +63,7 @@ test.test('when accepting', test => {
     test.test('html it should respond with html', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect('http://google.com'))
+        app.use(ctx => ctx.res.redirect('http://google.com'))
 
         request(app)
             .get('/')
@@ -84,8 +76,7 @@ test.test('when accepting', test => {
     test.test('should escape the url', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect('<la\'me>'))
+        app.use(ctx => ctx.res.redirect('<la\'me>'))
 
         request(app)
             .get('/')
@@ -99,8 +90,7 @@ test.test('when accepting', test => {
     test.test('should include the redirect type', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect(301, 'http://google.com'))
+        app.use(ctx => ctx.res.redirect(301, 'http://google.com'))
 
         request(app)
             .get('/')
@@ -117,8 +107,7 @@ test.test('when accepting text', test => {
     test.test('should respond with text', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect('http://google.com'))
+        app.use(ctx => ctx.res.redirect('http://google.com'))
 
         request(app)
             .get('/')
@@ -131,8 +120,7 @@ test.test('when accepting text', test => {
     test.test('should encode the url', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect('http://example.com/?param=<script>alert("hax");</script>'))
+        app.use(ctx => ctx.res.redirect('http://example.com/?param=<script>alert("hax");</script>'))
 
         request(app)
             .get('/')
@@ -146,8 +134,7 @@ test.test('when accepting text', test => {
     test.test('should include the redirect type', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.redirect(301, 'http://google.com'))
+        app.use(ctx => ctx.res.redirect(301, 'http://google.com'))
 
         request(app)
             .get('/')
@@ -160,18 +147,16 @@ test.test('when accepting text', test => {
     test.end()
 })
 
-// todo: why?
-// test.test('when accepting neither text or html it should respond with an empty body', test => {
-//     const app = create()
-//
-//     app.use((req, res) =>
-//         res.redirect('http://google.com'))
-//
-//     request(app)
-//         .get('/')
-//         .set('Accept', 'application/octet-stream')
-//         .expect('location', 'http://google.com')
-//         .expect('content-length', '0')
-//         .expect(utils.shouldNotHaveHeader('Content-Type'))
-//         .expect(302, '', end(test))
-// })
+test.test('when accepting neither text or html it should respond with an empty body', test => {
+    const app = create()
+
+    app.use(ctx => ctx.res.redirect('http://google.com'))
+
+    request(app)
+        .get('/')
+        .set('Accept', 'application/octet-stream')
+        .expect('location', 'http://google.com')
+        .expect('content-length', '0')
+        // .expect(helpers.shouldNotHaveHeader('Content-Type')) // todo
+        .expect(302, '', end(test))
+})

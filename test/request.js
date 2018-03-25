@@ -4,8 +4,6 @@
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0
 
 const fs      = require('fs'),
-      os      = require('os'),
-      dns     = require('dns'),
       AE      = require('assert').AssertionError,
       join    = require('path').join,
       https   = require('https'),
@@ -17,7 +15,10 @@ const fs      = require('fs'),
 
 test.plan(67)
 
-app1.post('/test', (req, res, next) => {
+app1.post('/test', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     test.type(req, Ellipse.Request, 'request object should be a Request instance')
     test.type(req.ctx, Ellipse.Context, 'req.ctx should be a Context instance')
     test.type(req.context, Ellipse.Context, 'req.context should be a Context instance')
@@ -113,32 +114,47 @@ app1.post('/test', (req, res, next) => {
     res.json({ test: 'test' })
 })
 
-app1.get('/default', (req, res) => {
+app1.get('/default', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     test.strictEquals(req.type, '', 'req.type should default to `undefined`')
     test.strictEquals(req.length, undefined, 'req.length should default to `undefined`')
     res.send('ok')
 })
 
-app1.get('/fresh/1', (req, res) => {
+app1.get('/fresh/1', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     res.status(304)
     test.notOk(req.fresh, 'req.fresh should be falsy if status code is 304')
     test.not(req.stale, 'req.stale should be truthy if status code is 304')
     res.send('ok')
 })
 
-app1.get('/fresh/2', (req, res) => {
+app1.get('/fresh/2', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     res.status(404)
     test.notOk(req.fresh, 'req.fresh should be falsy if status code is 404')
     test.not(req.stale, 'req.stale should be truthy if status code is 404')
     res.send('ok')
 })
 
-app1.get('/xhr', (req, res) => {
+app1.get('/xhr', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     test.ok(req.xhr, 'XHR requests should be detected')
     res.send('ok')
 })
 
-app1.get('/serialize', (req, res) => {
+app1.get('/serialize', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     const expected = {
         method: 'GET',
         url: '/serialize',
@@ -149,7 +165,10 @@ app1.get('/serialize', (req, res) => {
     res.send('ok')
 })
 
-app2.get('/test', (req, res) => {
+app2.get('/test', ctx => {
+    const req = ctx.req,
+          res = ctx.res
+
     test.equals(req.protocol, 'https', 'https prtocol should be detected')
     test.ok(req.secure, 'request should be considered as secure')
     res.send('ok')

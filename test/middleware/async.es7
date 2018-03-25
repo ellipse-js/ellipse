@@ -1,11 +1,9 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
-
+      helpers = require('../helpers'),
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('await next() should behave like Koa@2', test => {
     const app   = create({ respond: false }),
@@ -15,19 +13,22 @@ test.test('await next() should behave like Koa@2', test => {
               'four', 'five'
           ]
 
-    app.use(async next => {
+    app.use(async (ctx, next) => {
         calls.push('one')
         await next()
         calls.push('five')
     })
 
-    app.use(async next => {
+    app.use(async (ctx, next) => {
         calls.push('two')
         await next()
         calls.push('four')
     })
 
-    app.use((req, res) => {
+    app.use(ctx => {
+        const req = ctx.req,
+              res = ctx.res
+
         calls.push('three')
 
         let buf = ''

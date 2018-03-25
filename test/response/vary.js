@@ -5,17 +5,16 @@
 'use strict'
 
 const test     = require('tap'),
-      utils    = require('../support'),
-      end      = utils.end,
-      create   = utils.create,
-      request  = utils.request,
-      noHeader = utils.shouldNotHaveHeader
+      helpers  = require('../helpers'),
+      end      = helpers.end,
+      create   = helpers.create,
+      request  = helpers.request,
+      noHeader = helpers.shouldNotHaveHeader
 
 test.test('with no arguments should not set Vary', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.vary().end())
+    app.use(ctx => ctx.res.vary().end())
 
     app.on('error', (err, ctx) => ctx.send('ok'))
 
@@ -28,7 +27,7 @@ test.test('with no arguments should not set Vary', test => {
 test.test('with an empty array should not set Vary', test => {
     const app = create()
 
-    app.use((req, res) => res.vary([]).end())
+    app.use(ctx => ctx.res.vary([]).end())
 
     request(app)
         .get('/')
@@ -39,8 +38,7 @@ test.test('with an empty array should not set Vary', test => {
 test.test('with an array should set the values', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res.vary(['Accept', 'Accept-Language', 'Accept-Encoding']).end())
+    app.use(ctx => ctx.res.vary(['Accept', 'Accept-Language', 'Accept-Encoding']).end())
 
     request(app)
         .get('/')
@@ -51,7 +49,7 @@ test.test('with an array should set the values', test => {
 test.test('with a string should set the value', test => {
     const app = create()
 
-    app.use((req, res) => res.vary('Accept').end())
+    app.use(ctx => ctx.res.vary('Accept').end())
 
     request(app)
         .get('/')
@@ -62,14 +60,14 @@ test.test('with a string should set the value', test => {
 test.test('when the value is present should not add it again', test => {
     const app = create()
 
-    app.use((req, res) =>
-        res
-            .vary('Accept')
-            .vary('Accept-Encoding')
-            .vary('Accept-Encoding')
-            .vary('Accept-Encoding')
-            .vary('Accept')
-            .end())
+    app.use(ctx => ctx.res
+        .vary('Accept')
+        .vary('Accept-Encoding')
+        .vary('Accept-Encoding')
+        .vary('Accept-Encoding')
+        .vary('Accept')
+        .end()
+    )
 
     request(app)
         .get('/')

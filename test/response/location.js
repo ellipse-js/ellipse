@@ -5,17 +5,16 @@
 'use strict'
 
 const test    = require('tap'),
-      utils   = require('../support'),
-      end     = utils.end,
-      create  = utils.create,
-      request = utils.request
+      helpers = require('../helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request
 
 test.test('.location(url)', test => {
     test.test('should set the header', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.location('http://google.com').end())
+        app.use(ctx => ctx.res.location('http://google.com').end())
 
         request(app)
             .get('/')
@@ -26,8 +25,7 @@ test.test('.location(url)', test => {
     test.test('should encode "url"', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.location('https://google.com?q=\u2603 §10').end())
+        app.use(ctx => ctx.res.location('https://google.com?q=\u2603 §10').end())
 
         request(app)
             .get('/')
@@ -38,8 +36,7 @@ test.test('.location(url)', test => {
     test.test('should not touch already-encoded sequences in "url"', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.location('https://google.com?q=%A710').end())
+        app.use(ctx => ctx.res.location('https://google.com?q=%A710').end())
 
         request(app)
             .get('/')
@@ -50,8 +47,7 @@ test.test('.location(url)', test => {
     test.test('"back" should refer to the Referrer header', test => {
         const app = create()
 
-        app.use((req, res) =>
-            res.location('back').end())
+        app.use(ctx => ctx.res.location('back').end())
 
         request(app)
             .get('/')

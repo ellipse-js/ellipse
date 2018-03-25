@@ -1,0 +1,124 @@
+'use strict'
+
+const fs      = require('fs'),
+      test    = require('tap'),
+      helpers = require('./helpers'),
+      create  = helpers.create,
+      request = helpers.request,
+      text    = fs.readFileSync(__filename),
+      length  = Buffer.byteLength(text).toString(),
+      app     = create()
+
+test.plan(18)
+
+app.get('/1', ctx => {
+    ctx.sendFile(__filename)
+})
+
+app.get('/2', ctx => {
+    const calls = []
+    ctx.res.on('finish', () => calls.push(1))
+    ctx.sendFile(__filename, err => {
+        calls.push(2)
+        test.same(calls, [ 1, 2 ], 'response should be sent first (callback)')
+    })
+})
+
+app.get('/3', async ctx => {
+    const calls = []
+    ctx.res.on('finish', () => calls.push(1))
+    await ctx.sendFile(__filename)
+    calls.push(2)
+    test.same(calls, [ 1, 2 ], 'response should be sent first (promise)')
+})
+
+app.get('/headers', ctx => {
+    ctx.sendFile(__filename, {
+        headers: {
+            'x-test-1': 1,
+            'x-test-2': 'test'
+        }
+    })
+})
+
+const error = app.mount('/error')
+
+error.get('/basic', ctx => {
+    ctx.sendFile('/non/existing').catch(err => {
+        test.type(err, Error, 'an error should be passed back (catch)')
+        test.equals(err.code, 'ENOENT', 'error should be ENOENT (catch)')
+    })
+})
+
+error.get('/callback', ctx => {
+    ctx.sendFile('/non/existing', err => {
+        test.type(err, Error, 'an error should be passed back (callback)')
+        test.equals(err.code, 'ENOENT', 'error should be ENOENT (callback)')
+        ctx.res.status(404).send('error')
+    })
+})
+
+error.get('/yield', async ctx => {
+    try {
+        await ctx.sendFile('/non/existing')
+    }
+    catch (ex) {
+        test.type(ex, Error, 'an error should be passed back (promise)')
+        test.equals(ex.code, 'ENOENT', 'error should be ENOENT (promise)')
+        ctx.status = 404
+        ctx.send('error')
+    }
+})
+
+error.get('/directory', ctx => {
+    ctx.sendFile(__dirname, err => {
+        test.type(err, Error, 'an error should be passed back (directory)')
+        test.equals(err.code, 'EISDIR', 'error should be EISDIR (directory)')
+        ctx.res.status(404)
+        ctx.res.send('error')
+    })
+})
+
+get('/1')
+get('/2')
+get('/3')
+get('/headers', [ 'x-test-1', 'x-test-2' ])
+getError('/error/basic')
+getError('/error/callback')
+getError('/error/yield')
+getError('/error/directory')
+
+function get(path, headers) {
+    const req = request(app)
+        .get(path)
+        .expect(200)
+        // cannot check that because this file has .es7 extension
+        // .expect('content-type', 'application/javascript')
+        .expect('content-length', length)
+
+    if (headers)
+        headers.forEach(h => {
+            req.expect(res => {
+                if (!(h in res.headers))
+                    throw new Error(h + ' header expected, but missing')
+            })
+        })
+
+    req.expect(text, err => {
+            if (err)
+                test.threw(err)
+            else
+                test.pass('file received')
+        })
+}
+
+function getError(path) {
+    request(app)
+        .get(path)
+        .expect(404, err => {
+            if (err)
+                test.threw(err)
+            else
+                test.pass('error response received')
+        })
+}
