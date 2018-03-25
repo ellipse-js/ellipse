@@ -27,7 +27,7 @@ app1.post('/test', ctx => {
     test.equals(req.app, app1, 'req.app should be an Application instance')
     test.equals(req.application, app1, 'req.application should be an Application instance')
 
-    var body = ''
+    let body = ''
     req.setEncoding('utf8')
     req.on('data', data => body += data)
     req.on('end', () => test.equals(body, 'test', 'request body should be received'))

@@ -5,7 +5,7 @@ const request  = require('supertest'),
       Ellipse  = require('..'),
       Context  = Ellipse.Context
 
-var app = new Ellipse()
+let app = new Ellipse()
 
 // classic middleware
 

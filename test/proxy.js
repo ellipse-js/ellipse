@@ -3,7 +3,7 @@
 const request = require('supertest'),
       test    = require('tap')
 
-var app = require('..')({ proxy: true })
+let app = require('..')({ proxy: true })
 
 app.get('/', ctx => {
     test.equals(ctx.protocol, 'http', 'protocol should default to `x-forwarded-proto` header')

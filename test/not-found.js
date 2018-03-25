@@ -3,7 +3,7 @@
 const request = require('supertest'),
       test    = require('tap')
 
-var app1    = require('..')(),
+let app1    = require('..')(),
     app2    = require('..')()
 
 app1.on('notFound', function (ctx) {

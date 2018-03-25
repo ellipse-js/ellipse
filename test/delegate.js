@@ -3,7 +3,7 @@
 const request = require('supertest'),
       test    = require('tap')
 
-var app = require('..')()
+let app = require('..')()
 
 const delegate = app
     .route('/')

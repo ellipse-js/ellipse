@@ -14,7 +14,7 @@ test.equals(route.path, '/', 'route.path should be set')
 test.equals(route.all, false, 'route.all should be set')
 test.equals(route.wildcard, false, 'route.wildcard should be set')
 
-var expected = {
+const expected = {
     method: 'get',
     path: '/',
     handlerCount: 1

@@ -4,7 +4,7 @@ const request = require('supertest'),
       test    = require('tap'),
       Ellipse = require('..')
 
-var app  = new Ellipse,
+let app  = new Ellipse,
     sub1 = Ellipse.Router(),
     sub2 = Ellipse.Router()
 

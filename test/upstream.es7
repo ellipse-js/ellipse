@@ -6,7 +6,7 @@ const test      = require('tap'),
       result    = [],
       errResult = []
 
-var app  = new Ellipse,
+let app  = new Ellipse,
     app2 = new Ellipse
 
 function done(n) {

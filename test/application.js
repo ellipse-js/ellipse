@@ -6,7 +6,7 @@ const AE      = require('assert').AssertionError,
       Ellipse = require('..'),
       env     = process.env.NODE_ENV || 'development'
 
-var app = new Ellipse
+let app = new Ellipse
 
 // todo: what about app.keys?
 

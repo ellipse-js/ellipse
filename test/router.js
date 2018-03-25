@@ -17,7 +17,7 @@ app.get('/test', noop)
 app.get('/test2', noop)
 app.post('/test', noop)
 
-var expected = {
+let expected = {
     get: [ '/test', '/test2' ],
     post: [ '/test' ]
 }

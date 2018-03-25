@@ -3,7 +3,7 @@
 const request = require('supertest'),
       test    = require('tap')
 
-var app = require('..')()
+let app = require('..')()
 
 app.get('/', (req, res) => {
     test.fail('GET handler should not be executed')
