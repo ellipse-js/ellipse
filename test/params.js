@@ -1,11 +1,14 @@
 'use strict'
 
 const test    = require('tap'),
-      request = require('supertest')
+      helpers = require('./helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
+      app     = create(),
+      onend   = end(test, 3)
 
-let app = require('..')()
-
-test.plan(7)
+test.plan(9)
 
 app.param('p1', (ctx, next, param) => {
     test.equals(param, 'foo', 'param p1 should be "foo"')
@@ -22,8 +25,9 @@ app.get('/1/:p1', ctx => {
     ctx.send()
 })
 
-app.get(/^\/2\/([a-z]{3})$/, ctx => {
-    test.equals(ctx.params[ 0 ], 'bar', 'param 0 should be "bar"')
+app.get(/^\/2\/([a-z])([a-z]{2})$/, ctx => {
+    test.equals(ctx.params[ 0 ], 'b', 'param 0 should be "b"')
+    test.equals(ctx.params[ 1 ], 'ar', 'param 1 should be "ar"')
     ctx.send()
 })
 
@@ -33,20 +37,11 @@ app.get('/3/:p1/:p2', ctx => {
     ctx.send()
 })
 
-app = app.listen()
-
-test.tearDown(() => app.close())
-
 function get(path) {
     request(app)
         .get(path)
         .expect(200)
         .end(onend)
-}
-
-function onend(err) {
-    if (err)
-        test.threw(err)
 }
 
 get('/1/foo')

@@ -105,11 +105,11 @@ function get(path, headers) {
         })
 
     req.expect(text, err => {
-            if (err)
-                test.threw(err)
-            else
-                test.pass('file received')
-        })
+        if (err)
+            test.threw(err)
+        else
+            test.pass('file received')
+    })
 }
 
 function getError(path) {

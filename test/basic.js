@@ -1,9 +1,11 @@
 'use strict'
 
-const request = require('supertest'),
-      test    = require('tap'),
-      app     = require('..')(),
-      server  = app.listen()
+const test    = require('tap'),
+      helpers = require('./helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
+      app     = create()
 
 test.plan(3)
 
@@ -31,7 +33,7 @@ app.get('/', ctx => {
     res.send()
 })
 
-request(server)
+request(app)
     .get('/')
     .expect('x-test', 'test')
     .expect(noHeader('x-test-2'))
@@ -40,14 +42,7 @@ request(server)
     .expect('etag', 'W/"c-Lve95gjOVATpfV8EL5X4nxwjKHE"')
     .expect('content-type', 'text/plain; charset=utf-8')
     .expect('x-powered-by', 'Ellipse/' + require('../package.json').version)
-    .expect(200, 'Hello World!', err => {
-        if (err)
-            test.threw(err)
-        else {
-            test.pass('response received')
-            server.close()
-        }
-    })
+    .expect(200, 'Hello World!', end(test))
 
 function noHeader(field) {
     return res => {

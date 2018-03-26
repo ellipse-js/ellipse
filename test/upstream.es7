@@ -1,13 +1,14 @@
 'use strict'
 
 const test      = require('tap'),
-      request   = require('supertest'),
       Ellipse   = require('..'),
+      helpers   = require('./helpers'),
+      create    = helpers.create,
+      request   = helpers.request,
+      app       = create(),
+      app2      = create(),
       result    = [],
       errResult = []
-
-let app  = new Ellipse,
-    app2 = new Ellipse
 
 function done(n) {
     return () => result.push(n)
@@ -148,12 +149,8 @@ app2.get('/', ctx => {
 })
 
 test.plan(9)
-test.tearDown(() => {
-    app.close()
-    app2.close()
-})
 
-request(app = app.listen())
+request(app)
     .get('/test')
     .expect(200, err => {
         if (err)
@@ -208,7 +205,7 @@ request(app)
             test.pass('error caught in param processor (next)')
     })
 
-request(app2 = app2.listen())
+request(app2)
     .get('/')
     .expect(res => {
         if (!('x-powered-by' in res.headers) && !isNaN(res.headers[ 'x-powered-by' ]))

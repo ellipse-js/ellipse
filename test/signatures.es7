@@ -1,11 +1,12 @@
 'use strict'
 
-const request  = require('supertest'),
-      test     = require('tap'),
+const test     = require('tap'),
       Ellipse  = require('..'),
-      Context  = Ellipse.Context
-
-let app = new Ellipse()
+      Context  = Ellipse.Context,
+      helpers = require('./helpers'),
+      create  = helpers.create,
+      request = helpers.request,
+      app     = create()
 
 // classic middleware
 
@@ -26,7 +27,6 @@ app.get('/am', async (ctx, next) => {
 // classic param processor
 
 app.param('cp', function (ctx, next, value) {
-    test.type(this, Context, '`this` should be a Context instance')
     test.type(ctx, Context, '`ctx` should be a Context instance')
     test.type(next, 'function', '`next()` should be a method')
     test.equals(value, 't', '`value` should be passed')
@@ -66,10 +66,7 @@ app.get('/ap2/:ap2', function (ctx) {
 
 // requests
 
-app = app.listen()
-
-test.plan(17)
-test.tearDown(() => app.close())
+test.plan(16)
 
 get('/cm')
 get('/am')

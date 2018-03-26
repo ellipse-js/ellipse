@@ -320,7 +320,7 @@ test.test('.catch(err) should be available', test => {
 test.test('expose stack traces in development', test => {
     const app = create({ env: 'development' })
 
-    test.plan(1)
+    test.plan(2)
 
     process.stderr.write = data => {
         test.ok(stackTrace.test(data), 'stack trace should be written to stdout when app.env is development')

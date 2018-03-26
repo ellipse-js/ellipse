@@ -32,7 +32,7 @@ function createApp(opts) {
 }
 
 function createRequest(app) {
-    return request(app.server)
+    return request(app.server || app)
 }
 
 function merge(a, b) {
@@ -57,7 +57,9 @@ function endTest(test, n) {
     function done(err) {
         if (err)
             test.threw(err)
-        else
+        else {
+            test.pass('expected response received')
             test.end()
+        }
     }
 }

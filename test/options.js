@@ -1,12 +1,17 @@
 'use strict'
 
-const request = require('supertest'),
-      test    = require('tap'),
-      Ellipse = require('..')
+const test    = require('tap'),
+      Ellipse = require('..'),
+      helpers = require('./helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
+      onend   = end(test, 8),
+      app     = create(),
+      sub1    = Ellipse.Router(),
+      sub2    = Ellipse.Router()
 
-let app  = new Ellipse,
-    sub1 = Ellipse.Router(),
-    sub2 = Ellipse.Router()
+test.plan(1)
 
 app.get('/', handler)
 app.route('/1')
@@ -28,10 +33,6 @@ sub2.patch('/5', handler)
 
 sub2.mount('/6').get('/', handler)
 
-test.plan(8)
-test.tearDown(() => app.close())
-
-app = app.listen()
 doTest('/', 'GET,HEAD')
 doTest('/1', 'POST,GET,HEAD')
 doTest('/2', 'GET,PUT,PATCH,HEAD')
@@ -54,11 +55,4 @@ function doTest(path, body, status) {
 
 function handler() {
     test.fail('handler should not be executed')
-}
-
-function onend(err) {
-    if (err)
-        test.threw(err)
-    else
-        test.pass('expected method list returned')
 }

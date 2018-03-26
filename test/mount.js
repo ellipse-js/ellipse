@@ -1,11 +1,14 @@
 'use strict'
 
 const test    = require('tap'),
-      request = require('supertest')
+      helpers = require('./helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
+      app     = create(),
+      onend   = end(test, 2)
 
-let app = require('..')()
-
-test.plan(2)
+test.plan(3)
 
 app.use('/1/*', ctx => {
     test.equal(ctx.url, 'foo', 'route should be mounted')
@@ -19,7 +22,7 @@ app.mount('/2').get('/:test', ctx => {
     ctx.send()
 })
 
-request(app = app.listen())
+request(app)
     .get('/1/foo')
     .expect(200)
     .end(onend)
@@ -28,10 +31,3 @@ request(app)
     .get('/2/bar')
     .expect(200)
     .end(onend)
-
-function onend(err) {
-    if (err)
-        test.threw(err)
-}
-
-test.tearDown(() => app.close())

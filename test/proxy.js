@@ -1,9 +1,14 @@
 'use strict'
 
-const request = require('supertest'),
-      test    = require('tap')
+const test    = require('tap'),
+      helpers = require('./helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
+      app     = create({ proxy: true }),
+      onend   = end(test, 4)
 
-let app = require('..')({ proxy: true })
+test.plan(5)
 
 app.get('/', ctx => {
     test.equals(ctx.protocol, 'http', 'protocol should default to `x-forwarded-proto` header')
@@ -20,10 +25,7 @@ app.get('/ips', ctx => {
     ctx.send('ok')
 })
 
-test.plan(4)
-test.tearDown(() => app.close())
-
-request(app = app.listen())
+request(app)
     .get('/')
     .expect(200, onend)
 
@@ -41,8 +43,3 @@ request(app)
     .get('/ips')
     .set('x-forwarded-for', 't1, t2')
     .expect(200, onend)
-
-function onend(err) {
-    if (err)
-        test.threw(err)
-}

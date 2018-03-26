@@ -1,9 +1,14 @@
 'use strict'
 
-const request = require('supertest'),
-      test    = require('tap')
+const test    = require('tap'),
+      helpers = require('./helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
+      app     = create(),
+      onend   = end(test, 2)
 
-let app = require('..')()
+test.plan(1)
 
 app.get('/', (req, res) => {
     test.fail('GET handler should not be executed')
@@ -12,10 +17,6 @@ app.get('/', (req, res) => {
 app.head('/', handler)
 app.get('/fallback', handler)
 
-test.plan(2)
-test.tearDown(() => app.close())
-
-app = app.listen()
 head('/')
 head('/fallback')
 
@@ -24,15 +25,10 @@ function head(path) {
         .head(path)
         .expect('content-length', '4')
         .expect('content-type', 'text/html; charset=utf-8')
-        .expect(200, undefined, err => {
-            if (err)
-                test.threw(err)
-            else
-                test.pass('expected result received')
-        })
+        .expect(200, undefined, onend)
 }
 
-function handler() {
-    this.body = 'test'
-    this.send()
+function handler(ctx) {
+    ctx.body = 'test'
+    ctx.send()
 }

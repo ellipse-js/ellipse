@@ -4,9 +4,8 @@ const AE      = require('assert').AssertionError,
       root    = __dirname,
       test    = require('tap'),
       Ellipse = require('..'),
+      app     = new Ellipse,
       env     = process.env.NODE_ENV || 'development'
-
-let app = new Ellipse
 
 // todo: what about app.keys?
 
@@ -154,7 +153,7 @@ test.test('setters', test => {
 })
 
 test.test('constructor options', test => {
-    app = new Ellipse({
+    const app = new Ellipse({
         env: 'test',
         respond: false,
         xPoweredBy: 'community'

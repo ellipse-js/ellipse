@@ -12,7 +12,7 @@ const fs       = require('fs'),
 test.plan(3)
 
 test.test('in production mode', test => {
-    test.plan(41)
+    test.plan(42)
 
     const app   = create({ env: 'production' }),
           onend = end(test, 24),
@@ -359,7 +359,7 @@ test.test('in production mode', test => {
 })
 
 test.test('stream error', test => {
-    test.plan(0)
+    test.plan(1)
 
     const app = create()
 
@@ -378,7 +378,7 @@ test.test('stream error', test => {
 })
 
 test.test('in development mode', test => {
-    test.plan(1)
+    test.plan(2)
 
     const app = create({ env: 'development' })
 

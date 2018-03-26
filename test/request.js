@@ -8,12 +8,16 @@ const fs      = require('fs'),
       join    = require('path').join,
       https   = require('https'),
       test    = require('tap'),
-      request = require('supertest'),
+      helpers = require('./helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
       Ellipse = require('..'),
-      app1 = new Ellipse,
-      app2 = new Ellipse
+      app1    = create(),
+      app2    = new Ellipse,
+      onend   = end(test, 7)
 
-test.plan(67)
+test.plan(68)
 
 app1.post('/test', ctx => {
     const req = ctx.req,
@@ -92,7 +96,7 @@ app1.post('/test', ctx => {
     test.same(req.ips, [], 'req.ips should be an empty array when `app.proxy` is false')
 
     const hostname   = '127.0.0.1',
-          host       = hostname + ':' + server1.address().port,
+          host       = hostname + ':' + app1.server.address().port,
           subdomains = req.subdomains
 
     test.equals(req.host, host, 'req.host should be recognised')
@@ -174,14 +178,7 @@ app2.get('/test', ctx => {
     res.send('ok')
 })
 
-test.tearDown(() => {
-    server1.close()
-    server2.close()
-})
-
-const server1 = app1.listen()
-
-request(server1)
+request(app1)
     .post('/test?test=test')
     .set('accept', 'application/json, */*')
     .set('accept-charset', 'utf8')
@@ -194,24 +191,24 @@ request(server1)
     .expect(200)
     .expect({ test: 'test' }, onend)
 
-request(server1)
+request(app1)
     .get('/default')
     .expect(200, onend)
 
-request(server1)
+request(app1)
     .get('/xhr')
     .set('x-requested-with', 'XMLHttpRequest')
     .expect(200, onend)
 
-request(server1)
+request(app1)
     .get('/serialize')
     .expect(200, onend)
 
-request(server1)
+request(app1)
     .get('/fresh/1')
     .expect(304, onend)
 
-request(server1)
+request(app1)
     .get('/fresh/2')
     .expect(404, onend)
 
@@ -221,12 +218,10 @@ const server2 = https.createServer({
     passphrase: 'test'
 }, app2.callback()).listen()
 
+// make it work with onend helper
+helpers.servers.push(server2)
+
 request(server2)
     .get('/test')
     .expect(200)
     .expect('ok', onend)
-
-function onend(err) {
-    if (err)
-        test.threw(err)
-}

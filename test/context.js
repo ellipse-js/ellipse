@@ -1,11 +1,15 @@
 'use strict'
 
 const test    = require('tap'),
-      request = require('supertest'),
       Cookies = require('cookies'),
+      helpers = require('./helpers'),
       Ellipse = require('..'),
-      app     = new Ellipse,
-      server  = app.listen()
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
+      app     = create()
+
+test.plan(40)
 
 app.get('/', ctx => {
     test.type(ctx, Ellipse.Context, '`ctx` should be a Context instance')
@@ -99,12 +103,7 @@ app.get('/', ctx => {
     ctx.send()
 })
 
-request(server)
+request(app)
     .get('/')
     .expect(200)
-    .end(err => {
-        if (err)
-            test.threw(err)
-        else
-            server.close()
-    })
+    .end(end(test))

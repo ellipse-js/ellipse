@@ -1,9 +1,14 @@
 'use strict'
 
-const request = require('supertest'),
-      test    = require('tap')
+const test    = require('tap'),
+      helpers = require('./helpers'),
+      end     = helpers.end,
+      create  = helpers.create,
+      request = helpers.request,
+      onend   = end(test, 2),
+      app     = create()
 
-let app = require('..')()
+test.plan(3)
 
 const delegate = app
     .route('/')
@@ -14,13 +19,8 @@ const delegate = app
     .get(handler)
     .all(handler)
 
-test.plan(4)
-test.tearDown(() => app.close())
-
 test.same(delegate.toJSON(), { path: '/' }, 'json representation of delegate should be correct')
 test.same(delegate.toJSON(), delegate.inspect(), '`inspect()` and `toJSON()` should return the same result')
-
-app = app.listen()
 
 request(app)
     .get('/')
@@ -30,14 +30,7 @@ request(app)
     .post('/')
     .expect(200, 'ok', onend)
 
-function handler() {
-    this.body += 'k'
-    this.send()
-}
-
-function onend(err) {
-    if (err)
-        test.threw(err)
-    else
-        test.pass('expected result received')
+function handler(ctx) {
+    ctx.body += 'k'
+    ctx.send()
 }

@@ -4,36 +4,33 @@ const test    = require('tap'),
       helpers = require('./helpers'),
       end     = helpers.end,
       create  = helpers.create,
-      request = helpers.request
+      request = helpers.request,
+      app     = create()
 
-test.test('request method should be overwritten', test => {
-    const app = create()
+test.plan(4)
 
-    test.plan(3)
+app.get('/', (ctx, next) => {
+    ctx.req.method = 'POST'
+    next()
 
-    app.get('/', (ctx, next) => {
-        ctx.req.method = 'POST'
-        next()
-
-        test.pass('GET handler should be called')
-    })
-
-    app.put('/', () =>
-        test.fail('PUT handler should not be called'))
-
-    app.post('/', (ctx, next) => {
-        ctx.req.method = 'PATCH'
-        next()
-
-        test.pass('POST handler should be called')
-    })
-
-    app.patch('/', ctx => {
-        ctx.send('swag')
-        test.pass('PATCH handler should be called')
-    })
-
-    request(app)
-        .get('/')
-        .expect(200, 'swag', end(test))
+    test.pass('GET handler should be called')
 })
+
+app.put('/', () =>
+    test.fail('PUT handler should not be called'))
+
+app.post('/', (ctx, next) => {
+    ctx.req.method = 'PATCH'
+    next()
+
+    test.pass('POST handler should be called')
+})
+
+app.patch('/', ctx => {
+    ctx.send('swag')
+    test.pass('PATCH handler should be called')
+})
+
+request(app)
+    .get('/')
+    .expect(200, 'swag', end(test))
