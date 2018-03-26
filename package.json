@@ -43,6 +43,7 @@
     "content-disposition": "^0.5.2",
     "content-type": "^1.0.4",
     "cookies": "^0.7.1",
+    "delegates": "^1.0.0",
     "destroy": "^1.0.4",
     "encodeurl": "^1.0.2",
     "escape-html": "^1.0.3",

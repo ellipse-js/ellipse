@@ -10,7 +10,7 @@ const test    = require('tap'),
 test.plan(4)
 
 app.get('/', (ctx, next) => {
-    ctx.req.method = 'POST'
+    ctx.method = 'POST'
     next()
 
     test.pass('GET handler should be called')
@@ -20,7 +20,7 @@ app.put('/', () =>
     test.fail('PUT handler should not be called'))
 
 app.post('/', (ctx, next) => {
-    ctx.req.method = 'PATCH'
+    ctx.method = 'PATCH'
     next()
 
     test.pass('POST handler should be called')
