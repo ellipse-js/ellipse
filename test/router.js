@@ -5,7 +5,7 @@ const test    = require('tap'),
       app     = new Ellipse({ xPoweredBy: false }),
       sub     = new Ellipse.Router
 
-test.plan(14)
+test.plan(11)
 
 function noop(a, b, c, d) {}
 
@@ -18,15 +18,11 @@ app.get('/test2', noop)
 app.post('/test', noop)
 
 let expected = {
-    get: [ '/test', '/test2' ],
-    post: [ '/test' ]
+    GET: [ '/test', '/test2' ],
+    POST: [ '/test' ]
 }
 test.same(app.routes, expected, 'routes should be added')
 test.equals(app.length, 3, 'router.length should return the size of its stack')
-const wrapped = app.stack[ 0 ].handlers[ 0 ]
-test.equals(wrapped.name, noop.name, 'wrapped handler function should retain its original properties')
-test.equals(wrapped.length, noop.length, 'wrapped handler function should retain its original properties')
-test.equals(wrapped.toString(), noop.toString(), 'wrapped handler function should retain its original properties')
 
 test.equals(sub.app, undefined, 'router.app should be `undefined` until added into an app')
 
@@ -37,7 +33,7 @@ test.equals(sub.app, app, 'router.app should be its parent after added into an a
 test.equals(sub.app, sub.application, 'router.application should be an alias to router.application')
 test.equals(sub.parent, app, 'router.parent should be its parent after added into an app')
 
-test.same(sub.routes, { get: [ '/' ] }, 'sub-routes should be added')
+test.same(sub.routes, { GET: [ '/' ] }, 'sub-routes should be added')
 expected = {
     subdomainOffset: 2,
     proxy: false,
@@ -49,7 +45,7 @@ test.same(expected, app.toJSON(), "app\'s json representation shoul differ from 
 expected = {
     params: [ 'test' ],
     routes: {
-        get: [ '/' ]
+        GET: [ '/' ]
     }
 }
 test.same(expected, sub.toJSON(), "router\'s json representation shoul differ from app\'s")
